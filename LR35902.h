@@ -169,6 +169,29 @@ class LR35902
   void LD_hl_sp_r8();
   void LD_sp_hl();
 
+  void INC_a();
+  void INC_b();
+  void INC_c();
+  void INC_d();
+  void INC_e();
+  void INC_h();
+  void INC_l();
+  void INC_hladdr();
+
+  void DEC_a();
+  void DEC_b();
+  void DEC_c();
+  void DEC_d();
+  void DEC_e();
+  void DEC_h();
+  void DEC_l();
+  void DEC_hladdr();
+
+  void DAA();
+  void SCF();
+  void CPL();
+  void CCF();
+
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] = 
   {
@@ -282,6 +305,33 @@ class LR35902
 
     {0xf8, &LR35902::LD_hl_sp_r8, {12, 2, "LD HL, SP+n"}},
     {0xf9, &LR35902::LD_sp_hl,    { 8, 1, "LD SP, HL"}},
+
+    // 8-bit ALU
+    {0x04, &LR35902::INC_b,      { 4, 1, "INC B"}},
+    {0x14, &LR35902::INC_d,      { 4, 1, "INC D"}},
+    {0x24, &LR35902::INC_h,      { 4, 1, "INC H"}},
+    {0x34, &LR35902::INC_hladdr, {12, 1, "INC (HL)"}},
+
+    {0x05, &LR35902::DEC_b,      { 4, 1, "DEC B"}},
+    {0x15, &LR35902::DEC_d,      { 4, 1, "DEC D"}},
+    {0x25, &LR35902::DEC_h,      { 4, 1, "DEC H"}},
+    {0x35, &LR35902::DEC_hladdr, {12, 1, "DEC (HL)"}},
+
+    {0x27, &LR35902::DAA, {4, 1, "DAA"}},
+    {0x37, &LR35902::SCF, {4, 1, "SCF"}},
+
+    {0x0c, &LR35902::INC_c, {4, 1, "INC C"}},
+    {0x1c, &LR35902::INC_e, {4, 1, "INC E"}},
+    {0x2c, &LR35902::INC_l, {4, 1, "INC L"}},
+    {0x3c, &LR35902::INC_a, {4, 1, "INC A"}},
+
+    {0x0d, &LR35902::DEC_c, {4, 1, "DEC C"}},
+    {0x1d, &LR35902::DEC_e, {4, 1, "DEC E"}},
+    {0x2d, &LR35902::DEC_l, {4, 1, "DEC L"}},
+    {0x3d, &LR35902::DEC_a, {4, 1, "DEC A"}},
+
+    {0x2f, &LR35902::CPL, {4, 1, "CPL"}},
+    {0x3f, &LR35902::CCF, {4, 1, "CCF"}},
   };
 
   static const int table_size = 0xff;

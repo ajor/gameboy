@@ -570,3 +570,103 @@ void LR35902::LD_sp_hl()
 {
   reg.sp = reg.hl;
 }
+
+void LR35902::INC_a()
+{
+  reg.a++;
+}
+
+void LR35902::INC_b()
+{
+  reg.b++;
+}
+
+void LR35902::INC_c()
+{
+  reg.c++;
+}
+
+void LR35902::INC_d()
+{
+  reg.d++;
+}
+
+void LR35902::INC_e()
+{
+  reg.e++;
+}
+
+void LR35902::INC_h()
+{
+  reg.h++;
+}
+
+void LR35902::INC_l()
+{
+  reg.l++;
+}
+
+void LR35902::INC_hladdr()
+{
+  memory.set8(reg.hl, memory.get8(reg.hl)+1);
+}
+
+void LR35902::DEC_a()
+{
+  reg.a--;
+}
+
+void LR35902::DEC_b()
+{
+  reg.b--;
+}
+
+void LR35902::DEC_c()
+{
+  reg.c--;
+}
+
+void LR35902::DEC_d()
+{
+  reg.d--;
+}
+
+void LR35902::DEC_e()
+{
+  reg.e--;
+}
+
+void LR35902::DEC_h()
+{
+  reg.h--;
+}
+
+void LR35902::DEC_l()
+{
+  reg.l--;
+}
+
+void LR35902::DEC_hladdr()
+{
+  memory.set8(reg.hl, memory.get8(reg.hl)-1);
+}
+
+void LR35902::DAA()
+{
+  unknown_instruction();
+}
+
+void LR35902::SCF()
+{
+  unknown_instruction();
+}
+
+void LR35902::CPL()
+{
+  unknown_instruction();
+}
+
+void LR35902::CCF()
+{
+  unknown_instruction();
+}
