@@ -450,3 +450,39 @@ void LR35902::LD_a_hl_dec()
 {
   reg.a = memory.get8(reg.hl--);
 }
+
+void LR35902::LDH_naddr_a()
+{
+  u8 n = memory.get8(reg.pc + 1);
+  memory.set8(0xff00+n, reg.a);
+}
+
+void LR35902::LDH_a_naddr()
+{
+  u8 n = memory.get8(reg.pc + 1);
+  reg.a = memory.get8(0xff00+n);
+}
+
+void LR35902::LD_caddr_a()
+{
+  memory.set8(0xff00+reg.c, reg.a);
+}
+
+void LR35902::LD_a_caddr()
+{
+  reg.a = memory.get8(0xff00+reg.c);
+}
+
+void LR35902::LD_naddr_a()
+{
+  // TODO check endianess
+  u16 n = memory.get16(reg.pc + 1);
+  memory.set8(n, reg.a);
+}
+
+void LR35902::LD_a_naddr()
+{
+  // TODO check endianess
+  u16 n = memory.get16(reg.pc + 1);
+  reg.a = memory.get8(n);
+}

@@ -143,6 +143,13 @@ class LR35902
   void LD_a_hl_inc();
   void LD_a_hl_dec();
 
+  void LDH_naddr_a();
+  void LDH_a_naddr();
+  void LD_caddr_a();
+  void LD_a_caddr();
+  void LD_naddr_a();
+  void LD_a_naddr();
+
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] = 
   {
@@ -229,6 +236,13 @@ class LR35902
     {0x74, &LR35902::LD_hl_h, {8, 1, "LD (HL), H"}},
     {0x75, &LR35902::LD_hl_l, {8, 1, "LD (HL), L"}},
     {0x77, &LR35902::LD_hl_a, {8, 1, "LD (HL), A"}},
+
+    {0xe0, &LR35902::LDH_naddr_a, {12, 2, "LDH (n), A"}},
+    {0xf0, &LR35902::LDH_a_naddr, {12, 2, "LDH A, (n)"}},
+    {0xe2, &LR35902::LD_caddr_a,  { 8, 2, "LD (C), A"}},
+    {0xf2, &LR35902::LD_a_caddr,  { 8, 2, "LD A, (C)"}},
+    {0xea, &LR35902::LD_naddr_a,  {16, 3, "LD (n), A"}},
+    {0xfa, &LR35902::LD_a_naddr,  {16, 3, "LD A, (n)"}},
   };
 
   static const int table_size = 0xff;
