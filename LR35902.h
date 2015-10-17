@@ -150,6 +150,25 @@ class LR35902
   void LD_naddr_a();
   void LD_a_naddr();
 
+  void LD_bc_d16();
+  void LD_de_d16();
+  void LD_hl_d16();
+  void LD_sp_d16();
+  void LD_a16_sp();
+
+  void POP_bc();
+  void POP_de();
+  void POP_hl();
+  void POP_af();
+
+  void PUSH_bc();
+  void PUSH_de();
+  void PUSH_hl();
+  void PUSH_af();
+
+  void LD_hl_sp_r8();
+  void LD_sp_hl();
+
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] = 
   {
@@ -243,6 +262,26 @@ class LR35902
     {0xf2, &LR35902::LD_a_caddr,  { 8, 2, "LD A, (C)"}},
     {0xea, &LR35902::LD_naddr_a,  {16, 3, "LD (n), A"}},
     {0xfa, &LR35902::LD_a_naddr,  {16, 3, "LD A, (n)"}},
+
+    // 16-bit loads
+    {0x01, &LR35902::LD_bc_d16, {12, 3, "LD BD, n"}},
+    {0x11, &LR35902::LD_de_d16, {12, 3, "LD DE, n"}},
+    {0x21, &LR35902::LD_hl_d16, {12, 3, "LD HL, n"}},
+    {0x31, &LR35902::LD_sp_d16, {12, 3, "LD SP, n"}},
+    {0x08, &LR35902::LD_a16_sp, {20, 3, "LD (n), SP"}},
+
+    {0xc1, &LR35902::POP_bc,    {12, 1, "POP BC"}},
+    {0xd1, &LR35902::POP_de,    {12, 1, "POP DE"}},
+    {0xe1, &LR35902::POP_hl,    {12, 1, "POP HL"}},
+    {0xf1, &LR35902::POP_af,    {12, 1, "POP AF"}},
+
+    {0xc5, &LR35902::PUSH_bc,   {16, 1, "PUSH BC"}},
+    {0xd5, &LR35902::PUSH_de,   {16, 1, "PUSH DE"}},
+    {0xe5, &LR35902::PUSH_hl,   {16, 1, "PUSH HL"}},
+    {0xf5, &LR35902::PUSH_af,   {16, 1, "PUSH AF"}},
+
+    {0xf8, &LR35902::LD_hl_sp_r8, {12, 2, "LD HL, SP+n"}},
+    {0xf9, &LR35902::LD_sp_hl,    { 8, 1, "LD SP, HL"}},
   };
 
   static const int table_size = 0xff;

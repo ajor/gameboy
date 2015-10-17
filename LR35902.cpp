@@ -473,16 +473,100 @@ void LR35902::LD_a_caddr()
   reg.a = memory.get8(0xff00+reg.c);
 }
 
+// TODO check endianess for 16-bit loads
 void LR35902::LD_naddr_a()
 {
-  // TODO check endianess
   u16 n = memory.get16(reg.pc + 1);
   memory.set8(n, reg.a);
 }
 
 void LR35902::LD_a_naddr()
 {
-  // TODO check endianess
   u16 n = memory.get16(reg.pc + 1);
   reg.a = memory.get8(n);
+}
+
+void LR35902::LD_bc_d16()
+{
+  reg.bc = memory.get16(reg.pc + 1);
+}
+
+void LR35902::LD_de_d16()
+{
+  reg.de = memory.get16(reg.pc + 1);
+}
+
+void LR35902::LD_hl_d16()
+{
+  reg.hl = memory.get16(reg.pc + 1);
+}
+
+void LR35902::LD_sp_d16()
+{
+  reg.sp = memory.get16(reg.pc + 1);
+}
+
+void LR35902::LD_a16_sp()
+{
+  u16 n = memory.get16(reg.pc + 1);
+  memory.set16(n, reg.sp);
+}
+
+void LR35902::POP_bc()
+{
+  reg.bc = memory.get16(reg.sp);
+  reg.sp += 2;
+}
+
+void LR35902::POP_de()
+{
+  reg.de = memory.get16(reg.sp);
+  reg.sp += 2;
+}
+
+void LR35902::POP_hl()
+{
+  reg.hl = memory.get16(reg.sp);
+  reg.sp += 2;
+}
+
+void LR35902::POP_af()
+{
+  reg.af = memory.get16(reg.sp);
+  reg.sp += 2;
+}
+
+void LR35902::PUSH_bc()
+{
+  reg.sp -= 2;
+  memory.set16(reg.sp, reg.bc);
+}
+
+void LR35902::PUSH_de()
+{
+  reg.sp -= 2;
+  memory.set16(reg.sp, reg.de);
+}
+
+void LR35902::PUSH_hl()
+{
+  reg.sp -= 2;
+  memory.set16(reg.sp, reg.hl);
+}
+
+void LR35902::PUSH_af()
+{
+  reg.sp -= 2;
+  memory.set16(reg.sp, reg.af);
+}
+
+void LR35902::LD_hl_sp_r8()
+{
+  s8 n = memory.get8(reg.pc + 1);
+  reg.hl = reg.sp + n;
+}
+
+void LR35902::LD_sp_hl()
+{
+  reg.sp = reg.hl;
 }
