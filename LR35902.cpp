@@ -55,6 +55,11 @@ void LR35902::unknown_instruction()
   abort();
 }
 
+void LR35902::LD_a_n()
+{
+  reg.a = memory.get8(reg.pc + 1);
+}
+
 void LR35902::LD_b_n()
 {
   reg.b = memory.get8(reg.pc + 1);
@@ -87,7 +92,8 @@ void LR35902::LD_l_n()
 
 void LR35902::LD_hl_n()
 {
-  reg.hl = memory.get8(reg.pc + 1);
+  u8 n = memory.get8(reg.pc + 1);
+  memory.set8(reg.hl, n);
 }
 
 void LR35902::LD_a_a()
@@ -127,7 +133,12 @@ void LR35902::LD_a_l()
 
 void LR35902::LD_a_hl()
 {
-  reg.a = reg.hl;
+  reg.a = memory.get8(reg.hl);
+}
+
+void LR35902::LD_b_a()
+{
+  reg.b = reg.a;
 }
 
 void LR35902::LD_b_b()
@@ -162,7 +173,12 @@ void LR35902::LD_b_l()
 
 void LR35902::LD_b_hl()
 {
-  reg.b = reg.hl;
+  reg.b = memory.get8(reg.hl);
+}
+
+void LR35902::LD_c_a()
+{
+  reg.c = reg.a;
 }
 
 void LR35902::LD_c_b()
@@ -197,7 +213,12 @@ void LR35902::LD_c_l()
 
 void LR35902::LD_c_hl()
 {
-  reg.c = reg.hl;
+  reg.c = memory.get8(reg.hl);
+}
+
+void LR35902::LD_d_a()
+{
+  reg.d = reg.a;
 }
 
 void LR35902::LD_d_b()
@@ -232,7 +253,12 @@ void LR35902::LD_d_l()
 
 void LR35902::LD_d_hl()
 {
-  reg.d = reg.hl;
+  reg.d = memory.get8(reg.hl);
+}
+
+void LR35902::LD_e_a()
+{
+  reg.e = reg.a;
 }
 
 void LR35902::LD_e_b()
@@ -267,7 +293,12 @@ void LR35902::LD_e_l()
 
 void LR35902::LD_e_hl()
 {
-  reg.e = reg.hl;
+  reg.e = memory.get8(reg.hl);
+}
+
+void LR35902::LD_h_a()
+{
+  reg.h = reg.a;
 }
 
 void LR35902::LD_h_b()
@@ -302,7 +333,12 @@ void LR35902::LD_h_l()
 
 void LR35902::LD_h_hl()
 {
-  reg.h = reg.hl;
+  reg.h = memory.get8(reg.hl);
+}
+
+void LR35902::LD_l_a()
+{
+  reg.l = reg.a;
 }
 
 void LR35902::LD_l_b()
@@ -337,35 +373,80 @@ void LR35902::LD_l_l()
 
 void LR35902::LD_l_hl()
 {
-  reg.l = reg.hl;
+  reg.l = memory.get8(reg.hl);
+}
+
+void LR35902::LD_hl_a()
+{
+  memory.set8(reg.hl, reg.a);
 }
 
 void LR35902::LD_hl_b()
 {
-  reg.hl = reg.b;
+  memory.set8(reg.hl, reg.b);
 }
 
 void LR35902::LD_hl_c()
 {
-  reg.hl = reg.c;
+  memory.set8(reg.hl, reg.c);
 }
 
 void LR35902::LD_hl_d()
 {
-  reg.hl = reg.d;
+  memory.set8(reg.hl, reg.d);
 }
 
 void LR35902::LD_hl_e()
 {
-  reg.hl = reg.e;
+  memory.set8(reg.hl, reg.e);
 }
 
 void LR35902::LD_hl_h()
 {
-  reg.hl = reg.h;
+  memory.set8(reg.hl, reg.h);
 }
 
 void LR35902::LD_hl_l()
 {
-  reg.hl = reg.l;
+  memory.set8(reg.hl, reg.l);
+}
+
+void LR35902::LD_bc_a()
+{
+  memory.set8(reg.bc, reg.a);
+}
+
+void LR35902::LD_de_a()
+{
+  memory.set8(reg.de, reg.a);
+}
+
+void LR35902::LD_hl_inc_a()
+{
+  memory.set8(reg.hl++, reg.a);
+}
+
+void LR35902::LD_hl_dec_a()
+{
+  memory.set8(reg.hl--, reg.a);
+}
+
+void LR35902::LD_a_bc()
+{
+  reg.a = memory.get8(reg.bc);
+}
+
+void LR35902::LD_a_de()
+{
+  reg.a = memory.get8(reg.de);
+}
+
+void LR35902::LD_a_hl_inc()
+{
+  reg.a = memory.get8(reg.hl++);
+}
+
+void LR35902::LD_a_hl_dec()
+{
+  reg.a = memory.get8(reg.hl--);
 }
