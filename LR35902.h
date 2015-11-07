@@ -40,6 +40,19 @@ class LR35902
     u16 pc;
   } reg;
 
+  void set_flag_z()   { reg.f |=  (1<<7); }
+  void set_flag_n()   { reg.f |=  (1<<6); }
+  void set_flag_h()   { reg.f |=  (1<<5); }
+  void set_flag_c()   { reg.f |=  (1<<4); }
+  void clear_flag_z() { reg.f &= ~(1<<7); }
+  void clear_flag_n() { reg.f &= ~(1<<6); }
+  void clear_flag_h() { reg.f &= ~(1<<5); }
+  void clear_flag_c() { reg.f &= ~(1<<4); }
+  uint get_flag_z()   { return (reg.f >> 7)&1; }
+  uint get_flag_n()   { return (reg.f >> 6)&1; }
+  uint get_flag_h()   { return (reg.f >> 5)&1; }
+  uint get_flag_c()   { return (reg.f >> 4)&1; }
+
   Memory<8192> &memory;
 
   typedef void (LR35902::*InstrFunc)();
@@ -192,6 +205,42 @@ class LR35902
   void CPL();
   void CCF();
 
+  void ADD_a_a();
+  void ADD_a_b();
+  void ADD_a_c();
+  void ADD_a_d();
+  void ADD_a_e();
+  void ADD_a_h();
+  void ADD_a_l();
+  void ADD_a_hladdr();
+
+  void ADC_a_a();
+  void ADC_a_b();
+  void ADC_a_c();
+  void ADC_a_d();
+  void ADC_a_e();
+  void ADC_a_h();
+  void ADC_a_l();
+  void ADC_a_hladdr();
+
+  void SUB_a_a();
+  void SUB_a_b();
+  void SUB_a_c();
+  void SUB_a_d();
+  void SUB_a_e();
+  void SUB_a_h();
+  void SUB_a_l();
+  void SUB_a_hladdr();
+
+  void SBC_a_a();
+  void SBC_a_b();
+  void SBC_a_c();
+  void SBC_a_d();
+  void SBC_a_e();
+  void SBC_a_h();
+  void SBC_a_l();
+  void SBC_a_hladdr();
+
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] = 
   {
@@ -332,6 +381,42 @@ class LR35902
 
     {0x2f, &LR35902::CPL, {4, 1, "CPL"}},
     {0x3f, &LR35902::CCF, {4, 1, "CCF"}},
+
+    {0x80, &LR35902::ADD_a_b, {4, 1, "ADD A, B"}},
+    {0x81, &LR35902::ADD_a_c, {4, 1, "ADD A, C"}},
+    {0x82, &LR35902::ADD_a_d, {4, 1, "ADD A, D"}},
+    {0x83, &LR35902::ADD_a_e, {4, 1, "ADD A, E"}},
+    {0x84, &LR35902::ADD_a_h, {4, 1, "ADD A, H"}},
+    {0x85, &LR35902::ADD_a_l, {4, 1, "ADD A, L"}},
+    {0x86, &LR35902::ADD_a_hladdr, {8, 1, "ADD A, (HL)"}},
+    {0x87, &LR35902::ADD_a_a, {4, 1, "ADD A, A"}},
+
+    {0x88, &LR35902::ADC_a_b, {4, 1, "ADC A, B"}},
+    {0x89, &LR35902::ADC_a_c, {4, 1, "ADC A, C"}},
+    {0x8a, &LR35902::ADC_a_d, {4, 1, "ADC A, D"}},
+    {0x8b, &LR35902::ADC_a_e, {4, 1, "ADC A, E"}},
+    {0x8c, &LR35902::ADC_a_h, {4, 1, "ADC A, H"}},
+    {0x8d, &LR35902::ADC_a_l, {4, 1, "ADC A, L"}},
+    {0x8e, &LR35902::ADC_a_hladdr, {8, 1, "ADC A, (HL)"}},
+    {0x8f, &LR35902::ADC_a_a, {4, 1, "ADC A, A"}},
+
+    {0x90, &LR35902::SUB_a_b, {4, 1, "SUB A, B"}},
+    {0x91, &LR35902::SUB_a_c, {4, 1, "SUB A, C"}},
+    {0x92, &LR35902::SUB_a_d, {4, 1, "SUB A, D"}},
+    {0x93, &LR35902::SUB_a_e, {4, 1, "SUB A, E"}},
+    {0x94, &LR35902::SUB_a_h, {4, 1, "SUB A, H"}},
+    {0x95, &LR35902::SUB_a_l, {4, 1, "SUB A, L"}},
+    {0x96, &LR35902::SUB_a_hladdr, {8, 1, "SUB A, (HL)"}},
+    {0x97, &LR35902::SUB_a_a, {4, 1, "SUB A, A"}},
+
+    {0x98, &LR35902::SBC_a_b, {4, 1, "SBC A, B"}},
+    {0x99, &LR35902::SBC_a_c, {4, 1, "SBC A, C"}},
+    {0x9a, &LR35902::SBC_a_d, {4, 1, "SBC A, D"}},
+    {0x9b, &LR35902::SBC_a_e, {4, 1, "SBC A, E"}},
+    {0x9c, &LR35902::SBC_a_h, {4, 1, "SBC A, H"}},
+    {0x9d, &LR35902::SBC_a_l, {4, 1, "SBC A, L"}},
+    {0x9e, &LR35902::SBC_a_hladdr, {8, 1, "SBC A, (HL)"}},
+    {0x9f, &LR35902::SBC_a_a, {4, 1, "SBC A, A"}},
   };
 
   static const int table_size = 0xff;
