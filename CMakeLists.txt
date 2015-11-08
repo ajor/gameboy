@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 2.8.12)
+project(Gameboy)
+add_executable(gb main.cpp gameboy.cpp LR35902.cpp)
+
+target_compile_options(gb PRIVATE "-std=c++11")
+target_compile_options(gb PRIVATE "-Wall")
+#target_compile_options(gb PRIVATE "-pedantic")
+target_compile_options(gb PRIVATE "-O3")
+
+find_package(OpenGL REQUIRED)
+if (OPENGL_FOUND)
+  include_directories(${OPENGL_INCLUDE_DIR})
+  target_link_libraries(gb ${OPENGL_LIBRARIES})
+endif()
+
+find_package(GLEW REQUIRED)
+if (GLEW_FOUND)
+  include_directories(${GLEW_INCLUDE_DIRS})
+  target_link_libraries(gb ${GLEW_LIBRARIES})
+endif()
+
+find_package(PkgConfig REQUIRED)
+pkg_search_module(GLFW REQUIRED glfw3)
+
+if (GLFW_FOUND)
+  include_directories(${GLFW_INCLUDE_DIRS})
+  target_link_libraries(gb ${GLFW_LIBRARIES})
+endif()
+
+target_link_libraries(gb pthread)
