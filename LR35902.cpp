@@ -563,6 +563,12 @@ void LR35902::PUSH_af()
 void LR35902::LD_hl_sp_r8()
 {
   s8 n = memory.get8(reg.pc + 1);
+
+  set_flag_z(false);
+  set_flag_n(false);
+  set_flag_h((reg.sp&0xf) + (n&0xf) > 0xf);
+  set_flag_c(reg.sp + n > 0xff);
+
   reg.hl = reg.sp + n;
 }
 
