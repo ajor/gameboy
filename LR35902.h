@@ -207,6 +207,16 @@ class LR35902
   void OR_a_hladdr();
   void CP_a_hladdr();
 
+  void ADD_a_d8();
+  void SUB_a_d8();
+  void AND_a_d8();
+  void OR_a_d8();
+
+  void ADC_a_d8();
+  void SBC_a_d8();
+  void XOR_a_d8();
+  void CP_a_d8();
+
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] = 
   {
@@ -419,6 +429,15 @@ class LR35902
     {0xbd, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "CP A, L"}},
     {0xbe, &LR35902::CP_a_hladdr,                                {8, 1, "CP A, (HL)"}},
     {0xbf, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "CP A, A"}},
+
+    {0xc6, &LR35902::ADD_a_d8, {8, 2, "ADD A, d8"}},
+    {0xd6, &LR35902::SUB_a_d8, {8, 2, "SUB A, d8"}},
+    {0xe6, &LR35902::AND_a_d8, {8, 2, "AND A, d8"}},
+    {0xf6, &LR35902::OR_a_d8,  {8, 2,  "OR A, d8"}},
+    {0xce, &LR35902::ADC_a_d8, {8, 2, "ADC A, d8"}},
+    {0xde, &LR35902::SBC_a_d8, {8, 2, "SBC A, d8"}},
+    {0xee, &LR35902::XOR_a_d8, {8, 2, "XOR A, d8"}},
+    {0xfe, &LR35902::CP_a_d8,  {8, 2,  "CP A, d8"}},
   };
 
   static const int table_size = 0xff;
