@@ -577,39 +577,14 @@ void LR35902::LD_sp_hl()
   reg.sp = reg.hl;
 }
 
-void LR35902::INC_a()
+template <u8 LR35902::Reg::*R>
+void LR35902::INC_R()
 {
-  reg.a++;
-}
+  set_flag_z(reg.*R + 1 == 0);
+  set_flag_n(false);
+  set_flag_h((reg.*R&0xf) + 1 > 0xf);
 
-void LR35902::INC_b()
-{
-  reg.b++;
-}
-
-void LR35902::INC_c()
-{
-  reg.c++;
-}
-
-void LR35902::INC_d()
-{
-  reg.d++;
-}
-
-void LR35902::INC_e()
-{
-  reg.e++;
-}
-
-void LR35902::INC_h()
-{
-  reg.h++;
-}
-
-void LR35902::INC_l()
-{
-  reg.l++;
+  (reg.*R)++;
 }
 
 void LR35902::INC_hladdr()
@@ -617,39 +592,14 @@ void LR35902::INC_hladdr()
   memory.set8(reg.hl, memory.get8(reg.hl)+1);
 }
 
-void LR35902::DEC_a()
+template <u8 LR35902::Reg::*R>
+void LR35902::DEC_R()
 {
-  reg.a--;
-}
+  set_flag_z(reg.*R - 1 == 0);
+  set_flag_n(true);
+  set_flag_h((reg.*R&0xf) >= 1);
 
-void LR35902::DEC_b()
-{
-  reg.b--;
-}
-
-void LR35902::DEC_c()
-{
-  reg.c--;
-}
-
-void LR35902::DEC_d()
-{
-  reg.d--;
-}
-
-void LR35902::DEC_e()
-{
-  reg.e--;
-}
-
-void LR35902::DEC_h()
-{
-  reg.h--;
-}
-
-void LR35902::DEC_l()
-{
-  reg.l--;
+  (reg.*R)--;
 }
 
 void LR35902::DEC_hladdr()

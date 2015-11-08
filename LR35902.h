@@ -178,22 +178,10 @@ class LR35902
   void LD_hl_sp_r8();
   void LD_sp_hl();
 
-  void INC_a();
-  void INC_b();
-  void INC_c();
-  void INC_d();
-  void INC_e();
-  void INC_h();
-  void INC_l();
+  template <u8 LR35902::Reg::*R> void INC_R();
   void INC_hladdr();
 
-  void DEC_a();
-  void DEC_b();
-  void DEC_c();
-  void DEC_d();
-  void DEC_e();
-  void DEC_h();
-  void DEC_l();
+  template <u8 LR35902::Reg::*R> void DEC_R();
   void DEC_hladdr();
 
   void DAA();
@@ -334,28 +322,28 @@ class LR35902
     {0xf9, &LR35902::LD_sp_hl,    { 8, 1, "LD SP, HL"}},
 
     // 8-bit ALU
-    {0x04, &LR35902::INC_b,      { 4, 1, "INC B"}},
-    {0x14, &LR35902::INC_d,      { 4, 1, "INC D"}},
-    {0x24, &LR35902::INC_h,      { 4, 1, "INC H"}},
-    {0x34, &LR35902::INC_hladdr, {12, 1, "INC (HL)"}},
+    {0x04, &LR35902::INC_R<&LR35902::Reg::b>, { 4, 1, "INC B"}},
+    {0x14, &LR35902::INC_R<&LR35902::Reg::d>, { 4, 1, "INC D"}},
+    {0x24, &LR35902::INC_R<&LR35902::Reg::h>, { 4, 1, "INC H"}},
+    {0x34, &LR35902::INC_hladdr,              {12, 1, "INC (HL)"}},
 
-    {0x05, &LR35902::DEC_b,      { 4, 1, "DEC B"}},
-    {0x15, &LR35902::DEC_d,      { 4, 1, "DEC D"}},
-    {0x25, &LR35902::DEC_h,      { 4, 1, "DEC H"}},
-    {0x35, &LR35902::DEC_hladdr, {12, 1, "DEC (HL)"}},
+    {0x05, &LR35902::DEC_R<&LR35902::Reg::b>, { 4, 1, "DEC B"}},
+    {0x15, &LR35902::DEC_R<&LR35902::Reg::d>, { 4, 1, "DEC D"}},
+    {0x25, &LR35902::DEC_R<&LR35902::Reg::h>, { 4, 1, "DEC H"}},
+    {0x35, &LR35902::DEC_hladdr,              {12, 1, "DEC (HL)"}},
 
     {0x27, &LR35902::DAA, {4, 1, "DAA"}},
     {0x37, &LR35902::SCF, {4, 1, "SCF"}},
 
-    {0x0c, &LR35902::INC_c, {4, 1, "INC C"}},
-    {0x1c, &LR35902::INC_e, {4, 1, "INC E"}},
-    {0x2c, &LR35902::INC_l, {4, 1, "INC L"}},
-    {0x3c, &LR35902::INC_a, {4, 1, "INC A"}},
+    {0x0c, &LR35902::INC_R<&LR35902::Reg::c>, {4, 1, "INC C"}},
+    {0x1c, &LR35902::INC_R<&LR35902::Reg::e>, {4, 1, "INC E"}},
+    {0x2c, &LR35902::INC_R<&LR35902::Reg::l>, {4, 1, "INC L"}},
+    {0x3c, &LR35902::INC_R<&LR35902::Reg::a>, {4, 1, "INC A"}},
 
-    {0x0d, &LR35902::DEC_c, {4, 1, "DEC C"}},
-    {0x1d, &LR35902::DEC_e, {4, 1, "DEC E"}},
-    {0x2d, &LR35902::DEC_l, {4, 1, "DEC L"}},
-    {0x3d, &LR35902::DEC_a, {4, 1, "DEC A"}},
+    {0x0d, &LR35902::DEC_R<&LR35902::Reg::c>, {4, 1, "DEC C"}},
+    {0x1d, &LR35902::DEC_R<&LR35902::Reg::e>, {4, 1, "DEC E"}},
+    {0x2d, &LR35902::DEC_R<&LR35902::Reg::l>, {4, 1, "DEC L"}},
+    {0x3d, &LR35902::DEC_R<&LR35902::Reg::a>, {4, 1, "DEC A"}},
 
     {0x2f, &LR35902::CPL, {4, 1, "CPL"}},
     {0x3f, &LR35902::CCF, {4, 1, "CCF"}},
@@ -366,7 +354,7 @@ class LR35902
     {0x83, &LR35902::ADD_R_R<&LR35902::Reg::a, &LR35902::Reg::e>, {4, 1, "ADD A, E"}},
     {0x84, &LR35902::ADD_R_R<&LR35902::Reg::a, &LR35902::Reg::h>, {4, 1, "ADD A, H"}},
     {0x85, &LR35902::ADD_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "ADD A, L"}},
-    {0x86, &LR35902::ADD_a_hladdr, {8, 1, "ADD A, (HL)"}},
+    {0x86, &LR35902::ADD_a_hladdr,                                {8, 1, "ADD A, (HL)"}},
     {0x87, &LR35902::ADD_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "ADD A, A"}},
 
     {0x88, &LR35902::ADC_R_R<&LR35902::Reg::a, &LR35902::Reg::b>, {4, 1, "ADC A, B"}},
@@ -375,7 +363,7 @@ class LR35902
     {0x8b, &LR35902::ADC_R_R<&LR35902::Reg::a, &LR35902::Reg::e>, {4, 1, "ADC A, E"}},
     {0x8c, &LR35902::ADC_R_R<&LR35902::Reg::a, &LR35902::Reg::h>, {4, 1, "ADC A, H"}},
     {0x8d, &LR35902::ADC_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "ADC A, L"}},
-    {0x8e, &LR35902::ADC_a_hladdr, {8, 1, "ADC A, (HL)"}},
+    {0x8e, &LR35902::ADC_a_hladdr,                                {8, 1, "ADC A, (HL)"}},
     {0x8f, &LR35902::ADC_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "ADC A, A"}},
 
     {0x90, &LR35902::SUB_R_R<&LR35902::Reg::a, &LR35902::Reg::b>, {4, 1, "SUB A, B"}},
@@ -384,7 +372,7 @@ class LR35902
     {0x93, &LR35902::SUB_R_R<&LR35902::Reg::a, &LR35902::Reg::e>, {4, 1, "SUB A, E"}},
     {0x94, &LR35902::SUB_R_R<&LR35902::Reg::a, &LR35902::Reg::h>, {4, 1, "SUB A, H"}},
     {0x95, &LR35902::SUB_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "SUB A, L"}},
-    {0x96, &LR35902::SUB_a_hladdr, {8, 1, "SUB A, (HL)"}},
+    {0x96, &LR35902::SUB_a_hladdr,                                {8, 1, "SUB A, (HL)"}},
     {0x97, &LR35902::SUB_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "SUB A, A"}},
 
     {0x98, &LR35902::SBC_R_R<&LR35902::Reg::a, &LR35902::Reg::b>, {4, 1, "SBC A, B"}},
@@ -393,7 +381,7 @@ class LR35902
     {0x9b, &LR35902::SBC_R_R<&LR35902::Reg::a, &LR35902::Reg::e>, {4, 1, "SBC A, E"}},
     {0x9c, &LR35902::SBC_R_R<&LR35902::Reg::a, &LR35902::Reg::h>, {4, 1, "SBC A, H"}},
     {0x9d, &LR35902::SBC_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "SBC A, L"}},
-    {0x9e, &LR35902::SBC_a_hladdr, {8, 1, "SBC A, (HL)"}},
+    {0x9e, &LR35902::SBC_a_hladdr,                                {8, 1, "SBC A, (HL)"}},
     {0x9f, &LR35902::SBC_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "SBC A, A"}},
 
     {0xa0, &LR35902::AND_R_R<&LR35902::Reg::a, &LR35902::Reg::b>, {4, 1, "AND A, B"}},
@@ -402,7 +390,7 @@ class LR35902
     {0xa3, &LR35902::AND_R_R<&LR35902::Reg::a, &LR35902::Reg::e>, {4, 1, "AND A, E"}},
     {0xa4, &LR35902::AND_R_R<&LR35902::Reg::a, &LR35902::Reg::h>, {4, 1, "AND A, H"}},
     {0xa5, &LR35902::AND_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "AND A, L"}},
-    {0xa6, &LR35902::AND_a_hladdr, {8, 1, "AND A, (HL)"}},
+    {0xa6, &LR35902::AND_a_hladdr,                                {8, 1, "AND A, (HL)"}},
     {0xa7, &LR35902::AND_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "AND A, A"}},
 
     {0xa8, &LR35902::XOR_R_R<&LR35902::Reg::a, &LR35902::Reg::b>, {4, 1, "XOR A, B"}},
@@ -411,7 +399,7 @@ class LR35902
     {0xab, &LR35902::XOR_R_R<&LR35902::Reg::a, &LR35902::Reg::e>, {4, 1, "XOR A, E"}},
     {0xac, &LR35902::XOR_R_R<&LR35902::Reg::a, &LR35902::Reg::h>, {4, 1, "XOR A, H"}},
     {0xad, &LR35902::XOR_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "XOR A, L"}},
-    {0xae, &LR35902::XOR_a_hladdr, {8, 1, "XOR A, (HL)"}},
+    {0xae, &LR35902::XOR_a_hladdr,                                {8, 1, "XOR A, (HL)"}},
     {0xaf, &LR35902::XOR_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "XOR A, A"}},
 
     {0xb0, &LR35902::OR_R_R<&LR35902::Reg::a, &LR35902::Reg::b>, {4, 1, "OR A, B"}},
@@ -420,7 +408,7 @@ class LR35902
     {0xb3, &LR35902::OR_R_R<&LR35902::Reg::a, &LR35902::Reg::e>, {4, 1, "OR A, E"}},
     {0xb4, &LR35902::OR_R_R<&LR35902::Reg::a, &LR35902::Reg::h>, {4, 1, "OR A, H"}},
     {0xb5, &LR35902::OR_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "OR A, L"}},
-    {0xb6, &LR35902::OR_a_hladdr, {8, 1, "OR A, (HL)"}},
+    {0xb6, &LR35902::OR_a_hladdr,                                {8, 1, "OR A, (HL)"}},
     {0xb7, &LR35902::OR_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "OR A, A"}},
 
     {0xb8, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::b>, {4, 1, "CP A, B"}},
@@ -429,7 +417,7 @@ class LR35902
     {0xbb, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::e>, {4, 1, "CP A, E"}},
     {0xbc, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::h>, {4, 1, "CP A, H"}},
     {0xbd, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "CP A, L"}},
-    {0xbe, &LR35902::CP_a_hladdr, {8, 1, "CP A, (HL)"}},
+    {0xbe, &LR35902::CP_a_hladdr,                                {8, 1, "CP A, (HL)"}},
     {0xbf, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "CP A, A"}},
   };
 
