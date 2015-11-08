@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <assert.h>
 
 #include "LR35902.h"
 #include "memory.h"
@@ -44,6 +45,8 @@ void LR35902::init_tables()
 
   for (const Instruction &instr : implemented_instruction_table)
   {
+    assert(optable[instr.opcode] == &LR35902::unknown_instruction);
+
     optable[instr.opcode] = instr.func;
     infotable[instr.opcode] = instr.opinfo;
   }

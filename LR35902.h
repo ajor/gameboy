@@ -44,10 +44,10 @@ class LR35902
   void set_flag_n(bool set) { if (set) reg.f |=  (1<<6); else reg.f &= ~(1<<6); }
   void set_flag_h(bool set) { if (set) reg.f |=  (1<<5); else reg.f &= ~(1<<5); }
   void set_flag_c(bool set) { if (set) reg.f |=  (1<<4); else reg.f &= ~(1<<4); }
-  uint get_flag_z()   { return (reg.f >> 7)&1; }
-  uint get_flag_n()   { return (reg.f >> 6)&1; }
-  uint get_flag_h()   { return (reg.f >> 5)&1; }
-  uint get_flag_c()   { return (reg.f >> 4)&1; }
+  uint get_flag_z() const { return (reg.f >> 7)&1; }
+  uint get_flag_n() const { return (reg.f >> 6)&1; }
+  uint get_flag_h() const { return (reg.f >> 5)&1; }
+  uint get_flag_c() const { return (reg.f >> 4)&1; }
 
   Memory<8192> &memory;
 
@@ -431,7 +431,7 @@ class LR35902
 
 public:
   LR35902() = delete;
-  LR35902(Memory<8192> &mem) : memory(mem)
+  explicit LR35902(Memory<8192> &mem) : memory(mem)
   {
     init_tables();
   }
