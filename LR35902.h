@@ -206,16 +206,22 @@ class LR35902
   void CCF();
 
   template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2> void ADD_R_R();
-  void ADD_a_hladdr();
-
   template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2> void ADC_R_R();
-  void ADC_a_hladdr();
-
   template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2> void SUB_R_R();
-  void SUB_a_hladdr();
-
   template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2> void SBC_R_R();
+  void ADD_a_hladdr();
+  void ADC_a_hladdr();
+  void SUB_a_hladdr();
   void SBC_a_hladdr();
+
+  template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2> void AND_R_R();
+  template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2> void XOR_R_R();
+  template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2> void OR_R_R();
+  template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2> void CP_R_R();
+  void AND_a_hladdr();
+  void XOR_a_hladdr();
+  void OR_a_hladdr();
+  void CP_a_hladdr();
 
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] = 
@@ -393,6 +399,42 @@ class LR35902
     {0x9d, &LR35902::SBC_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "SBC A, L"}},
     {0x9e, &LR35902::SBC_a_hladdr, {8, 1, "SBC A, (HL)"}},
     {0x9f, &LR35902::SBC_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "SBC A, A"}},
+
+    {0xa0, &LR35902::AND_R_R<&LR35902::Reg::a, &LR35902::Reg::b>, {4, 1, "AND A, B"}},
+    {0xa1, &LR35902::AND_R_R<&LR35902::Reg::a, &LR35902::Reg::c>, {4, 1, "AND A, C"}},
+    {0xa2, &LR35902::AND_R_R<&LR35902::Reg::a, &LR35902::Reg::d>, {4, 1, "AND A, D"}},
+    {0xa3, &LR35902::AND_R_R<&LR35902::Reg::a, &LR35902::Reg::e>, {4, 1, "AND A, E"}},
+    {0xa4, &LR35902::AND_R_R<&LR35902::Reg::a, &LR35902::Reg::h>, {4, 1, "AND A, H"}},
+    {0xa5, &LR35902::AND_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "AND A, L"}},
+    {0xa6, &LR35902::AND_a_hladdr, {8, 1, "AND A, (HL)"}},
+    {0xa7, &LR35902::AND_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "AND A, A"}},
+
+    {0xa8, &LR35902::XOR_R_R<&LR35902::Reg::a, &LR35902::Reg::b>, {4, 1, "XOR A, B"}},
+    {0xa9, &LR35902::XOR_R_R<&LR35902::Reg::a, &LR35902::Reg::c>, {4, 1, "XOR A, C"}},
+    {0xaa, &LR35902::XOR_R_R<&LR35902::Reg::a, &LR35902::Reg::d>, {4, 1, "XOR A, D"}},
+    {0xab, &LR35902::XOR_R_R<&LR35902::Reg::a, &LR35902::Reg::e>, {4, 1, "XOR A, E"}},
+    {0xac, &LR35902::XOR_R_R<&LR35902::Reg::a, &LR35902::Reg::h>, {4, 1, "XOR A, H"}},
+    {0xad, &LR35902::XOR_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "XOR A, L"}},
+    {0xae, &LR35902::XOR_a_hladdr, {8, 1, "XOR A, (HL)"}},
+    {0xaf, &LR35902::XOR_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "XOR A, A"}},
+
+    {0xb0, &LR35902::OR_R_R<&LR35902::Reg::a, &LR35902::Reg::b>, {4, 1, "OR A, B"}},
+    {0xb1, &LR35902::OR_R_R<&LR35902::Reg::a, &LR35902::Reg::c>, {4, 1, "OR A, C"}},
+    {0xb2, &LR35902::OR_R_R<&LR35902::Reg::a, &LR35902::Reg::d>, {4, 1, "OR A, D"}},
+    {0xb3, &LR35902::OR_R_R<&LR35902::Reg::a, &LR35902::Reg::e>, {4, 1, "OR A, E"}},
+    {0xb4, &LR35902::OR_R_R<&LR35902::Reg::a, &LR35902::Reg::h>, {4, 1, "OR A, H"}},
+    {0xb5, &LR35902::OR_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "OR A, L"}},
+    {0xb6, &LR35902::OR_a_hladdr, {8, 1, "OR A, (HL)"}},
+    {0xb7, &LR35902::OR_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "OR A, A"}},
+
+    {0xb8, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::b>, {4, 1, "CP A, B"}},
+    {0xb9, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::c>, {4, 1, "CP A, C"}},
+    {0xba, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::d>, {4, 1, "CP A, D"}},
+    {0xbb, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::e>, {4, 1, "CP A, E"}},
+    {0xbc, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::h>, {4, 1, "CP A, H"}},
+    {0xbd, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::l>, {4, 1, "CP A, L"}},
+    {0xbe, &LR35902::CP_a_hladdr, {8, 1, "CP A, (HL)"}},
+    {0xbf, &LR35902::CP_R_R<&LR35902::Reg::a, &LR35902::Reg::a>, {4, 1, "CP A, A"}},
   };
 
   static const int table_size = 0xff;

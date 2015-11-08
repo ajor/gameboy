@@ -768,3 +768,88 @@ void LR35902::SBC_a_hladdr()
 
   reg.a -= sub;
 }
+
+template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
+void LR35902::AND_R_R()
+{
+  reg.*R1 &= reg.*R2;
+
+  if (reg.*R1 == 0) set_flag_z();
+  clear_flag_n();
+  set_flag_h();
+  clear_flag_c();
+}
+
+void LR35902::AND_a_hladdr()
+{
+  u8 hl = memory.get8(reg.hl);
+  reg.a &= hl;
+
+  if (reg.a == 0) set_flag_z();
+  clear_flag_n();
+  set_flag_h();
+  clear_flag_c();
+}
+
+template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
+void LR35902::XOR_R_R()
+{
+  reg.*R1 ^= reg.*R2;
+
+  if (reg.*R1 == 0) set_flag_z();
+  clear_flag_n();
+  clear_flag_h();
+  clear_flag_c();
+}
+
+void LR35902::XOR_a_hladdr()
+{
+  u8 hl = memory.get8(reg.hl);
+  reg.a ^= hl;
+
+  if (reg.a == 0) set_flag_z();
+  clear_flag_n();
+  clear_flag_h();
+  clear_flag_c();
+}
+
+template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
+void LR35902::OR_R_R()
+{
+  reg.*R1 |= reg.*R2;
+
+  if (reg.*R1 == 0) set_flag_z();
+  clear_flag_n();
+  clear_flag_h();
+  clear_flag_c();
+}
+
+void LR35902::OR_a_hladdr()
+{
+  u8 hl = memory.get8(reg.hl);
+  reg.a |= hl;
+
+  if (reg.a == 0) set_flag_z();
+  clear_flag_n();
+  clear_flag_h();
+  clear_flag_c();
+}
+
+template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
+void LR35902::CP_R_R()
+{
+  if (reg.*R1 - reg.*R2 == 0)         set_flag_z();
+  set_flag_n();
+  if (reg.*R1 >= reg.*R2)             set_flag_c();
+  if ((reg.*R1&0xf) >= (reg.*R2&0xf)) set_flag_h();
+}
+
+void LR35902::CP_a_hladdr()
+{
+  u8 hl = memory.get8(reg.hl);
+
+  if (reg.a - hl == 0)         set_flag_z();
+  set_flag_n();
+  if (reg.a >= hl)             set_flag_c();
+  if ((reg.a&0xf) >= (hl&0xf)) set_flag_h();
+}
