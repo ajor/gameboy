@@ -5,8 +5,8 @@
 
 LR35902::InstrFunc LR35902::optable[LR35902::table_size];
 LR35902::OpInfo LR35902::infotable[LR35902::table_size];
-const LR35902::OpInfo LR35902::unknown_info;
-const LR35902::Instruction LR35902::implemented_instruction_table[];
+constexpr LR35902::OpInfo LR35902::unknown_info;
+constexpr LR35902::Instruction LR35902::implemented_instruction_table[];
 
 void LR35902::run()
 {
