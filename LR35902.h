@@ -40,14 +40,10 @@ class LR35902
     u16 pc;
   } reg;
 
-  void set_flag_z()   { reg.f |=  (1<<7); }
-  void set_flag_n()   { reg.f |=  (1<<6); }
-  void set_flag_h()   { reg.f |=  (1<<5); }
-  void set_flag_c()   { reg.f |=  (1<<4); }
-  void clear_flag_z() { reg.f &= ~(1<<7); }
-  void clear_flag_n() { reg.f &= ~(1<<6); }
-  void clear_flag_h() { reg.f &= ~(1<<5); }
-  void clear_flag_c() { reg.f &= ~(1<<4); }
+  void set_flag_z(bool set) { if (set) reg.f |=  (1<<7); else reg.f &= ~(1<<7); }
+  void set_flag_n(bool set) { if (set) reg.f |=  (1<<6); else reg.f &= ~(1<<6); }
+  void set_flag_h(bool set) { if (set) reg.f |=  (1<<5); else reg.f &= ~(1<<5); }
+  void set_flag_c(bool set) { if (set) reg.f |=  (1<<4); else reg.f &= ~(1<<4); }
   uint get_flag_z()   { return (reg.f >> 7)&1; }
   uint get_flag_n()   { return (reg.f >> 6)&1; }
   uint get_flag_h()   { return (reg.f >> 5)&1; }

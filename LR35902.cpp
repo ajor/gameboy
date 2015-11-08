@@ -674,10 +674,10 @@ void LR35902::CCF()
 template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
 void LR35902::ADD_R_R()
 {
-  clear_flag_n();
-  if (reg.*R1 + reg.*R2 > 0xff)            set_flag_c();
-  if ((reg.*R1&0xf) + (reg.*R2&0xf) > 0xf) set_flag_h();
-  if (reg.*R1 + reg.*R2 == 0)              set_flag_z();
+  set_flag_z(reg.*R1 + reg.*R2 == 0);
+  set_flag_n(false);
+  set_flag_h((reg.*R1&0xf) + (reg.*R2&0xf) > 0xf);
+  set_flag_c(reg.*R1 + reg.*R2 > 0xff);
 
   reg.*R1 += reg.*R2;
 }
@@ -686,10 +686,10 @@ void LR35902::ADD_a_hladdr()
 {
   u8 hl = memory.get8(reg.hl);
 
-  clear_flag_n();
-  if (reg.a + hl > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (hl&0xf) > 0xf) set_flag_h();
-  if (reg.a + hl == 0)              set_flag_z();
+  set_flag_z(reg.a + hl == 0);
+  set_flag_n(false);
+  set_flag_h((reg.a&0xf) + (hl&0xf) > 0xf);
+  set_flag_c(reg.a + hl > 0xff);
 
   reg.a += hl;
 }
@@ -699,10 +699,10 @@ void LR35902::ADC_R_R()
 {
   uint add = reg.*R2 + get_flag_c();
 
-  clear_flag_n();
-  if (reg.*R1 + add > 0xff)            set_flag_c();
-  if ((reg.*R1&0xf) + (add&0xf) > 0xf) set_flag_h();
-  if (reg.*R1 + add == 0)              set_flag_z();
+  set_flag_z(reg.*R1 + add == 0);
+  set_flag_n(false);
+  set_flag_h((reg.*R1&0xf) + (add&0xf) > 0xf);
+  set_flag_c(reg.*R1 + add > 0xff);
 
   reg.*R1 += add;
 }
@@ -712,10 +712,10 @@ void LR35902::ADC_a_hladdr()
   u8 hl = memory.get8(reg.hl);
   uint add = hl + get_flag_c();
 
-  clear_flag_n();
-  if (reg.a + add > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (add&0xf) > 0xf) set_flag_h();
-  if (reg.a + add == 0)              set_flag_z();
+  set_flag_z(reg.a + add == 0);
+  set_flag_n(false);
+  set_flag_h((reg.a&0xf) + (add&0xf) > 0xf);
+  set_flag_c(reg.a + add > 0xff);
 
   reg.a += add;
 }
@@ -723,10 +723,10 @@ void LR35902::ADC_a_hladdr()
 template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
 void LR35902::SUB_R_R()
 {
-  set_flag_n();
-  if (reg.*R1 >= reg.*R2)             set_flag_c();
-  if ((reg.*R1&0xf) >= (reg.*R2&0xf)) set_flag_h();
-  if (reg.*R1 - reg.*R2 == 0)         set_flag_z();
+  set_flag_z(reg.*R1 - reg.*R2 == 0)        ;
+  set_flag_n(true);
+  set_flag_h((reg.*R1&0xf) >= (reg.*R2&0xf));
+  set_flag_c(reg.*R1 >= reg.*R2)            ;
 
   reg.*R1 -= reg.*R2;
 }
@@ -735,10 +735,10 @@ void LR35902::SUB_a_hladdr()
 {
   u8 hl = memory.get8(reg.hl);
 
-  set_flag_n();
-  if (reg.a >= hl)             set_flag_c();
-  if ((reg.a&0xf) >= (hl&0xf)) set_flag_h();
-  if (reg.a - hl == 0)         set_flag_z();
+  set_flag_z(reg.a - hl == 0)        ;
+  set_flag_n(true);
+  set_flag_h((reg.a&0xf) >= (hl&0xf));
+  set_flag_c(reg.a >= hl)            ;
 
   reg.a -= hl;
 }
@@ -748,10 +748,10 @@ void LR35902::SBC_R_R()
 {
   uint sub = reg.*R2 + get_flag_c();
 
-  set_flag_n();
-  if (reg.*R1 >= sub)             set_flag_c();
-  if ((reg.*R1&0xf) >= (sub&0xf)) set_flag_h();
-  if (reg.*R1 - sub == 0)         set_flag_z();
+  set_flag_z(reg.*R1 - sub == 0)        ;
+  set_flag_n(true);
+  set_flag_h((reg.*R1&0xf) >= (sub&0xf));
+  set_flag_c(reg.*R1 >= sub)            ;
 
   reg.*R1 -= sub;
 }
@@ -761,10 +761,10 @@ void LR35902::SBC_a_hladdr()
   u8 hl = memory.get8(reg.hl);
   uint sub = hl + get_flag_c();
 
-  set_flag_n();
-  if (reg.a >= sub)             set_flag_c();
-  if ((reg.a&0xf) >= (sub&0xf)) set_flag_h();
-  if (reg.a - sub == 0)         set_flag_z();
+  set_flag_z(reg.a - sub == 0)        ;
+  set_flag_n(true);
+  set_flag_h((reg.a&0xf) >= (sub&0xf));
+  set_flag_c(reg.a >= sub)            ;
 
   reg.a -= sub;
 }
@@ -774,10 +774,10 @@ void LR35902::AND_R_R()
 {
   reg.*R1 &= reg.*R2;
 
-  if (reg.*R1 == 0) set_flag_z();
-  clear_flag_n();
-  set_flag_h();
-  clear_flag_c();
+  set_flag_z(reg.*R1 == 0);
+  set_flag_n(false);
+  set_flag_h(true);
+  set_flag_c(false);
 }
 
 void LR35902::AND_a_hladdr()
@@ -785,10 +785,10 @@ void LR35902::AND_a_hladdr()
   u8 hl = memory.get8(reg.hl);
   reg.a &= hl;
 
-  if (reg.a == 0) set_flag_z();
-  clear_flag_n();
-  set_flag_h();
-  clear_flag_c();
+  set_flag_z(reg.a == 0);
+  set_flag_n(false);
+  set_flag_h(true);
+  set_flag_c(false);
 }
 
 template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
@@ -796,10 +796,10 @@ void LR35902::XOR_R_R()
 {
   reg.*R1 ^= reg.*R2;
 
-  if (reg.*R1 == 0) set_flag_z();
-  clear_flag_n();
-  clear_flag_h();
-  clear_flag_c();
+  set_flag_z(reg.*R1 == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(false);
 }
 
 void LR35902::XOR_a_hladdr()
@@ -807,10 +807,10 @@ void LR35902::XOR_a_hladdr()
   u8 hl = memory.get8(reg.hl);
   reg.a ^= hl;
 
-  if (reg.a == 0) set_flag_z();
-  clear_flag_n();
-  clear_flag_h();
-  clear_flag_c();
+  set_flag_z(reg.a == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(false);
 }
 
 template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
@@ -818,10 +818,10 @@ void LR35902::OR_R_R()
 {
   reg.*R1 |= reg.*R2;
 
-  if (reg.*R1 == 0) set_flag_z();
-  clear_flag_n();
-  clear_flag_h();
-  clear_flag_c();
+  set_flag_z(reg.*R1 == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(false);
 }
 
 void LR35902::OR_a_hladdr()
@@ -829,27 +829,27 @@ void LR35902::OR_a_hladdr()
   u8 hl = memory.get8(reg.hl);
   reg.a |= hl;
 
-  if (reg.a == 0) set_flag_z();
-  clear_flag_n();
-  clear_flag_h();
-  clear_flag_c();
+  set_flag_z(reg.a == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(false);
 }
 
 template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
 void LR35902::CP_R_R()
 {
-  if (reg.*R1 - reg.*R2 == 0)         set_flag_z();
-  set_flag_n();
-  if (reg.*R1 >= reg.*R2)             set_flag_c();
-  if ((reg.*R1&0xf) >= (reg.*R2&0xf)) set_flag_h();
+  set_flag_z(reg.*R1 - reg.*R2 == 0)        ;
+  set_flag_n(true);
+  set_flag_h((reg.*R1&0xf) >= (reg.*R2&0xf));
+  set_flag_c(reg.*R1 >= reg.*R2)            ;
 }
 
 void LR35902::CP_a_hladdr()
 {
   u8 hl = memory.get8(reg.hl);
 
-  if (reg.a - hl == 0)         set_flag_z();
-  set_flag_n();
-  if (reg.a >= hl)             set_flag_c();
-  if ((reg.a&0xf) >= (hl&0xf)) set_flag_h();
+  set_flag_z(reg.a - hl == 0)        ;
+  set_flag_n(true);
+  set_flag_h((reg.a&0xf) >= (hl&0xf));
+  set_flag_c(reg.a >= hl)            ;
 }
