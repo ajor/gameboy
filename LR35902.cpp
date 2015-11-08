@@ -905,3 +905,37 @@ void LR35902::CP_a_d8()
   set_flag_h((reg.a&0xf) >= (n&0xf));
   set_flag_c(reg.a >= n)            ;
 }
+
+template <u16 LR35902::Reg::*R>
+void LR35902::INC_RR()
+{
+  (reg.*R)++;
+}
+
+template <u16 LR35902::Reg::*R>
+void LR35902::DEC_RR()
+{
+  (reg.*R)--;
+}
+
+template <u16 LR35902::Reg::*R1, u16 LR35902::Reg::*R2>
+void LR35902::ADD_RR_RR()
+{
+  set_flag_n(false);
+  set_flag_h((reg.*R1&0xfff) + (reg.*R2&0xfff) > 0xfff);
+  set_flag_c(reg.*R1 + reg.*R2 > 0xffff);
+
+  reg.*R1 += reg.*R2;
+}
+
+void LR35902::ADD_SP_r8()
+{
+  u8 n = memory.get8(reg.pc + 1);
+
+  set_flag_z(false);
+  set_flag_n(false);
+  set_flag_h((reg.sp&0xfff) + (n&0xfff) > 0xfff);
+  set_flag_c(reg.sp + n > 0xffff);
+
+  reg.sp += n;
+}

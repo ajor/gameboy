@@ -217,6 +217,11 @@ class LR35902
   void XOR_a_d8();
   void CP_a_d8();
 
+  template <u16 LR35902::Reg::*R> void INC_RR();
+  template <u16 LR35902::Reg::*R> void DEC_RR();
+  template <u16 LR35902::Reg::*R1, u16 LR35902::Reg::*R2> void ADD_RR_RR();
+  void ADD_SP_r8();
+
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] = 
   {
@@ -438,6 +443,24 @@ class LR35902
     {0xde, &LR35902::SBC_a_d8, {8, 2, "SBC A, d8"}},
     {0xee, &LR35902::XOR_a_d8, {8, 2, "XOR A, d8"}},
     {0xfe, &LR35902::CP_a_d8,  {8, 2,  "CP A, d8"}},
+
+    // 16-bit ALU
+    {0x03, &LR35902::INC_RR<&LR35902::Reg::bc>, {8, 1, "INC BC"}},
+    {0x13, &LR35902::INC_RR<&LR35902::Reg::de>, {8, 1, "INC DE"}},
+    {0x23, &LR35902::INC_RR<&LR35902::Reg::hl>, {8, 1, "INC HL"}},
+    {0x33, &LR35902::INC_RR<&LR35902::Reg::sp>, {8, 1, "INC SP"}},
+
+    {0x09, &LR35902::ADD_RR_RR<&LR35902::Reg::hl, &LR35902::Reg::bc>, {8, 1, "ADD HL, BC"}},
+    {0x19, &LR35902::ADD_RR_RR<&LR35902::Reg::hl, &LR35902::Reg::de>, {8, 1, "ADD HL, DE"}},
+    {0x29, &LR35902::ADD_RR_RR<&LR35902::Reg::hl, &LR35902::Reg::hl>, {8, 1, "ADD HL, HL"}},
+    {0x39, &LR35902::ADD_RR_RR<&LR35902::Reg::hl, &LR35902::Reg::sp>, {8, 1, "ADD HL, SP"}},
+
+    {0x0b, &LR35902::DEC_RR<&LR35902::Reg::bc>, {8, 1, "DEC BC"}},
+    {0x1b, &LR35902::DEC_RR<&LR35902::Reg::de>, {8, 1, "DEC DE"}},
+    {0x2b, &LR35902::DEC_RR<&LR35902::Reg::hl>, {8, 1, "DEC HL"}},
+    {0x3b, &LR35902::DEC_RR<&LR35902::Reg::sp>, {8, 1, "DEC SP"}},
+
+    {0xe8, &LR35902::ADD_SP_r8, {16, 2, "ADD SP, r8"}},
   };
 
   static const int table_size = 0xff;
