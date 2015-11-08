@@ -671,74 +671,15 @@ void LR35902::CCF()
   unknown_instruction();
 }
 
-void LR35902::ADD_a_a()
+template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
+void LR35902::ADD_R_R()
 {
   clear_flag_n();
-  if (reg.a + reg.a > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (reg.a&0xf) > 0xf) set_flag_h();
-  if (reg.a + reg.a == 0)              set_flag_z();
+  if (reg.*R1 + reg.*R2 > 0xff)            set_flag_c();
+  if ((reg.*R1&0xf) + (reg.*R2&0xf) > 0xf) set_flag_h();
+  if (reg.*R1 + reg.*R2 == 0)              set_flag_z();
 
-  reg.a += reg.a;
-}
-
-void LR35902::ADD_a_b()
-{
-  clear_flag_n();
-  if (reg.a + reg.b > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (reg.b&0xf) > 0xf) set_flag_h();
-  if (reg.a + reg.b == 0)              set_flag_z();
-
-  reg.a += reg.b;
-}
-
-void LR35902::ADD_a_c()
-{
-  clear_flag_n();
-  if (reg.a + reg.c > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (reg.c&0xf) > 0xf) set_flag_h();
-  if (reg.a + reg.c == 0)              set_flag_z();
-
-  reg.a += reg.c;
-}
-
-void LR35902::ADD_a_d()
-{
-  clear_flag_n();
-  if (reg.a + reg.d > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (reg.d&0xf) > 0xf) set_flag_h();
-  if (reg.a + reg.d == 0)              set_flag_z();
-
-  reg.a += reg.d;
-}
-
-void LR35902::ADD_a_e()
-{
-  clear_flag_n();
-  if (reg.a + reg.e > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (reg.e&0xf) > 0xf) set_flag_h();
-  if (reg.a + reg.e == 0)              set_flag_z();
-
-  reg.a += reg.e;
-}
-
-void LR35902::ADD_a_h()
-{
-  clear_flag_n();
-  if (reg.a + reg.h > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (reg.h&0xf) > 0xf) set_flag_h();
-  if (reg.a + reg.h == 0)              set_flag_z();
-
-  reg.a += reg.h;
-}
-
-void LR35902::ADD_a_l()
-{
-  clear_flag_n();
-  if (reg.a + reg.l > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (reg.l&0xf) > 0xf) set_flag_h();
-  if (reg.a + reg.l == 0)              set_flag_z();
-
-  reg.a += reg.l;
+  reg.*R1 += reg.*R2;
 }
 
 void LR35902::ADD_a_hladdr()
@@ -753,88 +694,17 @@ void LR35902::ADD_a_hladdr()
   reg.a += hl;
 }
 
-void LR35902::ADC_a_a()
+template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
+void LR35902::ADC_R_R()
 {
-  uint add = reg.a + get_flag_c();
+  uint add = reg.*R2 + get_flag_c();
 
   clear_flag_n();
-  if (reg.a + add > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (add&0xf) > 0xf) set_flag_h();
-  if (reg.a + add == 0)              set_flag_z();
+  if (reg.*R1 + add > 0xff)            set_flag_c();
+  if ((reg.*R1&0xf) + (add&0xf) > 0xf) set_flag_h();
+  if (reg.*R1 + add == 0)              set_flag_z();
 
-  reg.a += add;
-}
-
-void LR35902::ADC_a_b()
-{
-  uint add = reg.b + get_flag_c();
-
-  clear_flag_n();
-  if (reg.a + add > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (add&0xf) > 0xf) set_flag_h();
-  if (reg.a + add == 0)              set_flag_z();
-
-  reg.a += add;
-}
-
-void LR35902::ADC_a_c()
-{
-  uint add = reg.c + get_flag_c();
-
-  clear_flag_n();
-  if (reg.a + add > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (add&0xf) > 0xf) set_flag_h();
-  if (reg.a + add == 0)              set_flag_z();
-
-  reg.a += add;
-}
-
-void LR35902::ADC_a_d()
-{
-  uint add = reg.d + get_flag_c();
-
-  clear_flag_n();
-  if (reg.a + add > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (add&0xf) > 0xf) set_flag_h();
-  if (reg.a + add == 0)              set_flag_z();
-
-  reg.a += add;
-}
-
-void LR35902::ADC_a_e()
-{
-  uint add = reg.e + get_flag_c();
-
-  clear_flag_n();
-  if (reg.a + add > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (add&0xf) > 0xf) set_flag_h();
-  if (reg.a + add == 0)              set_flag_z();
-
-  reg.a += add;
-}
-
-void LR35902::ADC_a_h()
-{
-  uint add = reg.h + get_flag_c();
-
-  clear_flag_n();
-  if (reg.a + add > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (add&0xf) > 0xf) set_flag_h();
-  if (reg.a + add == 0)              set_flag_z();
-
-  reg.a += add;
-}
-
-void LR35902::ADC_a_l()
-{
-  uint add = reg.l + get_flag_c();
-
-  clear_flag_n();
-  if (reg.a + add > 0xff)            set_flag_c();
-  if ((reg.a&0xf) + (add&0xf) > 0xf) set_flag_h();
-  if (reg.a + add == 0)              set_flag_z();
-
-  reg.a += add;
+  reg.*R1 += add;
 }
 
 void LR35902::ADC_a_hladdr()
@@ -850,74 +720,15 @@ void LR35902::ADC_a_hladdr()
   reg.a += add;
 }
 
-void LR35902::SUB_a_a()
+template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
+void LR35902::SUB_R_R()
 {
   set_flag_n();
-  if (reg.a >= reg.a)             set_flag_c();
-  if ((reg.a&0xf) >= (reg.a&0xf)) set_flag_h();
-  if (reg.a - reg.a == 0)         set_flag_z();
+  if (reg.*R1 >= reg.*R2)             set_flag_c();
+  if ((reg.*R1&0xf) >= (reg.*R2&0xf)) set_flag_h();
+  if (reg.*R1 - reg.*R2 == 0)         set_flag_z();
 
-  reg.a -= reg.a;
-}
-
-void LR35902::SUB_a_b()
-{
-  set_flag_n();
-  if (reg.a >= reg.b)             set_flag_c();
-  if ((reg.a&0xf) >= (reg.b&0xf)) set_flag_h();
-  if (reg.a - reg.b == 0)         set_flag_z();
-
-  reg.a -= reg.b;
-}
-
-void LR35902::SUB_a_c()
-{
-  set_flag_n();
-  if (reg.a >= reg.c)             set_flag_c();
-  if ((reg.a&0xf) >= (reg.c&0xf)) set_flag_h();
-  if (reg.a - reg.c == 0)         set_flag_z();
-
-  reg.a -= reg.c;
-}
-
-void LR35902::SUB_a_d()
-{
-  set_flag_n();
-  if (reg.a >= reg.d)             set_flag_c();
-  if ((reg.a&0xf) >= (reg.d&0xf)) set_flag_h();
-  if (reg.a - reg.d == 0)         set_flag_z();
-
-  reg.a -= reg.d;
-}
-
-void LR35902::SUB_a_e()
-{
-  set_flag_n();
-  if (reg.a >= reg.e)             set_flag_c();
-  if ((reg.a&0xf) >= (reg.e&0xf)) set_flag_h();
-  if (reg.a - reg.e == 0)         set_flag_z();
-
-  reg.a -= reg.e;
-}
-
-void LR35902::SUB_a_h()
-{
-  set_flag_n();
-  if (reg.a >= reg.h)             set_flag_c();
-  if ((reg.a&0xf) >= (reg.h&0xf)) set_flag_h();
-  if (reg.a - reg.h == 0)         set_flag_z();
-
-  reg.a -= reg.h;
-}
-
-void LR35902::SUB_a_l()
-{
-  set_flag_n();
-  if (reg.a >= reg.l)             set_flag_c();
-  if ((reg.a&0xf) >= (reg.l&0xf)) set_flag_h();
-  if (reg.a - reg.l == 0)         set_flag_z();
-
-  reg.a -= reg.l;
+  reg.*R1 -= reg.*R2;
 }
 
 void LR35902::SUB_a_hladdr()
@@ -932,88 +743,17 @@ void LR35902::SUB_a_hladdr()
   reg.a -= hl;
 }
 
-void LR35902::SBC_a_a()
+template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
+void LR35902::SBC_R_R()
 {
-  uint sub = reg.a + get_flag_c();
+  uint sub = reg.*R2 + get_flag_c();
 
   set_flag_n();
-  if (reg.a >= sub)             set_flag_c();
-  if ((reg.a&0xf) >= (sub&0xf)) set_flag_h();
-  if (reg.a - sub == 0)         set_flag_z();
+  if (reg.*R1 >= sub)             set_flag_c();
+  if ((reg.*R1&0xf) >= (sub&0xf)) set_flag_h();
+  if (reg.*R1 - sub == 0)         set_flag_z();
 
-  reg.a -= sub;
-}
-
-void LR35902::SBC_a_b()
-{
-  uint sub = reg.b + get_flag_c();
-
-  set_flag_n();
-  if (reg.a >= sub)             set_flag_c();
-  if ((reg.a&0xf) >= (sub&0xf)) set_flag_h();
-  if (reg.a - sub == 0)         set_flag_z();
-
-  reg.a -= sub;
-}
-
-void LR35902::SBC_a_c()
-{
-  uint sub = reg.c + get_flag_c();
-
-  set_flag_n();
-  if (reg.a >= sub)             set_flag_c();
-  if ((reg.a&0xf) >= (sub&0xf)) set_flag_h();
-  if (reg.a - sub == 0)         set_flag_z();
-
-  reg.a -= sub;
-}
-
-void LR35902::SBC_a_d()
-{
-  uint sub = reg.d + get_flag_c();
-
-  set_flag_n();
-  if (reg.a >= sub)             set_flag_c();
-  if ((reg.a&0xf) >= (sub&0xf)) set_flag_h();
-  if (reg.a - sub == 0)         set_flag_z();
-
-  reg.a -= sub;
-}
-
-void LR35902::SBC_a_e()
-{
-  uint sub = reg.e + get_flag_c();
-
-  set_flag_n();
-  if (reg.a >= sub)             set_flag_c();
-  if ((reg.a&0xf) >= (sub&0xf)) set_flag_h();
-  if (reg.a - sub == 0)         set_flag_z();
-
-  reg.a -= sub;
-}
-
-void LR35902::SBC_a_h()
-{
-  uint sub = reg.h + get_flag_c();
-
-  set_flag_n();
-  if (reg.a >= sub)             set_flag_c();
-  if ((reg.a&0xf) >= (sub&0xf)) set_flag_h();
-  if (reg.a - sub == 0)         set_flag_z();
-
-  reg.a -= sub;
-}
-
-void LR35902::SBC_a_l()
-{
-  uint sub = reg.l + get_flag_c();
-
-  set_flag_n();
-  if (reg.a >= sub)             set_flag_c();
-  if ((reg.a&0xf) >= (sub&0xf)) set_flag_h();
-  if (reg.a - sub == 0)         set_flag_z();
-
-  reg.a -= sub;
+  reg.*R1 -= sub;
 }
 
 void LR35902::SBC_a_hladdr()
