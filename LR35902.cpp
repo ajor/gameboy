@@ -16,6 +16,7 @@ void LR35902::run()
   while (true)
   {
     uint8_t opcode = memory.get8(reg.pc);
+    printf("%02X\n", opcode);
     execute(opcode);
 
     // TODO deal with interrupts here

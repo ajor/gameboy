@@ -49,7 +49,7 @@ class LR35902
   uint get_flag_h() const { return (reg.f >> 5)&1; }
   uint get_flag_c() const { return (reg.f >> 4)&1; }
 
-  Memory<8192> &memory;
+  Memory<0x10000> &memory;
 
   typedef void (LR35902::*InstrFunc)();
 
@@ -463,7 +463,7 @@ class LR35902
     {0xe8, &LR35902::ADD_SP_r8, {16, 2, "ADD SP, r8"}},
   };
 
-  static const int table_size = 0xff;
+  static const int table_size = 0x100;
   static InstrFunc optable[table_size];
   static OpInfo infotable[table_size];
 
@@ -473,7 +473,7 @@ class LR35902
 
 public:
   LR35902() = delete;
-  explicit LR35902(Memory<8192> &mem) : memory(mem)
+  explicit LR35902(Memory<0x10000> &mem) : memory(mem)
   {
     init_tables();
   }

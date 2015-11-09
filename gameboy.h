@@ -6,7 +6,7 @@
 class Gameboy
 {
   LR35902 cpu;
-  Memory<8192> memory;
+  Memory<0x10000> memory;
 
 public:
   Gameboy() : cpu(memory) { }
