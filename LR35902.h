@@ -40,6 +40,11 @@ class LR35902
     u16 pc;
   } reg;
 
+  // Flags
+  // Z (zero):        Result of operation is equal to 0
+  // N (subtract):    Operation was a subtration
+  // H (half-carry):  Operation caused a carry from the lower nibble
+  // C (carry):       Operation caused a carry
   void set_flag_z(bool set) { if (set) reg.f |=  (1<<7); else reg.f &= ~(1<<7); }
   void set_flag_n(bool set) { if (set) reg.f |=  (1<<6); else reg.f &= ~(1<<6); }
   void set_flag_h(bool set) { if (set) reg.f |=  (1<<5); else reg.f &= ~(1<<5); }

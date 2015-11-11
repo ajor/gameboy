@@ -613,22 +613,71 @@ void LR35902::DEC_hladdr()
 
 void LR35902::DAA()
 {
-  unknown_instruction();
+  // Decimal Adjust register A
+
+  bool carry = false;
+
+  u8 a = reg.a;
+  if (get_flag_n())
+  {
+    // Decimal adjust after subtraction
+    if ((reg.a&0xf) > 0x9 || get_flag_h())
+    {
+      a -= 0x6;
+    }
+    if (reg.a > 0x99 || get_flag_c())
+    {
+      a -= 0x60;
+      carry = true;
+    }
+  }
+  else
+  {
+    // Decimal adjust after addition
+    if ((reg.a&0xf) > 0x9 || get_flag_h())
+    {
+      a += 0x6;
+    }
+    if (reg.a > 0x99 || get_flag_c())
+    {
+      a += 0x60;
+      carry = true;
+    }
+
+  }
+  reg.a = a;
+
+  set_flag_z(reg.a == 0);
+  set_flag_h(false);
+  set_flag_c(carry);
 }
 
 void LR35902::SCF()
 {
-  unknown_instruction();
+  // Set Carry Flag
+
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(true);
 }
 
 void LR35902::CPL()
 {
-  unknown_instruction();
+  // Complement A Register
+  //
+  set_flag_n(true);
+  set_flag_h(true);
+
+  reg.a = ~reg.a;
 }
 
 void LR35902::CCF()
 {
-  unknown_instruction();
+  // Complement Carry Flag
+
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(!get_flag_c());
 }
 
 template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
