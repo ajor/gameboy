@@ -54,6 +54,8 @@ class LR35902
   uint get_flag_h() const { return (reg.f >> 5)&1; }
   uint get_flag_c() const { return (reg.f >> 4)&1; }
 
+  bool interrupts_enabled = true;
+
   Memory<0x10000> &memory;
 
   typedef void (LR35902::*InstrFunc)();
@@ -73,6 +75,12 @@ class LR35902
   };
 
   void unknown_instruction();
+
+  void NOP();
+  void STOP();
+  void HALT();
+  void DI();
+  void EI();
 
   void LD_a_n();
   void LD_b_n();
@@ -230,6 +238,12 @@ class LR35902
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] = 
   {
+    {0x00, &LR35902::NOP,  {4, 1, "NOP"}},
+    {0x10, &LR35902::STOP, {4, 2, "STOP"}}, // Opcode always followed by 0x00
+    {0x76, &LR35902::HALT, {4, 1, "HALT"}},
+    {0xf3, &LR35902::DI,   {4, 1, "DI"}},
+    {0xfb, &LR35902::EI,   {4, 1, "EI"}},
+
     // 8-bit loads
     {0x06, &LR35902::LD_b_n, {8, 2, "LD B, n"}},
     {0x0e, &LR35902::LD_c_n, {8, 2, "LD C, n"}},

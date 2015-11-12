@@ -59,6 +59,35 @@ void LR35902::unknown_instruction()
   abort();
 }
 
+void LR35902::NOP()
+{
+  // Do nothing
+}
+
+void LR35902::STOP()
+{
+  // Turn off screen and do nothing until button pressed
+  // TODO
+}
+
+void LR35902::HALT()
+{
+  // Do nothing until interrupt occurs
+  // TODO
+}
+
+void LR35902::DI()
+{
+  // TODO don't disable interrupts immediately
+  interrupts_enabled = false;
+}
+
+void LR35902::EI()
+{
+  // TODO don't enable interrupts immediately
+  interrupts_enabled = true;
+}
+
 void LR35902::LD_a_n()
 {
   reg.a = memory.get8(reg.pc + 1);
