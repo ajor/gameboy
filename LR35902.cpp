@@ -25,10 +25,12 @@ void LR35902::run()
 
 void LR35902::execute(uint8_t opcode)
 {
-  InstrFunc instr = optable[opcode];
-  (this->*instr)();
   OpInfo info = infotable[opcode];
   reg.pc += info.length;
+
+  InstrFunc instr = optable[opcode];
+  (this->*instr)();
+
   // TODO count cycles here too
 }
 
@@ -90,42 +92,42 @@ void LR35902::EI()
 
 void LR35902::LD_a_n()
 {
-  reg.a = memory.get8(reg.pc + 1);
+  reg.a = memory.get8(reg.pc - 1);
 }
 
 void LR35902::LD_b_n()
 {
-  reg.b = memory.get8(reg.pc + 1);
+  reg.b = memory.get8(reg.pc - 1);
 }
 
 void LR35902::LD_c_n()
 {
-  reg.c = memory.get8(reg.pc + 1);
+  reg.c = memory.get8(reg.pc - 1);
 }
 
 void LR35902::LD_d_n()
 {
-  reg.d = memory.get8(reg.pc + 1);
+  reg.d = memory.get8(reg.pc - 1);
 }
 
 void LR35902::LD_e_n()
 {
-  reg.e = memory.get8(reg.pc + 1);
+  reg.e = memory.get8(reg.pc - 1);
 }
 
 void LR35902::LD_h_n()
 {
-  reg.h = memory.get8(reg.pc + 1);
+  reg.h = memory.get8(reg.pc - 1);
 }
 
 void LR35902::LD_l_n()
 {
-  reg.l = memory.get8(reg.pc + 1);
+  reg.l = memory.get8(reg.pc - 1);
 }
 
 void LR35902::LD_hl_n()
 {
-  u8 n = memory.get8(reg.pc + 1);
+  u8 n = memory.get8(reg.pc - 1);
   memory.set8(reg.hl, n);
 }
 
@@ -486,13 +488,13 @@ void LR35902::LD_a_hl_dec()
 
 void LR35902::LDH_naddr_a()
 {
-  u8 n = memory.get8(reg.pc + 1);
+  u8 n = memory.get8(reg.pc - 1);
   memory.set8(0xff00+n, reg.a);
 }
 
 void LR35902::LDH_a_naddr()
 {
-  u8 n = memory.get8(reg.pc + 1);
+  u8 n = memory.get8(reg.pc - 1);
   reg.a = memory.get8(0xff00+n);
 }
 
@@ -509,39 +511,39 @@ void LR35902::LD_a_caddr()
 // TODO check endianess for 16-bit loads
 void LR35902::LD_naddr_a()
 {
-  u16 n = memory.get16(reg.pc + 1);
+  u16 n = memory.get16(reg.pc - 2);
   memory.set8(n, reg.a);
 }
 
 void LR35902::LD_a_naddr()
 {
-  u16 n = memory.get16(reg.pc + 1);
+  u16 n = memory.get16(reg.pc - 2);
   reg.a = memory.get8(n);
 }
 
 void LR35902::LD_bc_d16()
 {
-  reg.bc = memory.get16(reg.pc + 1);
+  reg.bc = memory.get16(reg.pc - 2);
 }
 
 void LR35902::LD_de_d16()
 {
-  reg.de = memory.get16(reg.pc + 1);
+  reg.de = memory.get16(reg.pc - 2);
 }
 
 void LR35902::LD_hl_d16()
 {
-  reg.hl = memory.get16(reg.pc + 1);
+  reg.hl = memory.get16(reg.pc - 2);
 }
 
 void LR35902::LD_sp_d16()
 {
-  reg.sp = memory.get16(reg.pc + 1);
+  reg.sp = memory.get16(reg.pc - 2);
 }
 
 void LR35902::LD_a16_sp()
 {
-  u16 n = memory.get16(reg.pc + 1);
+  u16 n = memory.get16(reg.pc - 2);
   memory.set16(n, reg.sp);
 }
 
@@ -595,7 +597,7 @@ void LR35902::PUSH_af()
 
 void LR35902::LD_hl_sp_r8()
 {
-  s8 n = memory.get8(reg.pc + 1);
+  s8 n = memory.get8(reg.pc - 1);
 
   set_flag_z(false);
   set_flag_n(false);
@@ -734,7 +736,7 @@ void LR35902::ADD_a_hladdr()
 
 void LR35902::ADD_a_d8()
 {
-  u8 n = memory.get8(reg.pc + 1);
+  u8 n = memory.get8(reg.pc - 1);
 
   set_flag_z(reg.a + n == 0);
   set_flag_n(false);
@@ -772,7 +774,7 @@ void LR35902::ADC_a_hladdr()
 
 void LR35902::ADC_a_d8()
 {
-  u8 n = memory.get8(reg.pc + 1);
+  u8 n = memory.get8(reg.pc - 1);
   uint add = n + get_flag_c();
 
   set_flag_z(reg.a + add == 0);
@@ -808,7 +810,7 @@ void LR35902::SUB_a_hladdr()
 
 void LR35902::SUB_a_d8()
 {
-  u8 n = memory.get8(reg.pc + 1);
+  u8 n = memory.get8(reg.pc - 1);
 
   set_flag_z(reg.a - n == 0)        ;
   set_flag_n(true);
@@ -846,7 +848,7 @@ void LR35902::SBC_a_hladdr()
 
 void LR35902::SBC_a_d8()
 {
-  u8 n = memory.get8(reg.pc + 1);
+  u8 n = memory.get8(reg.pc - 1);
   uint sub = n + get_flag_c();
 
   set_flag_z(reg.a - sub == 0)        ;
@@ -881,7 +883,7 @@ void LR35902::AND_a_hladdr()
 
 void LR35902::AND_a_d8()
 {
-  u8 n = memory.get8(reg.pc + 1);
+  u8 n = memory.get8(reg.pc - 1);
   reg.a &= n;
 
   set_flag_z(reg.a == 0);
@@ -914,7 +916,7 @@ void LR35902::XOR_a_hladdr()
 
 void LR35902::XOR_a_d8()
 {
-  u8 n = memory.get8(reg.pc + 1);
+  u8 n = memory.get8(reg.pc - 1);
   reg.a ^= n;
 
   set_flag_z(reg.a == 0);
@@ -947,7 +949,7 @@ void LR35902::OR_a_hladdr()
 
 void LR35902::OR_a_d8()
 {
-  u8 n = memory.get8(reg.pc + 1);
+  u8 n = memory.get8(reg.pc - 1);
   reg.a |= n;
 
   set_flag_z(reg.a == 0);
@@ -977,7 +979,7 @@ void LR35902::CP_a_hladdr()
 
 void LR35902::CP_a_d8()
 {
-  u8 n = memory.get8(reg.pc + 1);
+  u8 n = memory.get8(reg.pc - 1);
 
   set_flag_z(reg.a - n == 0)        ;
   set_flag_n(true);
@@ -1009,7 +1011,7 @@ void LR35902::ADD_RR_RR()
 
 void LR35902::ADD_SP_r8()
 {
-  u8 n = memory.get8(reg.pc + 1);
+  u8 n = memory.get8(reg.pc - 1);
 
   set_flag_z(false);
   set_flag_n(false);
