@@ -235,6 +235,12 @@ class LR35902
   template <u16 LR35902::Reg::*R1, u16 LR35902::Reg::*R2> void ADD_RR_RR();
   void ADD_SP_r8();
 
+  void JR_NZ_r8();
+  void JR_NC_r8();
+  void JR_r8();
+  void JR_Z_r8();
+  void JR_C_r8();
+
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] = 
   {
@@ -480,6 +486,12 @@ class LR35902
     {0x3b, &LR35902::DEC_RR<&LR35902::Reg::sp>, {8, 1, "DEC SP"}},
 
     {0xe8, &LR35902::ADD_SP_r8, {16, 2, "ADD SP, r8"}},
+
+    {0x20, &LR35902::JR_NZ_r8, {8, 2, "JR NZ, r8"}},
+    {0x30, &LR35902::JR_NC_r8, {8, 2, "JR NC, r8"}},
+    {0x18, &LR35902::JR_r8,    {8, 2, "JR r8"}},
+    {0x28, &LR35902::JR_Z_r8,  {8, 2, "JR Z, r8"}},
+    {0x38, &LR35902::JR_C_r8,  {8, 2, "JR C, r8"}},
   };
 
   static const int table_size = 0x100;

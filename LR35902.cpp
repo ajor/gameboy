@@ -16,7 +16,7 @@ void LR35902::run()
   while (true)
   {
     uint8_t opcode = memory.get8(reg.pc);
-    printf("%02X\n", opcode);
+    printf("%02X - %s\n", opcode, infotable[opcode].str);
     execute(opcode);
 
     // TODO deal with interrupts here
@@ -1019,4 +1019,46 @@ void LR35902::ADD_SP_r8()
   set_flag_c(reg.sp + n > 0xffff);
 
   reg.sp += n;
+}
+
+void LR35902::JR_NZ_r8()
+{
+  if (get_flag_z() == false)
+  {
+    u8 n = memory.get8(reg.pc - 1);
+    reg.pc += n;
+  }
+}
+
+void LR35902::JR_NC_r8()
+{
+  if (get_flag_c() == false)
+  {
+    u8 n = memory.get8(reg.pc - 1);
+    reg.pc += n;
+  }
+}
+
+void LR35902::JR_r8()
+{
+  u8 n = memory.get8(reg.pc - 1);
+  reg.pc += n;
+}
+
+void LR35902::JR_Z_r8()
+{
+  if (get_flag_z() == true)
+  {
+    u8 n = memory.get8(reg.pc - 1);
+    reg.pc += n;
+  }
+}
+
+void LR35902::JR_C_r8()
+{
+  if (get_flag_c() == true)
+  {
+    u8 n = memory.get8(reg.pc - 1);
+    reg.pc += n;
+  }
 }
