@@ -49,8 +49,8 @@ public:
     {
       uint8_t upper = (value & 0xff00) >> 8;
       uint8_t lower = (value & 0x00ff);
-      mem8[address] = upper;
-      mem8[address+1] = lower;
+      mem8[address] = lower;
+      mem8[address+1] = upper;
     }
     else
     {
@@ -63,8 +63,8 @@ public:
   {
     if (address >=0 && address+1 < size)
     {
-      uint8_t upper = mem8[address];
-      uint8_t lower = mem8[address+1];
+      uint8_t lower = mem8[address];
+      uint8_t upper = mem8[address+1];
       uint16_t value = (upper << 8) | lower;
       return value;
     }

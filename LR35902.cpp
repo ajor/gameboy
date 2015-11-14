@@ -508,7 +508,6 @@ void LR35902::LD_a_caddr()
   reg.a = memory.get8(0xff00+reg.c);
 }
 
-// TODO check endianess for 16-bit loads
 void LR35902::LD_naddr_a()
 {
   u16 n = memory.get16(reg.pc - 2);
