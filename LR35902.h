@@ -235,18 +235,31 @@ class LR35902
   template <u16 LR35902::Reg::*R1, u16 LR35902::Reg::*R2> void ADD_RR_RR();
   void ADD_SP_r8();
 
+  void JR_r8();
   void JR_NZ_r8();
   void JR_NC_r8();
-  void JR_r8();
   void JR_Z_r8();
   void JR_C_r8();
 
+  void JP_a16();
   void JP_NZ_a16();
   void JP_NC_a16();
-  void JP_a16();
   void JP_Z_a16();
   void JP_C_a16();
   void JP_hl();
+
+  void CALL_a16();
+  void CALL_NZ_a16();
+  void CALL_NC_a16();
+  void CALL_Z_a16();
+  void CALL_C_a16();
+
+  void RET();
+  void RETI();
+  void RET_NZ();
+  void RET_NC();
+  void RET_Z();
+  void RET_C();
 
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] = 
@@ -495,18 +508,32 @@ class LR35902
     {0xe8, &LR35902::ADD_SP_r8, {16, 2, "ADD SP, r8"}},
 
     // Jumps
+    {0x18, &LR35902::JR_r8,    {12, 2, "JR r8"}},
     {0x20, &LR35902::JR_NZ_r8, { 8, 2, "JR NZ, r8"}},
     {0x30, &LR35902::JR_NC_r8, { 8, 2, "JR NC, r8"}},
-    {0x18, &LR35902::JR_r8,    {12, 2, "JR r8"}},
     {0x28, &LR35902::JR_Z_r8,  { 8, 2, "JR Z, r8"}},
     {0x38, &LR35902::JR_C_r8,  { 8, 2, "JR C, r8"}},
 
+    {0xc3, &LR35902::JP_a16,    {16, 3, "JP a16"}},
     {0xc2, &LR35902::JP_NZ_a16, {12, 3, "JP NZ, a16"}},
     {0xd2, &LR35902::JP_NC_a16, {12, 3, "JP NC, a16"}},
-    {0xc3, &LR35902::JP_a16,    {16, 3, "JP a16"}},
     {0xca, &LR35902::JP_Z_a16,  {12, 3, "JP Z, a16"}},
     {0xda, &LR35902::JP_C_a16,  {12, 3, "JP C, a16"}},
     {0xe9, &LR35902::JP_hl,     { 4, 1, "JP (HL)"}},
+
+    // Calls
+    {0xcd, &LR35902::CALL_a16,    {24, 3, "CALL a16"}},
+    {0xc4, &LR35902::CALL_NZ_a16, {12, 3, "CALL NZ, a16"}},
+    {0xd4, &LR35902::CALL_NC_a16, {12, 3, "CALL NC, a16"}},
+    {0xcc, &LR35902::CALL_Z_a16,  {12, 3, "CALL Z, a16"}},
+    {0xdc, &LR35902::CALL_C_a16,  {12, 3, "CALL C, a16"}},
+
+    {0xc9, &LR35902::RET,    {16, 1, "RET"}},
+    {0xd9, &LR35902::RETI,   {16, 1, "RETI"}},
+    {0xc0, &LR35902::RET_NZ, { 8, 1, "RET NZ"}},
+    {0xd0, &LR35902::RET_NC, { 8, 1, "RET NC"}},
+    {0xc8, &LR35902::RET_Z,  { 8, 1, "RET Z"}},
+    {0xd8, &LR35902::RET_C,  { 8, 1, "RET C"}},
   };
 
   static const int table_size = 0x100;

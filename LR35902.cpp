@@ -16,7 +16,7 @@ void LR35902::run()
   while (true)
   {
     uint8_t opcode = memory.get8(reg.pc);
-    printf("%02X - %s\n", opcode, infotable[opcode].str);
+    printf("%04X: %02X - %s\n", reg.pc, opcode, infotable[opcode].str);
     execute(opcode);
 
     // TODO deal with interrupts here
@@ -1115,4 +1115,99 @@ void LR35902::JP_C_a16()
 void LR35902::JP_hl()
 {
   reg.pc = reg.hl;
+}
+
+void LR35902::CALL_a16()
+{
+  reg.sp -= 2;
+  memory.set16(reg.sp, reg.pc);
+
+  u16 n = memory.get16(reg.pc - 2);
+  reg.pc = n;
+}
+
+void LR35902::CALL_NZ_a16()
+{
+  if (get_flag_z() == false)
+  {
+    CALL_a16();
+    // TODO 12 extra cycles
+  }
+}
+
+void LR35902::CALL_NC_a16()
+{
+  if (get_flag_c() == false)
+  {
+    CALL_a16();
+    // TODO 12 extra cycles
+  }
+}
+
+void LR35902::CALL_Z_a16()
+{
+  if (get_flag_z() == true)
+  {
+    CALL_a16();
+    // TODO 12 extra cycles
+  }
+}
+
+void LR35902::CALL_C_a16()
+{
+  if (get_flag_c() == true)
+  {
+    CALL_a16();
+    // TODO 12 extra cycles
+  }
+}
+
+void LR35902::RET()
+{
+  u16 n = memory.get16(reg.sp);
+  reg.sp += 2;
+
+  reg.pc = n;
+}
+
+void LR35902::RETI()
+{
+  RET();
+  interrupts_enabled = true;
+}
+
+void LR35902::RET_NZ()
+{
+  if (get_flag_z() == false)
+  {
+    RET();
+    // TODO 12 extra cycles
+  }
+}
+
+void LR35902::RET_NC()
+{
+  if (get_flag_c() == false)
+  {
+    RET();
+    // TODO 12 extra cycles
+  }
+}
+
+void LR35902::RET_Z()
+{
+  if (get_flag_z() == true)
+  {
+    RET();
+    // TODO 12 extra cycles
+  }
+}
+
+void LR35902::RET_C()
+{
+  if (get_flag_c() == true)
+  {
+    RET();
+    // TODO 12 extra cycles
+  }
 }
