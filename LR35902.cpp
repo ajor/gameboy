@@ -1027,6 +1027,7 @@ void LR35902::JR_NZ_r8()
   {
     u8 n = memory.get8(reg.pc - 1);
     reg.pc += n;
+    // TODO 4 extra cycles
   }
 }
 
@@ -1036,6 +1037,7 @@ void LR35902::JR_NC_r8()
   {
     u8 n = memory.get8(reg.pc - 1);
     reg.pc += n;
+    // TODO 4 extra cycles
   }
 }
 
@@ -1051,6 +1053,7 @@ void LR35902::JR_Z_r8()
   {
     u8 n = memory.get8(reg.pc - 1);
     reg.pc += n;
+    // TODO 4 extra cycles
   }
 }
 
@@ -1060,5 +1063,57 @@ void LR35902::JR_C_r8()
   {
     u8 n = memory.get8(reg.pc - 1);
     reg.pc += n;
+    // TODO 4 extra cycles
   }
+}
+
+void LR35902::JP_NZ_a16()
+{
+  if (get_flag_z() == false)
+  {
+    u16 n = memory.get16(reg.pc - 2);
+    reg.pc = n;
+    // TODO 4 extra cycles
+  }
+}
+
+void LR35902::JP_NC_a16()
+{
+  if (get_flag_c() == false)
+  {
+    u16 n = memory.get16(reg.pc - 2);
+    reg.pc = n;
+    // TODO 4 extra cycles
+  }
+}
+
+void LR35902::JP_a16()
+{
+  u16 n = memory.get16(reg.pc - 2);
+  reg.pc = n;
+}
+
+void LR35902::JP_Z_a16()
+{
+  if (get_flag_z() == true)
+  {
+    u16 n = memory.get16(reg.pc - 2);
+    reg.pc = n;
+    // TODO 4 extra cycles
+  }
+}
+
+void LR35902::JP_C_a16()
+{
+  if (get_flag_c() == true)
+  {
+    u16 n = memory.get16(reg.pc - 2);
+    reg.pc = n;
+    // TODO 4 extra cycles
+  }
+}
+
+void LR35902::JP_hl()
+{
+  reg.pc = reg.hl;
 }
