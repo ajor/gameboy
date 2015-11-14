@@ -263,6 +263,11 @@ class LR35902
 
   template <u8 n> void RST();
 
+  void RLCA();
+  void RLA();
+  void RRCA();
+  void RRA();
+
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] = 
   {
@@ -537,7 +542,7 @@ class LR35902
     {0xc8, &LR35902::RET_Z,  { 8, 1, "RET Z"}},
     {0xd8, &LR35902::RET_C,  { 8, 1, "RET C"}},
 
-    // Restarts - TODO should these be 16 or 32 cycles?
+    // Restarts
     {0xc7, &LR35902::RST<0x00>, {16, 1, "RST 00H"}},
     {0xd7, &LR35902::RST<0x10>, {16, 1, "RST 10H"}},
     {0xe7, &LR35902::RST<0x20>, {16, 1, "RST 20H"}},
@@ -546,6 +551,12 @@ class LR35902
     {0xdf, &LR35902::RST<0x18>, {16, 1, "RST 18H"}},
     {0xef, &LR35902::RST<0x28>, {16, 1, "RST 28H"}},
     {0xff, &LR35902::RST<0x38>, {16, 1, "RST 38H"}},
+
+    // Rotates
+    {0x07, &LR35902::RLCA, {4, 1, "RLCA"}},
+    {0x17, &LR35902::RLA,  {4, 1, "RLA"}},
+    {0x0f, &LR35902::RRCA, {4, 1, "RRCA"}},
+    {0x1f, &LR35902::RRA,  {4, 1, "RRA"}},
   };
 
   static const int table_size = 0x100;

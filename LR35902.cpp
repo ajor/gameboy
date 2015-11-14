@@ -1219,3 +1219,47 @@ template <u8 n> void LR35902::RST()
 
   reg.pc = n;
 }
+
+void LR35902::RLCA()
+{
+  uint c = reg.a >> 7;
+  reg.a = (reg.a << 1) | c;
+
+  set_flag_z(false);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
+
+void LR35902::RLA()
+{
+  uint c = reg.a >> 7;
+  reg.a = (reg.a << 1) | get_flag_c();
+
+  set_flag_z(false);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
+
+void LR35902::RRCA()
+{
+  uint c = reg.a & 1;
+  reg.a = (reg.a >> 1) | (c << 7);
+
+  set_flag_z(false);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
+
+void LR35902::RRA()
+{
+  uint c = reg.a & 1;
+  reg.a = (reg.a >> 1) | (get_flag_c() << 7);
+
+  set_flag_z(false);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
