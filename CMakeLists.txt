@@ -1,11 +1,16 @@
 cmake_minimum_required(VERSION 2.8.12)
+
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "No build type selected, default to Release")
+  set(CMAKE_BUILD_TYPE "Release")
+endif()
+
 project(Gameboy)
 add_executable(gb main.cpp gameboy.cpp LR35902.cpp)
 
 target_compile_options(gb PRIVATE "-std=c++11")
 target_compile_options(gb PRIVATE "-Wall")
 #target_compile_options(gb PRIVATE "-pedantic")
-target_compile_options(gb PRIVATE "-O3")
 
 find_package(OpenGL REQUIRED)
 if (OPENGL_FOUND)
