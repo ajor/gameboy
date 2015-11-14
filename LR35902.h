@@ -261,6 +261,8 @@ class LR35902
   void RET_Z();
   void RET_C();
 
+  template <u8 n> void RST();
+
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] = 
   {
@@ -534,6 +536,16 @@ class LR35902
     {0xd0, &LR35902::RET_NC, { 8, 1, "RET NC"}},
     {0xc8, &LR35902::RET_Z,  { 8, 1, "RET Z"}},
     {0xd8, &LR35902::RET_C,  { 8, 1, "RET C"}},
+
+    // Restarts - TODO should these be 16 or 32 cycles?
+    {0xc7, &LR35902::RST<0x00>, {16, 1, "RST 00H"}},
+    {0xd7, &LR35902::RST<0x10>, {16, 1, "RST 10H"}},
+    {0xe7, &LR35902::RST<0x20>, {16, 1, "RST 20H"}},
+    {0xf7, &LR35902::RST<0x30>, {16, 1, "RST 30H"}},
+    {0xcf, &LR35902::RST<0x08>, {16, 1, "RST 08H"}},
+    {0xdf, &LR35902::RST<0x18>, {16, 1, "RST 18H"}},
+    {0xef, &LR35902::RST<0x28>, {16, 1, "RST 28H"}},
+    {0xff, &LR35902::RST<0x38>, {16, 1, "RST 38H"}},
   };
 
   static const int table_size = 0x100;

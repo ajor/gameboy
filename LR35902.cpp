@@ -1211,3 +1211,11 @@ void LR35902::RET_C()
     // TODO 12 extra cycles
   }
 }
+
+template <u8 n> void LR35902::RST()
+{
+  reg.sp -= 2;
+  memory.set16(reg.sp, reg.pc);
+
+  reg.pc = n;
+}
