@@ -274,6 +274,13 @@ class LR35902
   void RRC_hladdr();
   void RR_hladdr();
 
+  template <u8 LR35902::Reg::*R> void SLA();
+  template <u8 LR35902::Reg::*R> void SRA();
+  template <u8 LR35902::Reg::*R> void SRL();
+  void SLA_hladdr();
+  void SRA_hladdr();
+  void SRL_hladdr();
+
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] =
   {
@@ -572,6 +579,7 @@ class LR35902
 
   static constexpr Instruction implemented_instruction_table_cb[] =
   {
+    // Rotates
     {0x00, &LR35902::RLC<&LR35902::Reg::b>, { 8, 2, "RLC B"}},
     {0x01, &LR35902::RLC<&LR35902::Reg::c>, { 8, 2, "RLC C"}},
     {0x02, &LR35902::RLC<&LR35902::Reg::d>, { 8, 2, "RLC D"}},
@@ -607,6 +615,34 @@ class LR35902
     {0x1d, &LR35902::RR<&LR35902::Reg::l>, { 8, 2, "RR L"}},
     {0x1e, &LR35902::RR_hladdr,            {16, 2, "RR (HL)"}},
     {0x1f, &LR35902::RR<&LR35902::Reg::a>, { 8, 2, "RR A"}},
+
+    // Shifts
+    {0x20, &LR35902::SLA<&LR35902::Reg::b>, { 8, 2, "SLA B"}},
+    {0x21, &LR35902::SLA<&LR35902::Reg::c>, { 8, 2, "SLA C"}},
+    {0x22, &LR35902::SLA<&LR35902::Reg::d>, { 8, 2, "SLA D"}},
+    {0x23, &LR35902::SLA<&LR35902::Reg::e>, { 8, 2, "SLA E"}},
+    {0x24, &LR35902::SLA<&LR35902::Reg::h>, { 8, 2, "SLA H"}},
+    {0x25, &LR35902::SLA<&LR35902::Reg::l>, { 8, 2, "SLA L"}},
+    {0x26, &LR35902::SLA_hladdr,            {16, 2, "SLA (HL)"}},
+    {0x27, &LR35902::SLA<&LR35902::Reg::a>, { 8, 2, "SLA A"}},
+
+    {0x28, &LR35902::SRA<&LR35902::Reg::b>, { 8, 2, "SRA B"}},
+    {0x29, &LR35902::SRA<&LR35902::Reg::c>, { 8, 2, "SRA C"}},
+    {0x2a, &LR35902::SRA<&LR35902::Reg::d>, { 8, 2, "SRA D"}},
+    {0x2b, &LR35902::SRA<&LR35902::Reg::e>, { 8, 2, "SRA E"}},
+    {0x2c, &LR35902::SRA<&LR35902::Reg::h>, { 8, 2, "SRA H"}},
+    {0x2d, &LR35902::SRA<&LR35902::Reg::l>, { 8, 2, "SRA L"}},
+    {0x2e, &LR35902::SRA_hladdr,            {16, 2, "SRA (HL)"}},
+    {0x2f, &LR35902::SRA<&LR35902::Reg::a>, { 8, 2, "SRA A"}},
+
+    {0x38, &LR35902::SRL<&LR35902::Reg::b>, { 8, 2, "SRL B"}},
+    {0x39, &LR35902::SRL<&LR35902::Reg::c>, { 8, 2, "SRL C"}},
+    {0x3a, &LR35902::SRL<&LR35902::Reg::d>, { 8, 2, "SRL D"}},
+    {0x3b, &LR35902::SRL<&LR35902::Reg::e>, { 8, 2, "SRL E"}},
+    {0x3c, &LR35902::SRL<&LR35902::Reg::h>, { 8, 2, "SRL H"}},
+    {0x3d, &LR35902::SRL<&LR35902::Reg::l>, { 8, 2, "SRL L"}},
+    {0x3e, &LR35902::SRL_hladdr,            {16, 2, "SRL (HL)"}},
+    {0x3f, &LR35902::SRL<&LR35902::Reg::a>, { 8, 2, "SRL A"}},
   };
 
   static const int table_size = 0x100;

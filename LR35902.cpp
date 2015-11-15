@@ -1354,3 +1354,86 @@ void LR35902::RR_hladdr()
   set_flag_h(false);
   set_flag_c(c);
 }
+
+template <u8 LR35902::Reg::*R>
+void LR35902::SLA()
+{
+  uint c = reg.*R >> 7;
+  reg.*R = reg.*R << 1;
+
+  set_flag_z(reg.*R == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
+
+template <u8 LR35902::Reg::*R>
+void LR35902::SRA()
+{
+  uint c = reg.*R & 1;
+  uint extend_bit = reg.*R & 0x80;
+  reg.*R = (reg.*R >> 1) | extend_bit;
+
+  set_flag_z(reg.*R == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
+
+template <u8 LR35902::Reg::*R>
+void LR35902::SRL()
+{
+  uint c = reg.*R & 1;
+  reg.*R = reg.*R >> 1;
+
+  set_flag_z(reg.*R == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
+
+void LR35902::SLA_hladdr()
+{
+  u8 val = memory.get8(reg.hl);
+
+  uint c = val >> 7;
+  val = val << 1;
+
+  memory.set8(reg.hl, val);
+
+  set_flag_z(val == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
+
+void LR35902::SRA_hladdr()
+{
+  u8 val = memory.get8(reg.hl);
+
+  uint c = val & 1;
+  uint extend_bit = val & 0x80;
+  val = (val >> 1) | extend_bit;
+
+  memory.set8(reg.hl, val);
+
+  set_flag_z(val == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
+
+void LR35902::SRL_hladdr()
+{
+  u8 val = memory.get8(reg.hl);
+
+  uint c = val & 1;
+  val = val >> 1;
+
+  memory.set8(reg.hl, val);
+
+  set_flag_z(val == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
