@@ -263,13 +263,15 @@ class LR35902
 
   template <u8 n> void RST();
 
-  void RLCA();
-  void RLA();
-  void RRCA();
-  void RRA();
+  void execute_cb();
+
+  template <u8 LR35902::Reg::*R> void RLC();
+  template <u8 LR35902::Reg::*R> void RL();
+  template <u8 LR35902::Reg::*R> void RRC();
+  template <u8 LR35902::Reg::*R> void RR();
 
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
-  static constexpr Instruction implemented_instruction_table[] = 
+  static constexpr Instruction implemented_instruction_table[] =
   {
     {0x00, &LR35902::NOP,  {4, 1, "NOP"}},
     {0x10, &LR35902::STOP, {4, 2, "STOP"}}, // Opcode always followed by 0x00
@@ -553,15 +555,27 @@ class LR35902
     {0xff, &LR35902::RST<0x38>, {16, 1, "RST 38H"}},
 
     // Rotates
-    {0x07, &LR35902::RLCA, {4, 1, "RLCA"}},
-    {0x17, &LR35902::RLA,  {4, 1, "RLA"}},
-    {0x0f, &LR35902::RRCA, {4, 1, "RRCA"}},
-    {0x1f, &LR35902::RRA,  {4, 1, "RRA"}},
+    {0x07, &LR35902::RLC<&LR35902::Reg::a>, {4, 1, "RLCA"}},
+    {0x17, &LR35902::RL<&LR35902::Reg::a>,  {4, 1, "RLA"}},
+    {0x0f, &LR35902::RRC<&LR35902::Reg::a>, {4, 1, "RRCA"}},
+    {0x1f, &LR35902::RR<&LR35902::Reg::a>,  {4, 1, "RRA"}},
+
+    // Prefix CB
+    {0xcb, &LR35902::execute_cb, {0, 0, ""}},
+
+    // D3, DB, DD, E3, E4, EB, EC, ED, F4, FC, FD are not valid opcodes
+  };
+
+  static constexpr Instruction implemented_instruction_table_cb[] =
+  {
+    {0x00, &LR35902::unknown_instruction, {0, 0, ""}},
   };
 
   static const int table_size = 0x100;
   static InstrFunc optable[table_size];
   static OpInfo infotable[table_size];
+  static InstrFunc optable_cb[table_size];
+  static OpInfo infotable_cb[table_size];
 
   void init_tables();
 

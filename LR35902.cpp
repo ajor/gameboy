@@ -6,8 +6,11 @@
 
 LR35902::InstrFunc LR35902::optable[LR35902::table_size];
 LR35902::OpInfo LR35902::infotable[LR35902::table_size];
+LR35902::InstrFunc LR35902::optable_cb[LR35902::table_size];
+LR35902::OpInfo LR35902::infotable_cb[LR35902::table_size];
 constexpr LR35902::OpInfo LR35902::unknown_info;
 constexpr LR35902::Instruction LR35902::implemented_instruction_table[];
+constexpr LR35902::Instruction LR35902::implemented_instruction_table_cb[];
 
 void LR35902::run()
 {
@@ -34,6 +37,19 @@ void LR35902::execute(uint8_t opcode)
   // TODO count cycles here too
 }
 
+void LR35902::execute_cb()
+{
+  uint8_t opcode = memory.get8(reg.pc + 1);
+
+  OpInfo info = infotable_cb[opcode];
+  reg.pc += info.length;
+
+  InstrFunc instr = optable_cb[opcode];
+  (this->*instr)();
+
+  // TODO count cycles here too
+}
+
 void LR35902::init_tables()
 {
   static bool initialised = false;
@@ -44,6 +60,9 @@ void LR35902::init_tables()
   {
     optable[i] = &LR35902::unknown_instruction;
     infotable[i] = unknown_info;
+
+    optable_cb[i] = &LR35902::unknown_instruction;
+    infotable_cb[i] = unknown_info;
   }
 
   for (const Instruction &instr : implemented_instruction_table)
@@ -52,6 +71,14 @@ void LR35902::init_tables()
 
     optable[instr.opcode] = instr.func;
     infotable[instr.opcode] = instr.opinfo;
+  }
+
+  for (const Instruction &instr : implemented_instruction_table_cb)
+  {
+    assert(optable_cb[instr.opcode] == &LR35902::unknown_instruction);
+
+    optable_cb[instr.opcode] = instr.func;
+    infotable_cb[instr.opcode] = instr.opinfo;
   }
 }
 
@@ -1220,10 +1247,11 @@ template <u8 n> void LR35902::RST()
   reg.pc = n;
 }
 
-void LR35902::RLCA()
+template <u8 LR35902::Reg::*R>
+void LR35902::RLC()
 {
-  uint c = reg.a >> 7;
-  reg.a = (reg.a << 1) | c;
+  uint c = reg.*R >> 7;
+  reg.*R = (reg.*R << 1) | c;
 
   set_flag_z(false);
   set_flag_n(false);
@@ -1231,10 +1259,11 @@ void LR35902::RLCA()
   set_flag_c(c);
 }
 
-void LR35902::RLA()
+template <u8 LR35902::Reg::*R>
+void LR35902::RL()
 {
-  uint c = reg.a >> 7;
-  reg.a = (reg.a << 1) | get_flag_c();
+  uint c = reg.*R >> 7;
+  reg.*R = (reg.*R << 1) | get_flag_c();
 
   set_flag_z(false);
   set_flag_n(false);
@@ -1242,10 +1271,11 @@ void LR35902::RLA()
   set_flag_c(c);
 }
 
-void LR35902::RRCA()
+template <u8 LR35902::Reg::*R>
+void LR35902::RRC()
 {
-  uint c = reg.a & 1;
-  reg.a = (reg.a >> 1) | (c << 7);
+  uint c = reg.*R & 1;
+  reg.*R = (reg.*R >> 1) | (c << 7);
 
   set_flag_z(false);
   set_flag_n(false);
@@ -1253,10 +1283,11 @@ void LR35902::RRCA()
   set_flag_c(c);
 }
 
-void LR35902::RRA()
+template <u8 LR35902::Reg::*R>
+void LR35902::RR()
 {
-  uint c = reg.a & 1;
-  reg.a = (reg.a >> 1) | (get_flag_c() << 7);
+  uint c = reg.*R & 1;
+  reg.*R = (reg.*R >> 1) | (get_flag_c() << 7);
 
   set_flag_z(false);
   set_flag_n(false);
