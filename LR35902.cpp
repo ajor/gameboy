@@ -1253,7 +1253,7 @@ void LR35902::RLC()
   uint c = reg.*R >> 7;
   reg.*R = (reg.*R << 1) | c;
 
-  set_flag_z(false);
+  set_flag_z(reg.*R == 0);
   set_flag_n(false);
   set_flag_h(false);
   set_flag_c(c);
@@ -1265,7 +1265,7 @@ void LR35902::RL()
   uint c = reg.*R >> 7;
   reg.*R = (reg.*R << 1) | get_flag_c();
 
-  set_flag_z(false);
+  set_flag_z(reg.*R == 0);
   set_flag_n(false);
   set_flag_h(false);
   set_flag_c(c);
@@ -1277,7 +1277,7 @@ void LR35902::RRC()
   uint c = reg.*R & 1;
   reg.*R = (reg.*R >> 1) | (c << 7);
 
-  set_flag_z(false);
+  set_flag_z(reg.*R == 0);
   set_flag_n(false);
   set_flag_h(false);
   set_flag_c(c);
@@ -1289,7 +1289,67 @@ void LR35902::RR()
   uint c = reg.*R & 1;
   reg.*R = (reg.*R >> 1) | (get_flag_c() << 7);
 
-  set_flag_z(false);
+  set_flag_z(reg.*R == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
+
+void LR35902::RLC_hladdr()
+{
+  u8 val = memory.get8(reg.hl);
+
+  uint c = val >> 7;
+  val = (val << 1) | c;
+
+  memory.set8(reg.hl, val);
+
+  set_flag_z(val == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
+
+void LR35902::RL_hladdr()
+{
+  u8 val = memory.get8(reg.hl);
+
+  uint c = val >> 7;
+  val = (val << 1) | get_flag_c();
+
+  memory.set8(reg.hl, val);
+
+  set_flag_z(val == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
+
+void LR35902::RRC_hladdr()
+{
+  u8 val = memory.get8(reg.hl);
+
+  uint c = val & 1;
+  val = (val >> 1) | (c << 7);
+
+  memory.set8(reg.hl, val);
+
+  set_flag_z(val == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(c);
+}
+
+void LR35902::RR_hladdr()
+{
+  u8 val = memory.get8(reg.hl);
+
+  uint c = val & 1;
+  val = (val >> 1) | (get_flag_c() << 7);
+
+  memory.set8(reg.hl, val);
+
+  set_flag_z(val == 0);
   set_flag_n(false);
   set_flag_h(false);
   set_flag_c(c);

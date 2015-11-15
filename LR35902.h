@@ -269,6 +269,10 @@ class LR35902
   template <u8 LR35902::Reg::*R> void RL();
   template <u8 LR35902::Reg::*R> void RRC();
   template <u8 LR35902::Reg::*R> void RR();
+  void RLC_hladdr();
+  void RL_hladdr();
+  void RRC_hladdr();
+  void RR_hladdr();
 
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] =
@@ -554,7 +558,7 @@ class LR35902
     {0xef, &LR35902::RST<0x28>, {16, 1, "RST 28H"}},
     {0xff, &LR35902::RST<0x38>, {16, 1, "RST 38H"}},
 
-    // Rotates
+    // Rotates - are these ones meant to always clear the Z flag?
     {0x07, &LR35902::RLC<&LR35902::Reg::a>, {4, 1, "RLCA"}},
     {0x17, &LR35902::RL<&LR35902::Reg::a>,  {4, 1, "RLA"}},
     {0x0f, &LR35902::RRC<&LR35902::Reg::a>, {4, 1, "RRCA"}},
@@ -568,7 +572,41 @@ class LR35902
 
   static constexpr Instruction implemented_instruction_table_cb[] =
   {
-    {0x00, &LR35902::unknown_instruction, {0, 0, ""}},
+    {0x00, &LR35902::RLC<&LR35902::Reg::b>, { 8, 2, "RLC B"}},
+    {0x01, &LR35902::RLC<&LR35902::Reg::c>, { 8, 2, "RLC C"}},
+    {0x02, &LR35902::RLC<&LR35902::Reg::d>, { 8, 2, "RLC D"}},
+    {0x03, &LR35902::RLC<&LR35902::Reg::e>, { 8, 2, "RLC E"}},
+    {0x04, &LR35902::RLC<&LR35902::Reg::h>, { 8, 2, "RLC H"}},
+    {0x05, &LR35902::RLC<&LR35902::Reg::l>, { 8, 2, "RLC L"}},
+    {0x06, &LR35902::RLC_hladdr,            {16, 2, "RLC (HL)"}},
+    {0x07, &LR35902::RLC<&LR35902::Reg::a>, { 8, 2, "RLC A"}},
+
+    {0x08, &LR35902::RRC<&LR35902::Reg::b>, { 8, 2, "RRC B"}},
+    {0x09, &LR35902::RRC<&LR35902::Reg::c>, { 8, 2, "RRC C"}},
+    {0x0a, &LR35902::RRC<&LR35902::Reg::d>, { 8, 2, "RRC D"}},
+    {0x0b, &LR35902::RRC<&LR35902::Reg::e>, { 8, 2, "RRC E"}},
+    {0x0c, &LR35902::RRC<&LR35902::Reg::h>, { 8, 2, "RRC H"}},
+    {0x0d, &LR35902::RRC<&LR35902::Reg::l>, { 8, 2, "RRC L"}},
+    {0x0e, &LR35902::RRC_hladdr,            {16, 2, "RRC (HL)"}},
+    {0x0f, &LR35902::RRC<&LR35902::Reg::a>, { 8, 2, "RRC A"}},
+
+    {0x10, &LR35902::RL<&LR35902::Reg::b>, { 8, 2, "RL B"}},
+    {0x11, &LR35902::RL<&LR35902::Reg::c>, { 8, 2, "RL C"}},
+    {0x12, &LR35902::RL<&LR35902::Reg::d>, { 8, 2, "RL D"}},
+    {0x13, &LR35902::RL<&LR35902::Reg::e>, { 8, 2, "RL E"}},
+    {0x14, &LR35902::RL<&LR35902::Reg::h>, { 8, 2, "RL H"}},
+    {0x15, &LR35902::RL<&LR35902::Reg::l>, { 8, 2, "RL L"}},
+    {0x16, &LR35902::RL_hladdr,            {16, 2, "RL (HL)"}},
+    {0x17, &LR35902::RL<&LR35902::Reg::a>, { 8, 2, "RL A"}},
+
+    {0x18, &LR35902::RR<&LR35902::Reg::b>, { 8, 2, "RR B"}},
+    {0x19, &LR35902::RR<&LR35902::Reg::c>, { 8, 2, "RR C"}},
+    {0x1a, &LR35902::RR<&LR35902::Reg::d>, { 8, 2, "RR D"}},
+    {0x1b, &LR35902::RR<&LR35902::Reg::e>, { 8, 2, "RR E"}},
+    {0x1c, &LR35902::RR<&LR35902::Reg::h>, { 8, 2, "RR H"}},
+    {0x1d, &LR35902::RR<&LR35902::Reg::l>, { 8, 2, "RR L"}},
+    {0x1e, &LR35902::RR_hladdr,            {16, 2, "RR (HL)"}},
+    {0x1f, &LR35902::RR<&LR35902::Reg::a>, { 8, 2, "RR A"}},
   };
 
   static const int table_size = 0x100;
