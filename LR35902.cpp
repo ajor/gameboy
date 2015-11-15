@@ -1466,3 +1466,61 @@ void LR35902::SWAP_hladdr()
   set_flag_h(false);
   set_flag_c(false);
 }
+
+template <u8 bit, u8 LR35902::Reg::*R>
+void LR35902::BIT()
+{
+  u8 bit_mask = 1 << bit;
+
+  set_flag_z((reg.*R & bit_mask) == 0);
+  set_flag_n(false);
+  set_flag_h(true);
+}
+
+template <u8 bit, u8 LR35902::Reg::*R>
+void LR35902::RES()
+{
+  u8 bit_mask = (u8) ~(1 << bit);
+  reg.*R &= bit_mask;
+}
+
+template <u8 bit, u8 LR35902::Reg::*R>
+void LR35902::SET()
+{
+  u8 bit_mask = 1 << bit;
+  reg.*R |= bit_mask;
+}
+
+template <u8 bit>
+void LR35902::BIT_hladdr()
+{
+  u8 val = memory.get8(reg.hl);
+
+  u8 bit_mask = 1 << bit;
+
+  set_flag_z((val & bit_mask) == 0);
+  set_flag_n(false);
+  set_flag_h(true);
+}
+
+template <u8 bit>
+void LR35902::RES_hladdr()
+{
+  u8 val = memory.get8(reg.hl);
+
+  u8 bit_mask = (u8) ~(1 << bit);
+  val &= bit_mask;
+
+  memory.set8(reg.hl, val);
+}
+
+template <u8 bit>
+void LR35902::SET_hladdr()
+{
+  u8 val = memory.get8(reg.hl);
+
+  u8 bit_mask = 1 << bit;
+  val |= bit_mask;
+
+  memory.set8(reg.hl, val);
+}
