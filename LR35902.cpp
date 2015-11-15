@@ -1437,3 +1437,32 @@ void LR35902::SRL_hladdr()
   set_flag_h(false);
   set_flag_c(c);
 }
+
+template <u8 LR35902::Reg::*R>
+void LR35902::SWAP()
+{
+  u8 upper = (reg.*R & 0xf0) >> 4;
+  u8 lower = reg.*R & 0xf;
+  reg.*R = (lower << 4) | upper;
+
+  set_flag_z(reg.*R == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(false);
+}
+
+void LR35902::SWAP_hladdr()
+{
+  u8 val = memory.get8(reg.hl);
+
+  u8 upper = (val & 0xf0) >> 4;
+  u8 lower = val & 0xf;
+  val = (lower << 4) | upper;
+
+  memory.set8(reg.hl, val);
+
+  set_flag_z(val == 0);
+  set_flag_n(false);
+  set_flag_h(false);
+  set_flag_c(false);
+}

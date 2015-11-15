@@ -281,6 +281,9 @@ class LR35902
   void SRA_hladdr();
   void SRL_hladdr();
 
+  template <u8 LR35902::Reg::*R> void SWAP();
+  void SWAP_hladdr();
+
   static constexpr OpInfo unknown_info = {0, 0, "Unknown instruction"};
   static constexpr Instruction implemented_instruction_table[] =
   {
@@ -643,6 +646,15 @@ class LR35902
     {0x3d, &LR35902::SRL<&LR35902::Reg::l>, { 8, 2, "SRL L"}},
     {0x3e, &LR35902::SRL_hladdr,            {16, 2, "SRL (HL)"}},
     {0x3f, &LR35902::SRL<&LR35902::Reg::a>, { 8, 2, "SRL A"}},
+
+    {0x30, &LR35902::SWAP<&LR35902::Reg::b>, { 8, 2, "SWAP B"}},
+    {0x31, &LR35902::SWAP<&LR35902::Reg::c>, { 8, 2, "SWAP C"}},
+    {0x32, &LR35902::SWAP<&LR35902::Reg::d>, { 8, 2, "SWAP D"}},
+    {0x33, &LR35902::SWAP<&LR35902::Reg::e>, { 8, 2, "SWAP E"}},
+    {0x34, &LR35902::SWAP<&LR35902::Reg::h>, { 8, 2, "SWAP H"}},
+    {0x35, &LR35902::SWAP<&LR35902::Reg::l>, { 8, 2, "SWAP L"}},
+    {0x36, &LR35902::SWAP_hladdr,            {16, 2, "SWAP (HL)"}},
+    {0x37, &LR35902::SWAP<&LR35902::Reg::a>, { 8, 2, "SWAP A"}},
   };
 
   static const int table_size = 0x100;
