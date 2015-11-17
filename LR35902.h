@@ -56,7 +56,7 @@ class LR35902
 
   bool interrupts_enabled = true;
 
-  Memory<0x10000> &memory;
+  Memory &memory;
 
   typedef void (LR35902::*InstrFunc)();
 
@@ -896,7 +896,7 @@ class LR35902
 
 public:
   LR35902() = delete;
-  explicit LR35902(Memory<0x10000> &mem) : memory(mem)
+  explicit LR35902(Memory &mem) : memory(mem)
   {
     init_tables();
   }

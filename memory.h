@@ -4,11 +4,9 @@
 #include <istream>
 #include <string.h>
 
-template <std::size_t size>
 class Memory
 {
-  static_assert((size % 2)==0, "size must be a multiple of 2");
-
+  const static size_t size = 0x10000;
   uint8_t mem8[size];
 
 public:
@@ -24,52 +22,52 @@ public:
 
   void set8(unsigned int address, uint8_t value)
   {
-    if (address >=0 && address < size)
-    {
-      mem8[address] = value;
-    }
-    else
+    if (address >= size)
     {
       fprintf(stderr, "set8 address = %u\n", address);
       abort();
     }
+
+    mem8[address] = value;
   }
 
   uint8_t get8(unsigned int address)
   {
-    if (address >=0 && address < size)
-      return mem8[address];
-    fprintf(stderr, "get8 address = %u\n", address);
-    abort();
+    if (address >= size)
+    {
+      fprintf(stderr, "get8 address = %u\n", address);
+      abort();
+    }
+
+    return mem8[address];
   }
 
   void set16(unsigned int address, uint16_t value)
   {
-    if (address >=0 && address+1 < size)
-    {
-      uint8_t upper = (value & 0xff00) >> 8;
-      uint8_t lower = (value & 0x00ff);
-      mem8[address] = lower;
-      mem8[address+1] = upper;
-    }
-    else
+    if (address+1 >= size)
     {
       fprintf(stderr, "set16 address = %u\n", address);
       abort();
     }
+
+    uint8_t upper = (value & 0xff00) >> 8;
+    uint8_t lower = (value & 0x00ff);
+    mem8[address] = lower;
+    mem8[address+1] = upper;
   }
 
   uint16_t get16(unsigned int address)
   {
-    if (address >=0 && address+1 < size)
+    if (address+1 >= size)
     {
-      uint8_t lower = mem8[address];
-      uint8_t upper = mem8[address+1];
-      uint16_t value = (upper << 8) | lower;
-      return value;
+      fprintf(stderr, "get16 address = %u\n", address);
+      abort();
     }
-    fprintf(stderr, "get16 address = %u\n", address);
-    abort();
+
+    uint8_t lower = mem8[address];
+    uint8_t upper = mem8[address+1];
+    uint16_t value = (upper << 8) | lower;
+    return value;
   }
 
   void print(unsigned int start, unsigned int range=10)

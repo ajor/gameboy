@@ -10,6 +10,7 @@ add_executable(gb main.cpp gameboy.cpp LR35902.cpp)
 
 target_compile_options(gb PRIVATE "-std=c++11")
 target_compile_options(gb PRIVATE "-Wall")
+target_compile_options(gb PRIVATE "-Wextra")
 #target_compile_options(gb PRIVATE "-pedantic")
 
 find_package(OpenGL REQUIRED)
