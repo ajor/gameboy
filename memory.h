@@ -11,41 +11,41 @@ public:
   Memory() = delete;
   explicit Memory(Cartridge &cartridge) : cart(cartridge) { }
 
-  void set8(unsigned int address, uint8_t value)
+  void set8(uint address, u8 value)
   {
     write_byte(address, value);
   }
 
-  uint8_t get8(unsigned int address)
+  u8 get8(uint address) const
   {
     return read_byte(address);
   }
 
-  void set16(unsigned int address, uint16_t value)
+  void set16(uint address, u16 value)
   {
-    uint8_t upper = (value & 0xff00) >> 8;
-    uint8_t lower = (value & 0x00ff);
+    u8 upper = (value & 0xff00) >> 8;
+    u8 lower = (value & 0x00ff);
     write_byte(address, lower);
     write_byte(address+1, upper);
   }
 
-  uint16_t get16(unsigned int address)
+  u16 get16(uint address) const
   {
-    uint8_t lower = read_byte(address);
-    uint8_t upper = read_byte(address+1);
-    uint16_t value = (upper << 8) | lower;
+    u8 lower = read_byte(address);
+    u8 upper = read_byte(address+1);
+    u16 value = (upper << 8) | lower;
     return value;
   }
 
-  void print(unsigned int start, unsigned int range=10)
+  void print(uint start, uint range=10)
   {
-    for (unsigned int i=start; i<start+range; i++)
+    for (uint i=start; i<start+range; i++)
     {
 //      printf("0x%04X: 0x%02X\n", i, mem8[i]);
     }
   }
 
 private:
-  u8 read_byte(uint address);
+  u8 read_byte(uint address) const;
   void write_byte(uint address, u8 value);
 };

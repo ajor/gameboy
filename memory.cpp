@@ -2,7 +2,7 @@
 #include "cartridge.h"
 #include <assert.h>
 
-u8 Memory::read_byte(uint address)
+u8 Memory::read_byte(uint address) const
 {
   if (address < 0x4000)
   {
