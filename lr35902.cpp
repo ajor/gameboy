@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "LR35902.h"
+#include "lr35902.h"
 #include "memory.h"
 
 LR35902::InstrFunc LR35902::optable[LR35902::table_size];

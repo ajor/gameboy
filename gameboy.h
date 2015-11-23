@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LR35902.h"
+#include "lr35902.h"
 #include "memory.h"
 
 class Gameboy
