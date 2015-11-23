@@ -1,19 +1,15 @@
 #pragma once
 
-#include <istream>
-#include <string.h>
 #include "types.h"
+#include "cartridge.h"
 
 class Memory
 {
-  const static size_t max_rom_size = 0x400000;
-  u8 rom[max_rom_size];
+  Cartridge &cart;
 
 public:
-  void load_rom(std::istream& src)
-  {
-    src.read(reinterpret_cast<char *>(&rom), max_rom_size);
-  }
+  Memory() = delete;
+  explicit Memory(Cartridge &cartridge) : cart(cartridge) { }
 
   void set8(unsigned int address, uint8_t value)
   {

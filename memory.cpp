@@ -1,4 +1,5 @@
 #include "memory.h"
+#include "cartridge.h"
 #include <assert.h>
 
 u8 Memory::read_byte(uint address)
@@ -6,12 +7,12 @@ u8 Memory::read_byte(uint address)
   if (address < 0x4000)
   {
     // ROM bank 0
-    return rom[address];
+    return cart.get_memory_block_0()[address];
   }
   else if (address < 0x8000)
   {
     // Switchable ROM bank (1 - 255)
-    return rom[0x4000 + address]; // TODO make switchable
+    return cart.get_current_memory_block()[address-0x4000];
   }
   else if (address < 0xa000)
   {
