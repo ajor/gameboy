@@ -21,6 +21,7 @@ void LR35902::run()
     uint8_t opcode = memory.get8(reg.pc);
     printf("%04X: %02X - %s\n", reg.pc, opcode, infotable[opcode].str);
     execute(opcode);
+//    reg.f &= 0xf0;
 
     // TODO deal with interrupts here
   }
@@ -97,12 +98,14 @@ void LR35902::STOP()
 {
   // Turn off screen and do nothing until button pressed
   // TODO
+  abort();
 }
 
 void LR35902::HALT()
 {
   // Do nothing until interrupt occurs
   // TODO
+  abort();
 }
 
 void LR35902::DI()
