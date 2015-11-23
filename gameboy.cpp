@@ -11,7 +11,7 @@ void Gameboy::load_rom(char *rom_file)
     abort();
   }
 
-  memory.load(0, 0x8000, rom);
+  memory.load_rom(rom);
 }
 
 void Gameboy::run()
