@@ -62,5 +62,50 @@ void Memory::write_byte(uint address, u8 value)
     // ROM / external RAM
     cart.set8(address, value);
   }
-  // TODO
+  else if (address >= 0x8000 && address < 0xa000)
+  {
+    // VRAM - Video RAM
+    vram[address - 0x8000] = value;
+  }
+  else if (address >= 0xc000 && address < 0xd000)
+  {
+    // WRAM - Work RAM bank 0
+    wram[address - 0xc000] = value;
+  }
+  else if (address >= 0xd000 && address < 0xe000)
+  {
+    // Switchable Work RAM bank (1 - 7)
+    // TODO make switchable
+    wram[address - 0xc000] = value;
+  }
+  else if (address >= 0xe000 && address < 0xfe00)
+  {
+    // ECHO - Mirror of C000 - DDFF
+    wram[address - 0xe000] = value;
+  }
+  else if (address >= 0xfe00 && address < 0xfea0)
+  {
+    // Sprite attribute table
+  }
+  else if (address >= 0xfea0 && address < 0xff00)
+  {
+    // Not usable
+  }
+  else if (address >= 0xff00 && address < 0xff80)
+  {
+    // IO registers
+  }
+  else if (address >= 0xff80 && address < 0xffff)
+  {
+    // HRAM - High RAM
+  }
+  else if (address == 0xffff)
+  {
+    // Interrupt enable register
+  }
+  else
+  {
+    // Should never get here
+    abort();
+  }
 }
