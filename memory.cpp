@@ -1,6 +1,5 @@
 #include "memory.h"
 #include "cartridge.h"
-#include <assert.h>
 
 u8 Memory::read_byte(uint address) const
 {

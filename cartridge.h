@@ -1,6 +1,5 @@
 #pragma once
 
-#include <stddef.h>
 #include <istream>
 #include <memory>
 #include "types.h"

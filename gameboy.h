@@ -2,6 +2,7 @@
 
 #include "lr35902.h"
 #include "memory.h"
+#include "cartridge.h"
 
 class Gameboy
 {

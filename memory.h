@@ -1,7 +1,8 @@
 #pragma once
 
 #include "types.h"
-#include "cartridge.h"
+
+class Cartridge;
 
 class Memory
 {
