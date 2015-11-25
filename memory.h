@@ -6,6 +6,8 @@
 class Memory
 {
   Cartridge &cart;
+  u8 vram[0x2000];
+  u8 wram[0x2000];
 
 public:
   Memory() = delete;
