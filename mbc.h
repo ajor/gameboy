@@ -1,12 +1,13 @@
 #pragma once
 
+#include <vector>
 #include "types.h"
 
 class MemoryBankController
 {
 public:
   MemoryBankController() = delete;
-  MemoryBankController(u8 *rom, u8 *ram) : rom(rom), ram(ram) {}
+  MemoryBankController(const std::vector<u8> &rom, std::vector<u8> &ram) : rom(rom), ram(ram) {}
   virtual ~MemoryBankController() {}
 
   virtual u8 get8(uint address) const = 0;
@@ -19,8 +20,8 @@ public:
   };
 
 protected:
-  u8 *rom;
-  u8 *ram;
+  const std::vector<u8> &rom;
+  std::vector<u8> &ram;
   uint active_rom_bank = 1;
   uint active_ram_bank = 0;
   bool ram_enabled = false;
@@ -30,8 +31,7 @@ protected:
 class MBC1 final : public MemoryBankController
 {
 public:
-  //using MemoryBankController::MemoryBankController;
-  MBC1(u8 *rom, u8 *ram) : MemoryBankController(rom, ram) {}
+  using MemoryBankController::MemoryBankController;
 
   u8 get8(uint address) const override;
   void set8(uint address, u8 value) override;
