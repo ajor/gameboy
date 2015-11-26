@@ -11,23 +11,23 @@ u8 Memory::read_byte(uint address) const
   else if (address >= 0x8000 && address < 0xa000)
   {
     // VRAM - Video RAM
-    return vram[address - 0x8000];
+    return vram.at(address - 0x8000);
   }
   else if (address >= 0xc000 && address < 0xd000)
   {
     // WRAM - Work RAM bank 0
-    return wram[address - 0xc000];
+    return wram.at(address - 0xc000);
   }
   else if (address >= 0xd000 && address < 0xe000)
   {
     // Switchable Work RAM bank (1 - 7)
     // TODO make switchable
-    return wram[address - 0xc000];
+    return wram.at(address - 0xc000);
   }
   else if (address >= 0xe000 && address < 0xfe00)
   {
     // ECHO - Mirror of C000 - DDFF
-    return wram[address - 0xe000];
+    return wram.at(address - 0xe000);
   }
   else if (address >= 0xfe00 && address < 0xfea0)
   {
@@ -64,23 +64,23 @@ void Memory::write_byte(uint address, u8 value)
   else if (address >= 0x8000 && address < 0xa000)
   {
     // VRAM - Video RAM
-    vram[address - 0x8000] = value;
+    vram.at(address - 0x8000) = value;
   }
   else if (address >= 0xc000 && address < 0xd000)
   {
     // WRAM - Work RAM bank 0
-    wram[address - 0xc000] = value;
+    wram.at(address - 0xc000) = value;
   }
   else if (address >= 0xd000 && address < 0xe000)
   {
     // Switchable Work RAM bank (1 - 7)
     // TODO make switchable
-    wram[address - 0xc000] = value;
+    wram.at(address - 0xc000) = value;
   }
   else if (address >= 0xe000 && address < 0xfe00)
   {
     // ECHO - Mirror of C000 - DDFF
-    wram[address - 0xe000] = value;
+    wram.at(address - 0xe000) = value;
   }
   else if (address >= 0xfe00 && address < 0xfea0)
   {
