@@ -36,10 +36,12 @@ u8 Memory::read_byte(uint address) const
   else if (address >= 0xfea0 && address < 0xff00)
   {
     // Not usable
+    abort();
   }
   else if (address >= 0xff00 && address < 0xff80)
   {
     // IO registers
+    return io.at(address - 0xff00);
   }
   else if (address >= 0xff80 && address < 0xffff)
   {
@@ -91,10 +93,12 @@ void Memory::write_byte(uint address, u8 value)
   else if (address >= 0xfea0 && address < 0xff00)
   {
     // Not usable
+    abort();
   }
   else if (address >= 0xff00 && address < 0xff80)
   {
     // IO registers
+    io.at(address - 0xff00) = value;
   }
   else if (address >= 0xff80 && address < 0xffff)
   {
