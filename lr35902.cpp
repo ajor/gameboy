@@ -23,8 +23,8 @@ void LR35902::run()
     printf("%04X: %02X - %s\n", reg.pc, opcode, infotable[opcode].str);
     execute(opcode);
 //    reg.f &= 0xf0;
-
-    // TODO deal with interrupts here
+    // TODO check cycle count
+    handle_interrupts();
   }
 }
 
@@ -50,6 +50,51 @@ void LR35902::execute_cb()
   (this->*instr)();
 
   // TODO count cycles here too
+}
+
+void LR35902::handle_interrupts()
+{
+  if (interrupt_master_enable)
+  {
+    if (get_interrupt_enable(0) && get_interrupt_flag(0))
+    {
+      // V-Blank
+      clear_interrupt_flag(0);
+      call_interrupt_handler(0x40);
+    }
+    else if (get_interrupt_enable(1) && get_interrupt_flag(1))
+    {
+      // LCD STAT
+      clear_interrupt_flag(1);
+      call_interrupt_handler(0x48);
+    }
+    else if (get_interrupt_enable(2) && get_interrupt_flag(2))
+    {
+      // Timer
+      clear_interrupt_flag(2);
+      call_interrupt_handler(0x50);
+    }
+    else if (get_interrupt_enable(3) && get_interrupt_flag(3))
+    {
+      // Serial
+      clear_interrupt_flag(3);
+      call_interrupt_handler(0x58);
+    }
+    else if (get_interrupt_enable(4) && get_interrupt_flag(4))
+    {
+      // Joypad
+      clear_interrupt_flag(4);
+      call_interrupt_handler(0x60);
+    }
+  }
+}
+
+void LR35902::call_interrupt_handler(uint address)
+{
+  interrupt_master_enable = false;
+  reg.sp -= 2;
+  memory.set16(reg.sp, reg.pc);
+  reg.pc = address;
 }
 
 void LR35902::init_tables()
@@ -112,13 +157,13 @@ void LR35902::HALT()
 void LR35902::DI()
 {
   // TODO don't disable interrupts immediately
-  interrupts_enabled = false;
+  interrupt_master_enable = false;
 }
 
 void LR35902::EI()
 {
   // TODO don't enable interrupts immediately
-  interrupts_enabled = true;
+  interrupt_master_enable = true;
 }
 
 void LR35902::LD_a_n()
@@ -1204,7 +1249,7 @@ void LR35902::RET()
 void LR35902::RETI()
 {
   RET();
-  interrupts_enabled = true;
+  interrupt_master_enable = true;
 }
 
 void LR35902::RET_NZ()

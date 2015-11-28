@@ -54,9 +54,20 @@ class LR35902
   uint get_flag_h() const { return (reg.f >> 5)&1; }
   uint get_flag_c() const { return (reg.f >> 4)&1; }
 
-  bool interrupts_enabled = true;
+  bool interrupt_master_enable = true;
+  bool get_interrupt_enable(uint bit) const { return memory.get8(0xffff) & (1 << bit); };
+  bool get_interrupt_flag(uint bit) const   { return memory.get8(0xff0f) & (1 << bit); };
+  void clear_interrupt_flag(uint bit) {
+    u8 IF = memory.get8(0xff0f);
+    memory.set8(0xff0f, IF & ~(1<<bit));
+  };
 
   Memory &memory;
+
+  void execute(u8 opcode);
+  void execute_cb();
+  void handle_interrupts();
+  void call_interrupt_handler(uint address);
 
   typedef void (LR35902::*InstrFunc)();
 
@@ -262,8 +273,6 @@ class LR35902
   void RET_C();
 
   template <u8 n> void RST();
-
-  void execute_cb();
 
   template <u8 LR35902::Reg::*R> void RLC();
   template <u8 LR35902::Reg::*R> void RL();
@@ -891,8 +900,6 @@ class LR35902
   static OpInfo infotable_cb[table_size];
 
   void init_tables();
-
-  void execute(u8 opcode);
 
 public:
   LR35902() = delete;
