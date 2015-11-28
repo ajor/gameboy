@@ -49,6 +49,7 @@ u8 Memory::read_byte(uint address) const
   else if (address == 0xffff)
   {
     // Interrupt enable register
+    return interrupt_enable;
   }
 
   // Should never get here
@@ -103,6 +104,7 @@ void Memory::write_byte(uint address, u8 value)
   else if (address == 0xffff)
   {
     // Interrupt enable register
+    interrupt_enable = value;
   }
   else
   {
