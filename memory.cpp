@@ -44,6 +44,7 @@ u8 Memory::read_byte(uint address) const
   else if (address >= 0xff80 && address < 0xffff)
   {
     // HRAM - High RAM
+    return hram.at(address - 0xff80);
   }
   else if (address == 0xffff)
   {
@@ -97,6 +98,7 @@ void Memory::write_byte(uint address, u8 value)
   else if (address >= 0xff80 && address < 0xffff)
   {
     // HRAM - High RAM
+    hram.at(address - 0xff80) = value;
   }
   else if (address == 0xffff)
   {

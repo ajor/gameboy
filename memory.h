@@ -10,6 +10,7 @@ class Memory
   Cartridge &cart;
   std::vector<u8> vram = std::vector<u8>(0x2000);
   std::vector<u8> wram = std::vector<u8>(0x2000);
+  std::vector<u8> hram = std::vector<u8>(0x7f);
 
 public:
   Memory() = delete;
