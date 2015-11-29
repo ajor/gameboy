@@ -19,20 +19,21 @@ void LR35902::run()
   reg.sp = 0xfffe;
   while (true)
   {
-    uint8_t opcode = memory.get8(reg.pc);
-    if (debug)
-    {
-      printf("%04X: %02X - %s\n", reg.pc, opcode, infotable[opcode].str);
-    }
-    execute(opcode);
+    execute();
 //    reg.f &= 0xf0;
     // TODO check cycle count
     handle_interrupts();
   }
 }
 
-void LR35902::execute(uint8_t opcode)
+void LR35902::execute()
 {
+  u8 opcode = memory.get8(reg.pc);
+  if (debug)
+  {
+    printf("%04X: %02X - %s\n", reg.pc, opcode, infotable[opcode].str);
+  }
+
   OpInfo info = infotable[opcode];
   reg.pc += info.length;
 
@@ -44,7 +45,11 @@ void LR35902::execute(uint8_t opcode)
 
 void LR35902::execute_cb()
 {
-  uint8_t opcode = memory.get8(reg.pc + 1);
+  u8 opcode = memory.get8(reg.pc + 1);
+  if (debug)
+  {
+    printf("%04X: %02X - %s\n", reg.pc, opcode, infotable_cb[opcode].str);
+  }
 
   OpInfo info = infotable_cb[opcode];
   reg.pc += info.length;

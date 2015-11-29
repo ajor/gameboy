@@ -64,7 +64,7 @@ class LR35902
 
   Memory &memory;
 
-  void execute(u8 opcode);
+  void execute();
   void execute_cb();
   void handle_interrupts();
   void call_interrupt_handler(uint address);
