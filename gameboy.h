@@ -16,4 +16,5 @@ public:
   void load_rom(char *rom_file);
   void run();
   void reset();
+  void set_debug(bool debug);
 };

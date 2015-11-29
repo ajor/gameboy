@@ -18,3 +18,8 @@ void Gameboy::run()
 {
   cpu.run();
 }
+
+void Gameboy::set_debug(bool debug)
+{
+  cpu.debug = debug;
+}

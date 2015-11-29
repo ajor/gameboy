@@ -909,4 +909,6 @@ public:
   }
 
   void run();
+
+  bool debug = false;
 };

@@ -20,7 +20,10 @@ void LR35902::run()
   while (true)
   {
     uint8_t opcode = memory.get8(reg.pc);
-    printf("%04X: %02X - %s\n", reg.pc, opcode, infotable[opcode].str);
+    if (debug)
+    {
+      printf("%04X: %02X - %s\n", reg.pc, opcode, infotable[opcode].str);
+    }
     execute(opcode);
 //    reg.f &= 0xf0;
     // TODO check cycle count
