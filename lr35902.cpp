@@ -19,7 +19,10 @@ void LR35902::run()
   reg.sp = 0xfffe;
   while (true)
   {
-    execute();
+    if (!stopped && !halted)
+    {
+      execute();
+    }
 //    reg.f &= 0xf0;
     // TODO check cycle count
     handle_interrupts();
@@ -67,30 +70,36 @@ void LR35902::handle_interrupts()
     if (get_interrupt_enable(0) && get_interrupt_flag(0))
     {
       // V-Blank
+      halted = false;
       clear_interrupt_flag(0);
       call_interrupt_handler(0x40);
     }
     else if (get_interrupt_enable(1) && get_interrupt_flag(1))
     {
       // LCD STAT
+      halted = false;
       clear_interrupt_flag(1);
       call_interrupt_handler(0x48);
     }
     else if (get_interrupt_enable(2) && get_interrupt_flag(2))
     {
       // Timer
+      halted = false;
       clear_interrupt_flag(2);
       call_interrupt_handler(0x50);
     }
     else if (get_interrupt_enable(3) && get_interrupt_flag(3))
     {
       // Serial
+      halted = false;
       clear_interrupt_flag(3);
       call_interrupt_handler(0x58);
     }
     else if (get_interrupt_enable(4) && get_interrupt_flag(4))
     {
       // Joypad
+      halted = false;
+      stopped = false;
       clear_interrupt_flag(4);
       call_interrupt_handler(0x60);
     }
@@ -151,15 +160,13 @@ void LR35902::NOP()
 void LR35902::STOP()
 {
   // Turn off screen and do nothing until button pressed
-  // TODO
-  abort();
+  stopped = true;
 }
 
 void LR35902::HALT()
 {
   // Do nothing until interrupt occurs
-  // TODO
-  abort();
+  halted = true;
 }
 
 void LR35902::DI()

@@ -911,4 +911,6 @@ public:
   void run();
 
   bool debug = false;
+  bool halted = false;
+  bool stopped = false;
 };
