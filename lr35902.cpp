@@ -1128,7 +1128,7 @@ void LR35902::JR_NZ_r8()
   {
     s8 n = memory.get8(reg.pc - 1);
     reg.pc += n;
-    // TODO 4 extra cycles
+    curr_instr_cycles += 4;
   }
 }
 
@@ -1138,7 +1138,7 @@ void LR35902::JR_NC_r8()
   {
     s8 n = memory.get8(reg.pc - 1);
     reg.pc += n;
-    // TODO 4 extra cycles
+    curr_instr_cycles += 4;
   }
 }
 
@@ -1154,7 +1154,7 @@ void LR35902::JR_Z_r8()
   {
     s8 n = memory.get8(reg.pc - 1);
     reg.pc += n;
-    // TODO 4 extra cycles
+    curr_instr_cycles += 4;
   }
 }
 
@@ -1164,7 +1164,7 @@ void LR35902::JR_C_r8()
   {
     s8 n = memory.get8(reg.pc - 1);
     reg.pc += n;
-    // TODO 4 extra cycles
+    curr_instr_cycles += 4;
   }
 }
 
@@ -1174,7 +1174,7 @@ void LR35902::JP_NZ_a16()
   {
     u16 n = memory.get16(reg.pc - 2);
     reg.pc = n;
-    // TODO 4 extra cycles
+    curr_instr_cycles += 4;
   }
 }
 
@@ -1184,7 +1184,7 @@ void LR35902::JP_NC_a16()
   {
     u16 n = memory.get16(reg.pc - 2);
     reg.pc = n;
-    // TODO 4 extra cycles
+    curr_instr_cycles += 4;
   }
 }
 
@@ -1200,7 +1200,7 @@ void LR35902::JP_Z_a16()
   {
     u16 n = memory.get16(reg.pc - 2);
     reg.pc = n;
-    // TODO 4 extra cycles
+    curr_instr_cycles += 4;
   }
 }
 
@@ -1210,7 +1210,7 @@ void LR35902::JP_C_a16()
   {
     u16 n = memory.get16(reg.pc - 2);
     reg.pc = n;
-    // TODO 4 extra cycles
+    curr_instr_cycles += 4;
   }
 }
 
@@ -1233,7 +1233,7 @@ void LR35902::CALL_NZ_a16()
   if (get_flag_z() == false)
   {
     CALL_a16();
-    // TODO 12 extra cycles
+    curr_instr_cycles += 12;
   }
 }
 
@@ -1242,7 +1242,7 @@ void LR35902::CALL_NC_a16()
   if (get_flag_c() == false)
   {
     CALL_a16();
-    // TODO 12 extra cycles
+    curr_instr_cycles += 12;
   }
 }
 
@@ -1251,7 +1251,7 @@ void LR35902::CALL_Z_a16()
   if (get_flag_z() == true)
   {
     CALL_a16();
-    // TODO 12 extra cycles
+    curr_instr_cycles += 12;
   }
 }
 
@@ -1260,7 +1260,7 @@ void LR35902::CALL_C_a16()
   if (get_flag_c() == true)
   {
     CALL_a16();
-    // TODO 12 extra cycles
+    curr_instr_cycles += 12;
   }
 }
 
@@ -1283,7 +1283,7 @@ void LR35902::RET_NZ()
   if (get_flag_z() == false)
   {
     RET();
-    // TODO 12 extra cycles
+    curr_instr_cycles += 12;
   }
 }
 
@@ -1292,7 +1292,7 @@ void LR35902::RET_NC()
   if (get_flag_c() == false)
   {
     RET();
-    // TODO 12 extra cycles
+    curr_instr_cycles += 12;
   }
 }
 
@@ -1301,7 +1301,7 @@ void LR35902::RET_Z()
   if (get_flag_z() == true)
   {
     RET();
-    // TODO 12 extra cycles
+    curr_instr_cycles += 12;
   }
 }
 
@@ -1310,7 +1310,7 @@ void LR35902::RET_C()
   if (get_flag_c() == true)
   {
     RET();
-    // TODO 12 extra cycles
+    curr_instr_cycles += 12;
   }
 }
 
