@@ -6,7 +6,7 @@ if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 project(Gameboy)
-add_executable(gb main.cpp gameboy.cpp lr35902.cpp memory.cpp mbc.cpp)
+add_executable(gb main.cpp gameboy.cpp lr35902.cpp memory.cpp mbc.cpp timer.cpp)
 
 target_compile_options(gb PRIVATE "-std=c++11")
 target_compile_options(gb PRIVATE "-Wall")

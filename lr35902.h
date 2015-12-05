@@ -2,6 +2,7 @@
 
 #include "types.h"
 #include "memory.h"
+#include "timer.h"
 
 class LR35902
 {
@@ -63,6 +64,9 @@ class LR35902
   };
 
   Memory &memory;
+  Timer timer;
+
+  uint curr_instr_cycles;
 
   void execute();
   void execute_cb();
@@ -903,7 +907,7 @@ class LR35902
 
 public:
   LR35902() = delete;
-  explicit LR35902(Memory &mem) : memory(mem)
+  explicit LR35902(Memory &mem) : memory(mem), timer(*this, mem)
   {
     init_tables();
   }
@@ -913,4 +917,18 @@ public:
   bool debug = false;
   bool halted = false;
   bool stopped = false;
+
+  struct Interrupt
+  {
+    enum Type
+    {
+      VBLANK = 0,
+      LCD    = 1,
+      TIMER  = 2,
+      SERIAL = 3,
+      JOYPAD = 4
+    };
+  };
+
+  void raise_interrupt(Interrupt::Type interrupt);
 };

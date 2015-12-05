@@ -23,8 +23,8 @@ void LR35902::run()
     {
       execute();
     }
-//    reg.f &= 0xf0;
-    // TODO check cycle count
+    reg.f &= 0xf0;
+    timer.update(curr_instr_cycles);
     handle_interrupts();
   }
 }
@@ -39,11 +39,10 @@ void LR35902::execute()
 
   OpInfo info = infotable[opcode];
   reg.pc += info.length;
+  curr_instr_cycles = info.cycles;
 
   InstrFunc instr = optable[opcode];
   (this->*instr)();
-
-  // TODO count cycles here too
 }
 
 void LR35902::execute_cb()
@@ -56,11 +55,10 @@ void LR35902::execute_cb()
 
   OpInfo info = infotable_cb[opcode];
   reg.pc += info.length;
+  curr_instr_cycles = info.cycles;
 
   InstrFunc instr = optable_cb[opcode];
   (this->*instr)();
-
-  // TODO count cycles here too
 }
 
 void LR35902::handle_interrupts()
@@ -114,6 +112,13 @@ void LR35902::call_interrupt_handler(uint address)
   reg.pc = address;
 }
 
+void LR35902::raise_interrupt(Interrupt::Type interrupt)
+{
+  u8 IF = memory.get8(Memory::IO::IF);
+  IF |= 1 << interrupt;
+  memory.set8(Memory::IO::IF, IF);
+}
+
 void LR35902::init_tables()
 {
   static bool initialised = false;
@@ -160,13 +165,19 @@ void LR35902::NOP()
 void LR35902::STOP()
 {
   // Turn off screen and do nothing until button pressed
-  stopped = true;
+  if (interrupt_master_enable)
+  {
+    stopped = true;
+  }
 }
 
 void LR35902::HALT()
 {
   // Do nothing until interrupt occurs
-  halted = true;
+  if (interrupt_master_enable)
+  {
+    halted = true;
+  }
 }
 
 void LR35902::DI()

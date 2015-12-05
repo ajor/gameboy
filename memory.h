@@ -52,6 +52,19 @@ public:
     }
   }
 
+  struct IO
+  {
+    enum Address
+    {
+      DIV = 0xff04,     // Divider register (R/W)
+      TIMA = 0xff05,    // Timer counter (R/W)
+      TMA = 0xff06,     // Timer Modulo (R/W)
+      TAC = 0xff07,     // Timer Control (R/W)
+
+      IF = 0xff0f,      // Interrupt Flag
+    };
+  };
+
 private:
   u8 read_byte(uint address) const;
   void write_byte(uint address, u8 value);
