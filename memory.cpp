@@ -98,7 +98,14 @@ void Memory::write_byte(uint address, u8 value)
   else if (address >= 0xff00 && address < 0xff80)
   {
     // IO registers
-    io.at(address - 0xff00) = value;
+    if (address == IO::DIV)
+    {
+      value = 0;
+    }
+    else
+    {
+      io.at(address - 0xff00) = value;
+    }
   }
   else if (address >= 0xff80 && address < 0xffff)
   {
@@ -115,4 +122,9 @@ void Memory::write_byte(uint address, u8 value)
     // Should never get here
     abort();
   }
+}
+
+void Memory::direct_io_write8(uint address, u8 value)
+{
+  io.at(address - 0xff00) = value;
 }

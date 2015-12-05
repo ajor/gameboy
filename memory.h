@@ -44,6 +44,10 @@ public:
     return value;
   }
 
+  // Used to directly set the memory at a given address
+  // without value being manipulated first
+  void direct_io_write8(uint address, u8 value);
+
   void print(uint start, uint range=10)
   {
     for (uint i=start; i<start+range; i++)
