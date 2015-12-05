@@ -119,6 +119,22 @@ void LR35902::raise_interrupt(Interrupt::Type interrupt)
   memory.set8(Memory::IO::IF, IF);
 }
 
+bool LR35902::get_interrupt_enable(uint bit) const
+{
+  return memory.get8(Memory::IO::IE) & (1 << bit);
+}
+
+bool LR35902::get_interrupt_flag(uint bit) const
+{
+  return memory.get8(Memory::IO::IF) & (1 << bit);
+}
+
+void LR35902::clear_interrupt_flag(uint bit)
+{
+  u8 IF = memory.get8(Memory::IO::IF);
+  memory.set8(Memory::IO::IF, IF & ~(1<<bit));
+}
+
 void LR35902::init_tables()
 {
   static bool initialised = false;

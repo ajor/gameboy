@@ -66,6 +66,7 @@ public:
       TAC = 0xff07,     // Timer Control (R/W)
 
       IF = 0xff0f,      // Interrupt Flag
+      IE = 0xffff,      // Interrupt Enable
     };
   };
 

@@ -56,12 +56,9 @@ class LR35902
   uint get_flag_c() const { return (reg.f >> 4)&1; }
 
   bool interrupt_master_enable = true;
-  bool get_interrupt_enable(uint bit) const { return memory.get8(0xffff) & (1 << bit); };
-  bool get_interrupt_flag(uint bit) const   { return memory.get8(0xff0f) & (1 << bit); };
-  void clear_interrupt_flag(uint bit) {
-    u8 IF = memory.get8(0xff0f);
-    memory.set8(0xff0f, IF & ~(1<<bit));
-  };
+  bool get_interrupt_enable(uint bit) const;
+  bool get_interrupt_flag(uint bit) const;
+  void clear_interrupt_flag(uint bit);
 
   Memory &memory;
   Timer timer;
