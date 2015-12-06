@@ -5,6 +5,8 @@
 
 static char *name;
 
+void render_loop(Gameboy &gb);
+
 void usage()
 {
   printf("Usage: %s [options] rom\n", name);
@@ -44,6 +46,8 @@ int main(int argc, char *argv[])
 
   char *rom = argv[optind];
   gb.load_rom(rom);
-  gb.run();
+
+  render_loop(gb);
+
   return 0;
 }

@@ -16,7 +16,8 @@ public:
   Gameboy() : cpu(memory), memory(cart), display(cpu, memory) { }
 
   void load_rom(char *rom_file);
-  void run();
+  void step();
   void reset();
   void set_debug(bool debug);
+  const Display::Colour *get_framebuffer() const { return display.get_framebuffer(); }
 };

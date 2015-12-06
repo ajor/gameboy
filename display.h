@@ -7,18 +7,26 @@ class Memory;
 
 class Display
 {
-  LR35902 &cpu;
-  Memory &memory;
+public:
+  Display() = delete;
+  explicit Display(LR35902 &lr35902, Memory &mem) : cpu(lr35902), memory(mem) { }
+
+  static const uint width  = 160;
+  static const uint height = 144;
 
   struct Colour
   {
     u8 r, g, b;
   };
 
-  static const uint width  = 160;
-  static const uint height = 144;
+  void update(uint cycles);
+  const Colour *get_framebuffer() const { return &framebuffer[0][0]; }
 
-  Colour screen_buffer[height][width];
+private:
+  LR35902 &cpu;
+  Memory &memory;
+
+  Colour framebuffer[height][width];
 
   static const uint cycles_per_scanline = 456;
 
@@ -26,10 +34,4 @@ class Display
   int scanline_counter = 456;
 
   void draw();
-
-public:
-  Display() = delete;
-  explicit Display(LR35902 &lr35902, Memory &mem) : cpu(lr35902), memory(mem) { }
-
-  void update(uint cycles);
 };

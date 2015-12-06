@@ -31,7 +31,7 @@ void Display::draw()
   {
     for (uint x=0; x<width; x++)
     {
-      screen_buffer[y][x] = {0xff, 0, 0};
+      framebuffer[y][x] = {0xff, (u8)y, (u8)x};
     }
   }
 }

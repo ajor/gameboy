@@ -14,14 +14,11 @@ void Gameboy::load_rom(char *rom_file)
   cart.load_rom(rom);
 }
 
-void Gameboy::run()
+void Gameboy::step()
 {
-  while (true)
-  {
-    uint cycles = cpu.step();
-    display.update(cycles);
-    cpu.handle_interrupts();
-  }
+  uint cycles = cpu.step();
+  display.update(cycles);
+  cpu.handle_interrupts();
 }
 
 void Gameboy::set_debug(bool debug)
