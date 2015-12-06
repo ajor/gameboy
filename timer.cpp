@@ -50,7 +50,7 @@ void Timer::update_divider(uint cycles)
   }
 }
 
-bool Timer::timer_enabled()
+bool Timer::timer_enabled() const
 {
   u8 TAC = memory.get8(Memory::IO::TAC);
   return TAC & 0x4;

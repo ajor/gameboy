@@ -22,7 +22,7 @@ class Timer
   bool interrupt_pending = false;
 
   void update_divider(uint cycles);
-  bool timer_enabled();
+  bool timer_enabled() const;
   void update_clock_freq();
 
 public:

@@ -25,6 +25,8 @@ class Display
   // Numer of cycles remaining until we move on to the next scanline
   int scanline_counter = 456;
 
+  void draw();
+
 public:
   Display() = delete;
   explicit Display(LR35902 &lr35902, Memory &mem) : cpu(lr35902), memory(mem) { }
