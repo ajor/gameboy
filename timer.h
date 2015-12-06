@@ -10,8 +10,8 @@ class Timer
   LR35902 &cpu;
   Memory &memory;
 
-  const uint clock_speed = 0x400000; // 4 MHz
-  const uint divider_cycles_per_tick = clock_speed / 0x4000; // 16 kHz
+  static const uint clock_speed = 0x400000; // 4 MHz
+  static const uint divider_cycles_per_tick = clock_speed / 0x4000; // 16 kHz
   uint cycles_per_tick = 1024;
 
   // Number of cycles remaining until we increment the timer

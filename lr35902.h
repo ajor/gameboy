@@ -1,8 +1,9 @@
 #pragma once
 
 #include "types.h"
-#include "memory.h"
 #include "timer.h"
+
+class Memory;
 
 class LR35902
 {
@@ -67,7 +68,6 @@ class LR35902
 
   void execute();
   void execute_cb();
-  void handle_interrupts();
   void call_interrupt_handler(uint address);
 
   typedef void (LR35902::*InstrFunc)();
@@ -907,9 +907,11 @@ public:
   explicit LR35902(Memory &mem) : memory(mem), timer(*this, mem)
   {
     init_tables();
+    reg.pc = 0x100;
+    reg.sp = 0xfffe;
   }
 
-  void run();
+  uint step();
 
   bool debug = false;
   bool halted = false;
@@ -928,4 +930,5 @@ public:
   };
 
   void raise_interrupt(Interrupt::Type interrupt);
+  void handle_interrupts();
 };

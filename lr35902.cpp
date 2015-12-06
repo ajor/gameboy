@@ -13,20 +13,18 @@ constexpr LR35902::OpInfo LR35902::unknown_info;
 constexpr LR35902::Instruction LR35902::implemented_instruction_table[];
 constexpr LR35902::Instruction LR35902::implemented_instruction_table_cb[];
 
-void LR35902::run()
+uint LR35902::step()
 {
-  reg.pc = 0x100;
-  reg.sp = 0xfffe;
-  while (true)
-  {
     if (!stopped && !halted)
     {
       execute();
+      // curr_instr_cycles when halted?
+      reg.f &= 0xf0;
+      timer.update(curr_instr_cycles);
+
+      return curr_instr_cycles;
     }
-    reg.f &= 0xf0;
-    timer.update(curr_instr_cycles);
-    handle_interrupts();
-  }
+    return 4; // 4 cycles when halted? - just made this up
 }
 
 void LR35902::execute()

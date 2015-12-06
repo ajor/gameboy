@@ -1,5 +1,6 @@
 #include "timer.h"
 #include "lr35902.h"
+#include "memory.h"
 
 void Timer::update(uint cycles)
 {

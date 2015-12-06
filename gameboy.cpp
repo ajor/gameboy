@@ -16,7 +16,11 @@ void Gameboy::load_rom(char *rom_file)
 
 void Gameboy::run()
 {
-  cpu.run();
+  while (true)
+  {
+    uint cycles = cpu.step();
+    cpu.handle_interrupts();
+  }
 }
 
 void Gameboy::set_debug(bool debug)
