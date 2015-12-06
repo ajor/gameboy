@@ -7,6 +7,8 @@ void Timer::update(uint cycles)
   update_divider(cycles);
 
   // Should this be here, or updated when TAC is written to in Memory?
+  // Only update the frequency when counter reaches 0 / set counter to zero
+  // when we update the frequency?
   update_clock_freq();
 
   if (interrupt_pending)

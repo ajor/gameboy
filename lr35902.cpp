@@ -4,6 +4,7 @@
 
 #include "lr35902.h"
 #include "memory.h"
+#include "display.h"
 
 LR35902::InstrFunc LR35902::optable[LR35902::table_size];
 LR35902::OpInfo LR35902::infotable[LR35902::table_size];

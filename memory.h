@@ -60,11 +60,27 @@ public:
   {
     enum Address
     {
-      DIV = 0xff04,     // Divider register (R/W)
-      TIMA = 0xff05,    // Timer counter (R/W)
-      TMA = 0xff06,     // Timer Modulo (R/W)
-      TAC = 0xff07,     // Timer Control (R/W)
+      // Timer
+      DIV = 0xff04,     // Divider register
+      TIMA = 0xff05,    // Timer counter
+      TMA = 0xff06,     // Timer Modulo
+      TAC = 0xff07,     // Timer Control
 
+      // Display
+      LCDC = 0xff40,    // LCD Control
+      STAT = 0xff41,    // LCDC Status
+      SCY  = 0xff42,    // Scroll Y
+      SCX  = 0xff43,    // Scroll X
+      LY   = 0xff44,    // LCDC Y coordinate
+      LYC  = 0xff45,    // LY Compare
+      DMA  = 0xff46,    // Direct Memory Access
+      BGP  = 0xff47,    // Background & Window Palette Data (non GBC)
+      OBP0 = 0xff48,    // Object Palette 0 Data (non GBC)
+      OBP1 = 0xff49,    // Object Palette 1 Data (non GBC)
+      WY   = 0xff4a,    // Window Y position
+      WX   = 0xff4b,    // Window X position
+
+      // Interrupt
       IF = 0xff0f,      // Interrupt Flag
       IE = 0xffff,      // Interrupt Enable
     };

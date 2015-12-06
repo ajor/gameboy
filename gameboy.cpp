@@ -19,6 +19,7 @@ void Gameboy::run()
   while (true)
   {
     uint cycles = cpu.step();
+    display.update(cycles);
     cpu.handle_interrupts();
   }
 }

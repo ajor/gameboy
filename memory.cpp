@@ -98,7 +98,7 @@ void Memory::write_byte(uint address, u8 value)
   else if (address >= 0xff00 && address < 0xff80)
   {
     // IO registers
-    if (address == IO::DIV)
+    if (address == IO::DIV || address == IO::LY)
     {
       value = 0;
     }
