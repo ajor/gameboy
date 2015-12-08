@@ -157,7 +157,7 @@ void render_loop(Gameboy &gb)
   glfwSwapInterval(0);
   while (!glfwWindowShouldClose(window))
   {
-    for (int i=0; i<100; i++)
+    for (int i=0; i<10000; i++)
     {
       gb.step();
     }

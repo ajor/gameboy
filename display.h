@@ -33,5 +33,7 @@ private:
   // Numer of cycles remaining until we move on to the next scanline
   int scanline_counter = 456;
 
-  void draw();
+  void draw_scanline();
+  void draw_tiles();
+  void draw_sprites();
 };

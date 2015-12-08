@@ -71,7 +71,7 @@ public:
       STAT = 0xff41,    // LCDC Status
       SCY  = 0xff42,    // Scroll Y
       SCX  = 0xff43,    // Scroll X
-      LY   = 0xff44,    // LCDC Y coordinate
+      LY   = 0xff44,    // LCDC Y coordinate (scanline)
       LYC  = 0xff45,    // LY Compare
       DMA  = 0xff46,    // Direct Memory Access
       BGP  = 0xff47,    // Background & Window Palette Data (non GBC)
