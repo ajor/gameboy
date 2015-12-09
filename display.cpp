@@ -89,9 +89,11 @@ void Display::draw_tiles()
     uint tile_col = background_x/8;
     uint tile_x = background_x%8;
 
+    // Tile map is 32x32 tiles, with 1 byte per tile
     uint tile_map_addr = base_tile_map_addr + tile_row*32 + tile_col;
     u8 tile_num = memory.get8(tile_map_addr);
 
+    // Tile data is 32x32 tiles, with 16 byte per tile
     uint tile_data_addr;
     if (signed_pattern_numbers)
     {
@@ -102,9 +104,18 @@ void Display::draw_tiles()
       tile_data_addr = base_tile_data_addr + ((u8)tile_num)*16;
     }
 
-    // TODO select the correct data from the tile
-    uint tile_byte = tile_y*2 + tile_x/4;
-    u8 pixel = memory.get8(tile_data_addr + tile_byte);
+    // Tiles are 8x8 pixels, with 2 bits per pixel
+    // i.e 2 bytes per line and 4 pixels per byte
+    //   The 2 bits per pixel aren't adjacent, they are in the
+    //   same position in each of the 2 bytes for their line.
+    uint tile_byte_offset = tile_y*2;
+    u8 tile_byte1 = memory.get16(tile_data_addr + tile_byte_offset);
+    u8 tile_byte2 = memory.get16(tile_data_addr + tile_byte_offset + 1);
+
+    uint bit = 7 - tile_x;
+    u8 pixel = (tile_byte1 >> bit) & 0x1;
+    pixel   |= ((tile_byte2 >> bit) & 0x1) << 1;
+    pixel *= 0xff/3;
 
     framebuffer[LY][screenx] = {pixel, 0, 0};
   }
