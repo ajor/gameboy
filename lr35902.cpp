@@ -762,41 +762,38 @@ void LR35902::DAA()
 {
   // Decimal Adjust register A
 
-  bool carry = false;
-
-  u8 a = reg.a;
+  uint a = reg.a;
   if (get_flag_n())
   {
     // Decimal adjust after subtraction
-    if ((reg.a&0xf) > 0x9 || get_flag_h())
+    if (get_flag_h())
     {
-      a -= 0x6;
+      a = (a - 0x6) & 0xff;
     }
-    if (reg.a > 0x99 || get_flag_c())
+    if (get_flag_c())
     {
       a -= 0x60;
-      carry = true;
     }
   }
   else
   {
     // Decimal adjust after addition
-    if ((reg.a&0xf) > 0x9 || get_flag_h())
+    if (get_flag_h() || (a&0xf) > 0x9)
     {
       a += 0x6;
     }
-    if (reg.a > 0x99 || get_flag_c())
+    if (get_flag_c() || a > 0x9f)
     {
       a += 0x60;
-      carry = true;
     }
-
   }
-  reg.a = a;
+
+  reg.a = a & 0xff;
 
   set_flag_z(reg.a == 0);
   set_flag_h(false);
-  set_flag_c(carry);
+  if ((a&0x100) == 0x100)
+    set_flag_c(true);
 }
 
 void LR35902::SCF()
