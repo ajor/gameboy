@@ -904,7 +904,7 @@ void LR35902::SUB_R_R()
   set_flag_z(((reg.*R1 - reg.*R2)&0xff) == 0);
   set_flag_n(true);
   set_flag_h((reg.*R1&0xf) < (reg.*R2&0xf));
-  set_flag_c(reg.*R1 >= reg.*R2);
+  set_flag_c(reg.*R1 < reg.*R2);
 
   reg.*R1 -= reg.*R2;
 }
@@ -916,7 +916,7 @@ void LR35902::SUB_a_hladdr()
   set_flag_z(((reg.a - hl)&0xff) == 0);
   set_flag_n(true);
   set_flag_h((reg.a&0xf) < (hl&0xf));
-  set_flag_c(reg.a >= hl);
+  set_flag_c(reg.a < hl);
 
   reg.a -= hl;
 }
@@ -928,7 +928,7 @@ void LR35902::SUB_a_d8()
   set_flag_z(((reg.a - n)&0xff) == 0);
   set_flag_n(true);
   set_flag_h((reg.a&0xf) < (n&0xf));
-  set_flag_c(reg.a >= n);
+  set_flag_c(reg.a < n);
 
   reg.a -= n;
 }
@@ -941,7 +941,7 @@ void LR35902::SBC_R_R()
   set_flag_z(((reg.*R1 - sub)&0xff) == 0);
   set_flag_n(true);
   set_flag_h((reg.*R1&0xf) < (sub&0xf));
-  set_flag_c(reg.*R1 >= sub);
+  set_flag_c(reg.*R1 < sub);
 
   reg.*R1 -= sub;
 }
@@ -954,7 +954,7 @@ void LR35902::SBC_a_hladdr()
   set_flag_z(((reg.a - sub)&0xff) == 0);
   set_flag_n(true);
   set_flag_h((reg.a&0xf) < (sub&0xf));
-  set_flag_c(reg.a >= sub);
+  set_flag_c(reg.a < sub);
 
   reg.a -= sub;
 }
@@ -967,7 +967,7 @@ void LR35902::SBC_a_d8()
   set_flag_z(((reg.a - sub)&0xff) == 0);
   set_flag_n(true);
   set_flag_h((reg.a&0xf) < (sub&0xf));
-  set_flag_c(reg.a >= sub);
+  set_flag_c(reg.a < sub);
 
   reg.a -= sub;
 }
@@ -1077,7 +1077,7 @@ void LR35902::CP_R_R()
   set_flag_z(((reg.*R1 - reg.*R2)&0xff) == 0);
   set_flag_n(true);
   set_flag_h((reg.*R1&0xf) < (reg.*R2&0xf));
-  set_flag_c(reg.*R1 >= reg.*R2);
+  set_flag_c(reg.*R1 < reg.*R2);
 }
 
 void LR35902::CP_a_hladdr()
@@ -1087,7 +1087,7 @@ void LR35902::CP_a_hladdr()
   set_flag_z(((reg.a - hl)&0xff) == 0);
   set_flag_n(true);
   set_flag_h((reg.a&0xf) < (hl&0xf));
-  set_flag_c(reg.a >= hl);
+  set_flag_c(reg.a < hl);
 }
 
 void LR35902::CP_a_d8()
@@ -1097,7 +1097,7 @@ void LR35902::CP_a_d8()
   set_flag_z(((reg.a - n)&0xff) == 0);
   set_flag_n(true);
   set_flag_h((reg.a&0xf) < (n&0xf));
-  set_flag_c(reg.a >= n);
+  set_flag_c(reg.a < n);
 }
 
 template <u16 LR35902::Reg::*R>
