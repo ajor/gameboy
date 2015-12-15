@@ -1334,6 +1334,30 @@ template <u8 n> void LR35902::RST()
   reg.pc = n;
 }
 
+void LR35902::RLCA()
+{
+  RLC<&LR35902::Reg::a>();
+  set_flag_z(false);
+}
+
+void LR35902::RLA()
+{
+  RL<&LR35902::Reg::a>();
+  set_flag_z(false);
+}
+
+void LR35902::RRCA()
+{
+  RRC<&LR35902::Reg::a>();
+  set_flag_z(false);
+}
+
+void LR35902::RRA()
+{
+  RR<&LR35902::Reg::a>();
+  set_flag_z(false);
+}
+
 template <u8 LR35902::Reg::*R>
 void LR35902::RLC()
 {

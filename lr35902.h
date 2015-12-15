@@ -275,6 +275,10 @@ class LR35902
 
   template <u8 n> void RST();
 
+  void RLCA();
+  void RLA();
+  void RRCA();
+  void RRA();
   template <u8 LR35902::Reg::*R> void RLC();
   template <u8 LR35902::Reg::*R> void RL();
   template <u8 LR35902::Reg::*R> void RRC();
@@ -585,11 +589,11 @@ class LR35902
     {0xef, &LR35902::RST<0x28>, {16, 1, "RST 28H"}},
     {0xff, &LR35902::RST<0x38>, {16, 1, "RST 38H"}},
 
-    // Rotates - are these ones meant to always clear the Z flag?
-    {0x07, &LR35902::RLC<&LR35902::Reg::a>, {4, 1, "RLCA"}},
-    {0x17, &LR35902::RL<&LR35902::Reg::a>,  {4, 1, "RLA"}},
-    {0x0f, &LR35902::RRC<&LR35902::Reg::a>, {4, 1, "RRCA"}},
-    {0x1f, &LR35902::RR<&LR35902::Reg::a>,  {4, 1, "RRA"}},
+    // Rotates
+    {0x07, &LR35902::RLCA, {4, 1, "RLCA"}},
+    {0x17, &LR35902::RLA,  {4, 1, "RLA"}},
+    {0x0f, &LR35902::RRCA, {4, 1, "RRCA"}},
+    {0x1f, &LR35902::RRA,  {4, 1, "RRA"}},
 
     // Prefix CB
     {0xcb, &LR35902::execute_cb, {0, 0, ""}},
