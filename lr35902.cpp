@@ -862,40 +862,40 @@ void LR35902::ADD_a_d8()
 template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
 void LR35902::ADC_R_R()
 {
-  uint add = reg.*R2 + get_flag_c();
+  uint flag_c = get_flag_c();
 
-  set_flag_z(((reg.*R1 + add)&0xff) == 0);
+  set_flag_z(((reg.*R1 + reg.*R2 + flag_c)&0xff) == 0);
   set_flag_n(false);
-  set_flag_h((reg.*R1&0xf) + (add&0xf) > 0xf);
-  set_flag_c(reg.*R1 + add > 0xff);
+  set_flag_h((reg.*R1&0xf) + (reg.*R2&0xf) + flag_c > 0xf);
+  set_flag_c(reg.*R1 + reg.*R2 + flag_c > 0xff);
 
-  reg.*R1 += add;
+  reg.*R1 += reg.*R2 + flag_c;
 }
 
 void LR35902::ADC_a_hladdr()
 {
   u8 hl = memory.get8(reg.hl);
-  uint add = hl + get_flag_c();
+  uint flag_c = get_flag_c();
 
-  set_flag_z(((reg.a + add)&0xff) == 0);
+  set_flag_z(((reg.a + hl + flag_c)&0xff) == 0);
   set_flag_n(false);
-  set_flag_h((reg.a&0xf) + (add&0xf) > 0xf);
-  set_flag_c(reg.a + add > 0xff);
+  set_flag_h((reg.a&0xf) + (hl&0xf) + flag_c > 0xf);
+  set_flag_c(reg.a + hl + flag_c > 0xff);
 
-  reg.a += add;
+  reg.a += hl + flag_c;
 }
 
 void LR35902::ADC_a_d8()
 {
   u8 n = memory.get8(reg.pc - 1);
-  uint add = n + get_flag_c();
+  uint flag_c = get_flag_c();
 
-  set_flag_z(((reg.a + add)&0xff) == 0);
+  set_flag_z(((reg.a + n + flag_c)&0xff) == 0);
   set_flag_n(false);
-  set_flag_h((reg.a&0xf) + (add&0xf) > 0xf);
-  set_flag_c(reg.a + add > 0xff);
+  set_flag_h((reg.a&0xf) + (n&0xf) + get_flag_c() > 0xf);
+  set_flag_c(reg.a + n + flag_c > 0xff);
 
-  reg.a += add;
+  reg.a += n + flag_c;
 }
 
 template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
@@ -936,40 +936,40 @@ void LR35902::SUB_a_d8()
 template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
 void LR35902::SBC_R_R()
 {
-  uint sub = reg.*R2 + get_flag_c();
+  uint flag_c = get_flag_c();
 
-  set_flag_z(((reg.*R1 - sub)&0xff) == 0);
+  set_flag_z(((reg.*R1 - reg.*R2 - flag_c)&0xff) == 0);
   set_flag_n(true);
-  set_flag_h((reg.*R1&0xf) < (sub&0xf));
-  set_flag_c(reg.*R1 < sub);
+  set_flag_h((reg.*R1&0xf) < (reg.*R2&0xf) + flag_c);
+  set_flag_c(reg.*R1 < reg.*R2 + flag_c);
 
-  reg.*R1 -= sub;
+  reg.*R1 -= reg.*R2 + flag_c;
 }
 
 void LR35902::SBC_a_hladdr()
 {
   u8 hl = memory.get8(reg.hl);
-  uint sub = hl + get_flag_c();
+  uint flag_c = get_flag_c();
 
-  set_flag_z(((reg.a - sub)&0xff) == 0);
+  set_flag_z(((reg.a - hl - flag_c)&0xff) == 0);
   set_flag_n(true);
-  set_flag_h((reg.a&0xf) < (sub&0xf));
-  set_flag_c(reg.a < sub);
+  set_flag_h((reg.a&0xf) < (hl&0xf) + flag_c);
+  set_flag_c(reg.a < hl + flag_c);
 
-  reg.a -= sub;
+  reg.a -= hl + flag_c;
 }
 
 void LR35902::SBC_a_d8()
 {
   u8 n = memory.get8(reg.pc - 1);
-  uint sub = n + get_flag_c();
+  uint flag_c = get_flag_c();
 
-  set_flag_z(((reg.a - sub)&0xff) == 0);
+  set_flag_z(((reg.a - n - flag_c)&0xff) == 0);
   set_flag_n(true);
-  set_flag_h((reg.a&0xf) < (sub&0xf));
-  set_flag_c(reg.a < sub);
+  set_flag_h((reg.a&0xf) < (n&0xf) + flag_c);
+  set_flag_c(reg.a < n + flag_c);
 
-  reg.a -= sub;
+  reg.a -= n + flag_c;
 }
 
 template <u8 LR35902::Reg::*R1, u8 LR35902::Reg::*R2>
