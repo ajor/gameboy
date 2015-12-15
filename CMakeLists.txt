@@ -47,4 +47,4 @@ if (GLFW_FOUND)
   target_link_libraries(gb ${GLFW_LIBRARIES})
 endif()
 
-target_link_libraries(gb pthread)
+target_link_libraries(gb)
