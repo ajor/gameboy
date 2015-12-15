@@ -113,11 +113,17 @@ void Display::draw_tiles()
     u8 tile_byte2 = memory.get16(tile_data_addr + tile_byte_offset + 1);
 
     uint bit = 7 - tile_x;
-    u8 pixel = (tile_byte1 >> bit) & 0x1;
-    pixel   |= ((tile_byte2 >> bit) & 0x1) << 1;
-    pixel *= 0xff/3;
+    uint colour_id = ((tile_byte1 >> bit) & 0x1) |
+                     ((tile_byte2 >> bit) & 0x1) << 1;
 
-    framebuffer[LY][screenx] = {pixel, 0, 0};
+    // Get the colour from the background palette register
+    // 0 = white, 3 = black
+    u8 BGP = memory.get8(Memory::IO::BGP);
+    u8 colour = (BGP >> (colour_id * 2)) & 0x3;
+    colour *= 0xff/3;
+    colour = 0xff - colour;
+
+    framebuffer[LY][screenx] = {colour, colour, colour};
   }
 }
 
