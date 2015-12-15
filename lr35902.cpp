@@ -740,7 +740,13 @@ void LR35902::INC_R()
 
 void LR35902::INC_hladdr()
 {
-  memory.set8(reg.hl, memory.get8(reg.hl)+1);
+  u8 hl = memory.get8(reg.hl);
+
+  set_flag_z(((hl + 1)&0xff) == 0);
+  set_flag_n(false);
+  set_flag_h((hl&0xf) + 1 > 0xf);
+
+  memory.set8(reg.hl, hl+1);
 }
 
 template <u8 LR35902::Reg::*R>
@@ -755,7 +761,13 @@ void LR35902::DEC_R()
 
 void LR35902::DEC_hladdr()
 {
-  memory.set8(reg.hl, memory.get8(reg.hl)-1);
+  u8 hl = memory.get8(reg.hl);
+
+  set_flag_z(((hl - 1)&0xff) == 0);
+  set_flag_n(true);
+  set_flag_h((hl&0xf) == 0);
+
+  memory.set8(reg.hl, hl-1);
 }
 
 void LR35902::DAA()
