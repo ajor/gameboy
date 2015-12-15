@@ -718,7 +718,7 @@ void LR35902::LD_hl_sp_r8()
   set_flag_z(false);
   set_flag_n(false);
   set_flag_h((reg.sp&0xf) + (n&0xf) > 0xf);
-  set_flag_c(reg.sp + n > 0xff);
+  set_flag_c((reg.sp&0xff) + (n&0xff) > 0xff);
 
   reg.hl = reg.sp + n;
 }
@@ -1128,8 +1128,8 @@ void LR35902::ADD_SP_r8()
 
   set_flag_z(false);
   set_flag_n(false);
-  set_flag_h((reg.sp&0xfff) + (n&0xfff) > 0xfff);
-  set_flag_c(reg.sp + n > 0xffff);
+  set_flag_h((reg.sp&0xf) + (n&0xf) > 0xf);
+  set_flag_c((reg.sp&0xff) + (n&0xff) > 0xff);
 
   reg.sp += n;
 }
