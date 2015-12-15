@@ -93,7 +93,7 @@ void Display::draw_tiles()
     uint tile_map_addr = base_tile_map_addr + tile_row*32 + tile_col;
     u8 tile_num = memory.get8(tile_map_addr);
 
-    // Tile data is 32x32 tiles, with 16 byte per tile
+    // Tile data is 32x32 tiles, with 16 bytes per tile
     uint tile_data_addr;
     if (signed_pattern_numbers)
     {
@@ -130,4 +130,84 @@ void Display::draw_tiles()
 void Display::draw_sprites()
 {
   u8 LCDC = memory.get8(Memory::IO::LCDC);
+  u8 LY   = memory.get8(Memory::IO::LY);
+
+  const uint base_sprite_data_addr = 0x8000;
+  const uint base_sprite_attr_addr = 0xfe00;
+
+  bool use_8x16_sprites = (LCDC >> 2) & 0x1;
+  uint sprite_height = use_8x16_sprites ? 16 : 8;
+
+  // Go through all the sprites in reverse order
+  // so sprite 0 is drawn on top of sprite 39 etc.
+  for (int i=39; i>=0; i--)
+  {
+    // Sprite attribute blocks are 4 bytes each
+    uint sprite_attr_addr = base_sprite_attr_addr + i*4;
+
+    u8 y_pos = memory.get8(sprite_attr_addr);
+    u8 x_pos = memory.get8(sprite_attr_addr + 1);
+    u8 pattern_number = memory.get8(sprite_attr_addr + 2);
+    u8 flags = memory.get8(sprite_attr_addr + 3);
+
+    if (!(y_pos <= LY && y_pos + sprite_height > LY))
+    {
+      // This sprite doesn't appear on the current scanline
+      continue;
+    }
+
+    if (use_8x16_sprites)
+    {
+      pattern_number &= 0xfe; // Set LSB to 0
+    }
+
+    bool high_priority = (flags >> 7) & 0x1;
+    bool flip_y = (flags >> 6) & 0x1;
+    bool flip_x = (flags >> 5) & 0x1;
+    uint palette_num = (flags >> 4) & 0x1;
+
+    // Sprites are either 8x8 or 8x16 pixels, with eiter 16 or 32 bytes each
+    uint sprite_size = 2 * sprite_height;
+    uint sprite_data_addr = base_sprite_data_addr + pattern_number*sprite_size;
+
+    uint sprite_y = LY - y_pos;
+    if (flip_y)
+    {
+      sprite_y = sprite_height - sprite_y;
+    }
+
+    // Get the data for this line of the sprite
+    uint sprite_byte_offset = sprite_y*2;
+    u8 sprite_byte1 = memory.get16(sprite_data_addr + sprite_byte_offset);
+    u8 sprite_byte2 = memory.get16(sprite_data_addr + sprite_byte_offset + 1);
+
+    for (uint sprite_x=0; sprite_x<8; sprite_x++)
+    {
+      uint bit = flip_x ? sprite_x : 7 - sprite_x;
+      uint colour_id = ((sprite_byte1 >> bit) & 0x1) |
+                       ((sprite_byte2 >> bit) & 0x1) << 1;
+
+      // Get the colour from the background palette register
+      // 0 = white, 3 = black
+      u8 palette;
+      if (palette_num == 0)
+      {
+        palette = memory.get8(Memory::IO::OBP0);
+      }
+      else
+      {
+        palette = memory.get8(Memory::IO::OBP1);
+      }
+      u8 colour = (palette >> (colour_id * 2)) & 0x3;
+      colour *= 0xff/3;
+      colour = 0xff - colour;
+
+      if (x_pos != 0)
+      {
+        x_pos++;
+        x_pos--;
+      }
+      framebuffer[LY][x_pos+sprite_x] = {colour, colour, colour};
+    }
+  }
 }
