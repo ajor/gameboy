@@ -173,13 +173,18 @@ void Display::draw_window()
     signed_pattern_numbers = true;
   }
 
-  uint tile_row = LY/8;
-  uint tile_y = LY%8;
+  uint window_y = (LY - WY)%256;
+  uint tile_row = window_y/8;
+  uint tile_y = window_y%8;
+
+  // Set WX to left side of window
+  WX -= 7;
 
   for (uint screenx=0; screenx<width; screenx++)
   {
-    uint tile_col = screenx/8;
-    uint tile_x = screenx%8;
+    uint window_x = (screenx - WX)%256;
+    uint tile_col = window_x/8;
+    uint tile_x = window_x%8;
 
     // Tile map is 32x32 tiles, with 1 byte per tile
     uint tile_map_addr = base_window_map_addr + tile_row*32 + tile_col;
