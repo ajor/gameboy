@@ -57,6 +57,8 @@ class LR35902
   uint get_flag_c() const { return (reg.f >> 4)&1; }
 
   bool interrupt_master_enable = true;
+  bool ime_pending;
+  uint ime_delay;
   bool get_interrupt_enable(uint bit) const;
   bool get_interrupt_flag(uint bit) const;
   void clear_interrupt_flag(uint bit);

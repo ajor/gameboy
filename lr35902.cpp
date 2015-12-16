@@ -16,16 +16,25 @@ constexpr LR35902::Instruction LR35902::implemented_instruction_table_cb[];
 
 uint LR35902::step()
 {
-    if (!stopped && !halted)
+  if (ime_delay > 0)
+  {
+    if (ime_delay == 1)
     {
-      execute();
-      // curr_instr_cycles when halted?
-      reg.f &= 0xf0;
-      timer.update(curr_instr_cycles);
-
-      return curr_instr_cycles;
+      interrupt_master_enable = ime_pending;
     }
-    return 4; // 4 cycles when halted? - just made this up
+    ime_delay--;
+  }
+
+  if (!stopped && !halted)
+  {
+    execute();
+    // curr_instr_cycles when halted?
+    reg.f &= 0xf0;
+    timer.update(curr_instr_cycles);
+
+    return curr_instr_cycles;
+  }
+  return 4; // 4 cycles when halted? - just made this up
 }
 
 void LR35902::execute()
@@ -197,14 +206,14 @@ void LR35902::HALT()
 
 void LR35902::DI()
 {
-  // TODO don't disable interrupts immediately
-  interrupt_master_enable = false;
+  ime_pending = false;
+  ime_delay = 2;
 }
 
 void LR35902::EI()
 {
-  // TODO don't enable interrupts immediately
-  interrupt_master_enable = true;
+  ime_pending = true;
+  ime_delay = 2;
 }
 
 void LR35902::LD_a_n()
@@ -1298,8 +1307,8 @@ void LR35902::RET()
 
 void LR35902::RETI()
 {
+  EI();
   RET();
-  interrupt_master_enable = true;
 }
 
 void LR35902::RET_NZ()
