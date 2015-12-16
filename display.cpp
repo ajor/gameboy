@@ -321,8 +321,6 @@ void Display::update_status()
   // TODO don't always reset this
   STAT = 252;
 
-  bool ly_compare = (STAT >> 6) & 0x1;
-
   u8 scanline = memory.get8(Memory::IO::LY);
   MODE::Mode mode;
 
@@ -352,10 +350,24 @@ void Display::update_status()
   }
 
   // Update mode
-  STAT |= 0x3;
-  STAT &= mode;
+  STAT &= ~0x3;
+  STAT |= mode;
 
-  // TODO check ly_compare
+  const u8 LYC = memory.get8(Memory::IO::LYC);
+  if (LYC == scanline)
+  {
+    // Set coincidence flag
+    STAT |= (1<<2);
+    if ((STAT >> 6) & 0x1)
+    {
+      cpu.raise_interrupt(LR35902::Interrupt::LCD);
+    }
+  }
+  else
+  {
+    // Clear coincidence flag
+    STAT &= ~(1<<2);
+  }
 
   memory.set8(Memory::IO::STAT, STAT);
 }
