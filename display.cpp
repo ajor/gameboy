@@ -36,7 +36,11 @@ void Display::draw_scanline()
 
   if (LCDC & (1<<0))
   {
-    draw_tiles();
+    draw_background();
+  }
+  if (LCDC & (1<<5))
+  {
+    draw_window();
   }
   if (LCDC & (1<<1))
   {
@@ -44,13 +48,13 @@ void Display::draw_scanline()
   }
 }
 
-void Display::draw_tiles()
+void Display::draw_background()
 {
   u8 LCDC = memory.get8(Memory::IO::LCDC);
   u8 LY   = memory.get8(Memory::IO::LY);
 
   uint base_tile_map_addr;
-  if (LCDC & (1<<6))
+  if (LCDC & (1<<3))
   {
     // 0x9C00 - 9FFF
     base_tile_map_addr = 0x9C00;
@@ -129,6 +133,94 @@ void Display::draw_tiles()
   }
 }
 
+void Display::draw_window()
+{
+  u8 LCDC = memory.get8(Memory::IO::LCDC);
+  u8 LY   = memory.get8(Memory::IO::LY);
+  u8 WY   = memory.get8(Memory::IO::WY);
+  u8 WX   = memory.get8(Memory::IO::WX);
+
+  if (WY > LY || WX >= 167)
+  {
+    // Window isn't visible / not drawn on this scanline
+    return;
+  }
+
+  uint base_window_map_addr;
+  if (LCDC & (1<<6))
+  {
+    // 0x9C00 - 9FFF
+    base_window_map_addr = 0x9C00;
+  }
+  else
+  {
+    // 0x9800 - 9BFF
+    base_window_map_addr = 0x9800;
+  }
+
+  uint base_tile_data_addr;
+  bool signed_pattern_numbers;
+  if (LCDC & (1<<4))
+  {
+    // 0x8000 - 0x8FFF
+    // Offsets will be unsigned
+    base_tile_data_addr = 0x8000;
+    signed_pattern_numbers = false;
+  }
+  else
+  {
+    // 0x8800 - 0x97FF
+    // Offsets will be signed, set addr to middle of range
+    base_tile_data_addr = 0x9000;
+    signed_pattern_numbers = true;
+  }
+
+  uint tile_row = LY/8;
+  uint tile_y = LY%8;
+
+  for (uint screenx=0; screenx<width; screenx++)
+  {
+    uint tile_col = screenx/8;
+    uint tile_x = screenx%8;
+
+    // Tile map is 32x32 tiles, with 1 byte per tile
+    uint tile_map_addr = base_window_map_addr + tile_row*32 + tile_col;
+    u8 tile_num = memory.get8(tile_map_addr);
+
+    // Tile data is 32x32 tiles, with 16 bytes per tile
+    uint tile_data_addr;
+    if (signed_pattern_numbers)
+    {
+      tile_data_addr = base_tile_data_addr + ((s8)tile_num)*16;
+    }
+    else
+    {
+      tile_data_addr = base_tile_data_addr + ((u8)tile_num)*16;
+    }
+
+    // Tiles are 8x8 pixels, with 2 bits per pixel
+    // i.e 2 bytes per line and 4 pixels per byte
+    //   The 2 bits per pixel aren't adjacent, they are in the
+    //   same position in each of the 2 bytes for their line.
+    uint tile_byte_offset = tile_y*2;
+    u8 tile_byte1 = memory.get16(tile_data_addr + tile_byte_offset);
+    u8 tile_byte2 = memory.get16(tile_data_addr + tile_byte_offset + 1);
+
+    uint bit = 7 - tile_x;
+    uint colour_id = ((tile_byte1 >> bit) & 0x1) |
+                     ((tile_byte2 >> bit) & 0x1) << 1;
+
+    // Get the colour from the background palette register
+    // 0 = white, 3 = black
+    u8 BGP = memory.get8(Memory::IO::BGP);
+    u8 colour = (BGP >> (colour_id * 2)) & 0x3;
+    colour *= 0xff/3;
+    colour = 0xff - colour;
+
+    framebuffer[LY][screenx] = {colour, colour, colour};
+  }
+}
+
 void Display::draw_sprites()
 {
   u8 LCDC = memory.get8(Memory::IO::LCDC);
@@ -152,7 +244,7 @@ void Display::draw_sprites()
     u8 pattern_number = memory.get8(sprite_attr_addr + 2);
     u8 flags = memory.get8(sprite_attr_addr + 3);
 
-    if (!(y_pos <= LY && y_pos + sprite_height > LY))
+    if (y_pos > LY || y_pos + sprite_height <= LY)
     {
       // This sprite doesn't appear on the current scanline
       continue;

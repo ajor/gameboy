@@ -45,7 +45,8 @@ private:
   };
 
   void draw_scanline();
-  void draw_tiles();
+  void draw_background();
+  void draw_window();
   void draw_sprites();
 
   void update_status();
