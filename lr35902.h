@@ -402,8 +402,8 @@ class LR35902
 
     {0xe0, &LR35902::LDH_naddr_a, {12, 2, "LDH (n), A"}},
     {0xf0, &LR35902::LDH_a_naddr, {12, 2, "LDH A, (n)"}},
-    {0xe2, &LR35902::LD_caddr_a,  { 8, 2, "LD (C), A"}},
-    {0xf2, &LR35902::LD_a_caddr,  { 8, 2, "LD A, (C)"}},
+    {0xe2, &LR35902::LD_caddr_a,  { 8, 1, "LD (C), A"}},
+    {0xf2, &LR35902::LD_a_caddr,  { 8, 1, "LD A, (C)"}},
     {0xea, &LR35902::LD_naddr_a,  {16, 3, "LD (n), A"}},
     {0xfa, &LR35902::LD_a_naddr,  {16, 3, "LD A, (n)"}},
 
