@@ -255,7 +255,7 @@ void Display::draw_sprites()
       pattern_number &= 0xfe; // Set LSB to 0
     }
 
-    bool high_priority = (flags >> 7) & 0x1;
+    bool low_priority = (flags >> 7) & 0x1;
     bool flip_y = (flags >> 6) & 0x1;
     bool flip_x = (flags >> 5) & 0x1;
     uint palette_num = (flags >> 4) & 0x1;
@@ -301,7 +301,14 @@ void Display::draw_sprites()
       }
       if (colour != 0) // White is transparent
       {
-        framebuffer[LY][x_pos+sprite_x] = display_palette[colour];
+        // Low priority sprites are only drawn on white backgrounds
+        if (!low_priority ||
+            (framebuffer[LY][x_pos+sprite_x].r == display_palette[0].r &&
+             framebuffer[LY][x_pos+sprite_x].b == display_palette[0].b &&
+             framebuffer[LY][x_pos+sprite_x].g == display_palette[0].g))
+        {
+          framebuffer[LY][x_pos+sprite_x] = display_palette[colour];
+        }
       }
     }
   }
