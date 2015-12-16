@@ -26,6 +26,8 @@ void Display::update(uint cycles)
       cpu.raise_interrupt(LR35902::Interrupt::VBLANK);
     }
   }
+
+  update_status(); // put at beginning?
 }
 
 void Display::draw_scanline()
@@ -210,4 +212,50 @@ void Display::draw_sprites()
       framebuffer[LY][x_pos+sprite_x] = {colour, colour, colour};
     }
   }
+}
+
+void Display::update_status()
+{
+  u8 STAT = memory.get8(Memory::IO::STAT);
+
+  // TODO don't always reset this
+  STAT = 252;
+
+  bool ly_compare = (STAT >> 6) & 0x1;
+
+  u8 scanline = memory.get8(Memory::IO::LY);
+  MODE::Mode mode;
+
+  if (scanline > 144)
+  {
+    mode = MODE::VBLANK;
+  }
+  else if (scanline_counter > cycles_per_scanline - 80)
+  {
+    mode = MODE::OAM;
+  }
+  else if (scanline_counter > cycles_per_scanline - 80 - 172)
+  {
+    mode = MODE::VRAM;
+  }
+  else
+  {
+    mode = MODE::HBLANK;
+  }
+
+  const MODE::Mode current_mode = static_cast<MODE::Mode>(STAT & 0x3);
+  if (current_mode != mode &&
+      mode != MODE::VRAM &&
+      (STAT >> (mode + 3)) & 0x1)
+  {
+    cpu.raise_interrupt(LR35902::Interrupt::LCD);
+  }
+
+  // Update mode
+  STAT |= 0x3;
+  STAT &= mode;
+
+  // TODO check ly_compare
+
+  memory.set8(Memory::IO::STAT, STAT);
 }

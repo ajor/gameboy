@@ -28,12 +28,25 @@ private:
 
   Colour framebuffer[height][width];
 
-  static const uint cycles_per_scanline = 456;
+  static const int cycles_per_scanline = 456;
 
   // Numer of cycles remaining until we move on to the next scanline
   int scanline_counter = 456;
 
+  struct MODE
+  {
+    enum Mode
+    {
+      HBLANK = 0,
+      VBLANK = 1,
+      OAM    = 2,
+      VRAM   = 3,
+    };
+  };
+
   void draw_scanline();
   void draw_tiles();
   void draw_sprites();
+
+  void update_status();
 };
