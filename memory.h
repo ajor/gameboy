@@ -11,6 +11,7 @@ class Memory
   std::vector<u8> vram = std::vector<u8>(0x2000);
   std::vector<u8> wram = std::vector<u8>(0x2000);
   std::vector<u8> hram = std::vector<u8>(0x7f);
+  std::vector<u8> oam  = std::vector<u8>(0xa0);
   std::vector<u8> io   = std::vector<u8>(0x80);
   u8 interrupt_enable;
 
@@ -89,4 +90,5 @@ public:
 private:
   u8 read_byte(uint address) const;
   void write_byte(uint address, u8 value);
+  void dma_transfer(uint address);
 };

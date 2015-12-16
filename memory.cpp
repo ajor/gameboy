@@ -32,6 +32,7 @@ u8 Memory::read_byte(uint address) const
   else if (address >= 0xfe00 && address < 0xfea0)
   {
     // Sprite attribute table
+    return oam.at(address - 0xfe00);
   }
   else if (address >= 0xfea0 && address < 0xff00)
   {
@@ -89,6 +90,7 @@ void Memory::write_byte(uint address, u8 value)
   else if (address >= 0xfe00 && address < 0xfea0)
   {
     // Sprite attribute table
+    oam.at(address - 0xfe00) = value;
   }
   else if (address >= 0xfea0 && address < 0xff00)
   {
@@ -102,10 +104,12 @@ void Memory::write_byte(uint address, u8 value)
     {
       value = 0;
     }
-    else
+    else if (address == IO::DMA)
     {
-      io.at(address - 0xff00) = value;
+      dma_transfer(value);
     }
+
+    io.at(address - 0xff00) = value;
   }
   else if (address >= 0xff80 && address < 0xffff)
   {
@@ -127,4 +131,13 @@ void Memory::write_byte(uint address, u8 value)
 void Memory::direct_io_write8(uint address, u8 value)
 {
   io.at(address - 0xff00) = value;
+}
+
+void Memory::dma_transfer(uint address)
+{
+  address <<= 8;
+  for (uint i=0; i<0xa0; i++)
+  {
+    set8(0xfe00+i, get8(address+i));
+  }
 }
