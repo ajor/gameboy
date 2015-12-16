@@ -126,10 +126,8 @@ void Display::draw_background()
     // 0 = white, 3 = black
     u8 BGP = memory.get8(Memory::IO::BGP);
     u8 colour = (BGP >> (colour_id * 2)) & 0x3;
-    colour *= 0xff/3;
-    colour = 0xff - colour;
 
-    framebuffer[LY][screenx] = {colour, colour, colour};
+    framebuffer[LY][screenx] = display_palette[colour];
   }
 }
 
@@ -214,10 +212,8 @@ void Display::draw_window()
     // 0 = white, 3 = black
     u8 BGP = memory.get8(Memory::IO::BGP);
     u8 colour = (BGP >> (colour_id * 2)) & 0x3;
-    colour *= 0xff/3;
-    colour = 0xff - colour;
 
-    framebuffer[LY][screenx] = {colour, colour, colour};
+    framebuffer[LY][screenx] = display_palette[colour];
   }
 }
 
@@ -243,6 +239,10 @@ void Display::draw_sprites()
     u8 x_pos = memory.get8(sprite_attr_addr + 1);
     u8 pattern_number = memory.get8(sprite_attr_addr + 2);
     u8 flags = memory.get8(sprite_attr_addr + 3);
+
+    // Set x and y coordinates to sprite's top left corner
+    y_pos -= 16;
+    x_pos -= 8;
 
     if (y_pos > LY || y_pos + sprite_height <= LY)
     {
@@ -293,15 +293,16 @@ void Display::draw_sprites()
         palette = memory.get8(Memory::IO::OBP1);
       }
       u8 colour = (palette >> (colour_id * 2)) & 0x3;
-      colour *= 0xff/3;
-      colour = 0xff - colour;
 
       if (x_pos != 0)
       {
         x_pos++;
         x_pos--;
       }
-      framebuffer[LY][x_pos+sprite_x] = {colour, colour, colour};
+      if (colour != 0) // White is transparent
+      {
+        framebuffer[LY][x_pos+sprite_x] = display_palette[colour];
+      }
     }
   }
 }

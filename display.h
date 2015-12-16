@@ -19,6 +19,13 @@ public:
     u8 r, g, b;
   };
 
+  Colour display_palette[4] = {
+                               {0xff, 0xff, 0xff},
+                               {0xaa, 0xaa, 0xaa},
+                               {0x55, 0x55, 0x55},
+                               {0x00, 0x00, 0x00},
+                              };
+
   void update(uint cycles);
   const Colour *get_framebuffer() const { return &framebuffer[0][0]; }
 
