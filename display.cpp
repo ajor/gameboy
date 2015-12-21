@@ -323,9 +323,6 @@ void Display::update_status()
 {
   u8 STAT = memory.get8(Memory::IO::STAT);
 
-  // TODO don't always reset this
-  STAT = 252;
-
   u8 scanline = memory.get8(Memory::IO::LY);
   MODE::Mode mode;
 
