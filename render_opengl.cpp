@@ -8,6 +8,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
+
 void render_loop(Gameboy &gb)
 {
   //
@@ -33,8 +35,8 @@ void render_loop(Gameboy &gb)
     abort();
   }
   glfwMakeContextCurrent(window);
-//  glfwSetWindowUserPointer(window, this);
-//  glfwSetKeyCallback(window, key_callback);
+  glfwSetWindowUserPointer(window, &gb);
+  glfwSetKeyCallback(window, key_callback);
 
   glewExperimental = true;
   if (glewInit() != GLEW_OK) {
@@ -168,5 +170,46 @@ void render_loop(Gameboy &gb)
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glfwSwapBuffers(window);
     glfwPollEvents();
+  }
+}
+
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
+{
+  Gameboy *gb = (Gameboy *)glfwGetWindowUserPointer(window);
+  bool pressed = (action != GLFW_RELEASE);
+  switch (key)
+  {
+    case GLFW_KEY_UP:
+      pressed ? gb->button_pressed(Joypad::Button::UP) :
+                gb->button_released(Joypad::Button::UP);
+      break;
+    case GLFW_KEY_DOWN:
+      pressed ? gb->button_pressed(Joypad::Button::DOWN) :
+                gb->button_released(Joypad::Button::DOWN);
+      break;
+    case GLFW_KEY_LEFT:
+      pressed ? gb->button_pressed(Joypad::Button::LEFT) :
+                gb->button_released(Joypad::Button::LEFT);
+      break;
+    case GLFW_KEY_RIGHT:
+      pressed ? gb->button_pressed(Joypad::Button::RIGHT) :
+                gb->button_released(Joypad::Button::RIGHT);
+      break;
+    case GLFW_KEY_Z:
+      pressed ? gb->button_pressed(Joypad::Button::A) :
+                gb->button_released(Joypad::Button::A);
+      break;
+    case GLFW_KEY_X:
+      pressed ? gb->button_pressed(Joypad::Button::B) :
+                gb->button_released(Joypad::Button::B);
+      break;
+    case GLFW_KEY_ENTER:
+      pressed ? gb->button_pressed(Joypad::Button::START) :
+                gb->button_released(Joypad::Button::START);
+      break;
+    case GLFW_KEY_BACKSPACE:
+      pressed ? gb->button_pressed(Joypad::Button::SELECT) :
+                gb->button_released(Joypad::Button::SELECT);
+      break;
   }
 }

@@ -1,5 +1,6 @@
 #include "memory.h"
 #include "cartridge.h"
+#include "joypad.h"
 
 u8 Memory::read_byte(uint address) const
 {
@@ -107,6 +108,12 @@ void Memory::write_byte(uint address, u8 value)
     else if (address == IO::DMA)
     {
       dma_transfer(value);
+    }
+    else if (address == IO::JOYP)
+    {
+      // First set the control bits, then update the joypad state
+      io.at(IO::JOYP - 0xff00) = value;
+      value = joypad.get_button_state();
     }
 
     io.at(address - 0xff00) = value;

@@ -4,10 +4,13 @@
 #include "types.h"
 
 class Cartridge;
+class Joypad;
 
 class Memory
 {
   Cartridge &cart;
+  Joypad &joypad;
+
   std::vector<u8> vram = std::vector<u8>(0x2000);
   std::vector<u8> wram = std::vector<u8>(0x2000);
   std::vector<u8> hram = std::vector<u8>(0x7f);
@@ -17,7 +20,8 @@ class Memory
 
 public:
   Memory() = delete;
-  explicit Memory(Cartridge &cartridge) : cart(cartridge) { }
+  explicit Memory(Cartridge &cartridge, Joypad &j) : cart(cartridge),
+                                                     joypad(j) { }
 
   void set8(uint address, u8 value)
   {
@@ -61,11 +65,14 @@ public:
   {
     enum Address
     {
+      // Joypad
+      JOYP = 0xff00,    // Joypad
+
       // Timer
-      DIV = 0xff04,     // Divider register
+      DIV  = 0xff04,    // Divider register
       TIMA = 0xff05,    // Timer counter
-      TMA = 0xff06,     // Timer Modulo
-      TAC = 0xff07,     // Timer Control
+      TMA  = 0xff06,    // Timer Modulo
+      TAC  = 0xff07,    // Timer Control
 
       // Display
       LCDC = 0xff40,    // LCD Control
