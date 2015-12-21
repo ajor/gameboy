@@ -13,7 +13,8 @@ void Joypad::button_pressed(Button::Name b)
 {
   buttons[b] = true;
   memory.direct_io_write8(Memory::IO::JOYP, get_button_state());
-  cpu.raise_interrupt(LR35902::Interrupt::JOYPAD);
+
+  /*
   printf("button pressed");
   switch (b)
   {
@@ -45,6 +46,7 @@ void Joypad::button_pressed(Button::Name b)
       printf("error\n");
       throw "sdf";
   }
+  */
 }
 
 void Joypad::button_released(Button::Name b)
@@ -78,6 +80,11 @@ u8 Joypad::get_button_state() const
 
   JOYP = (button_keys << 5) | (direction_keys << 4) |
          (bit3 << 3) | (bit2 << 2) | (bit1 << 1) | bit0;
+
+  if (bit0 || bit1 || bit2 || bit3)
+  {
+    cpu.raise_interrupt(LR35902::Interrupt::JOYPAD);
+  }
 
   // 0 means button is pressed, 1 means not pressed - invert all bits
   return ~JOYP;
