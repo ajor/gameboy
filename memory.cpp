@@ -38,7 +38,7 @@ u8 Memory::read_byte(uint address) const
   else if (address >= 0xfea0 && address < 0xff00)
   {
     // Not usable
-    abort();
+    return 0;
   }
   else if (address >= 0xff00 && address < 0xff80)
   {
@@ -96,7 +96,7 @@ void Memory::write_byte(uint address, u8 value)
   else if (address >= 0xfea0 && address < 0xff00)
   {
     // Not usable
-    abort();
+    return;
   }
   else if (address >= 0xff00 && address < 0xff80)
   {
