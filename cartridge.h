@@ -14,7 +14,7 @@ class Cartridge
   std::unique_ptr<MemoryBankController> mbc;
 
 public:
-  Cartridge() : rom(max_rom_size), ram(0x2000), mbc(new MBC1(rom, ram)) {}
+  Cartridge() : rom(max_rom_size), ram(0x20000), mbc(new MBC1(rom, ram)) { }
 
   void load_rom(std::istream& src)
   {
