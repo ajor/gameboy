@@ -299,20 +299,21 @@ void Display::draw_sprites()
       }
       u8 colour = (palette >> (colour_id * 2)) & 0x3;
 
-      if (x_pos != 0)
+      uint screenx = (x_pos+sprite_x)%256;
+      if (screenx >= width)
       {
-        x_pos++;
-        x_pos--;
+        // Pixel is off screen
+        continue;
       }
       if (colour != 0) // White is transparent
       {
         // Low priority sprites are only drawn on white backgrounds
         if (!low_priority ||
-            (framebuffer[LY][x_pos+sprite_x].r == display_palette[0].r &&
-             framebuffer[LY][x_pos+sprite_x].b == display_palette[0].b &&
-             framebuffer[LY][x_pos+sprite_x].g == display_palette[0].g))
+            (framebuffer[LY][screenx].r == display_palette[0].r &&
+             framebuffer[LY][screenx].b == display_palette[0].b &&
+             framebuffer[LY][screenx].g == display_palette[0].g))
         {
-          framebuffer[LY][x_pos+sprite_x] = display_palette[colour];
+          framebuffer[LY][screenx] = display_palette[colour];
         }
       }
     }
