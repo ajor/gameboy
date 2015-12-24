@@ -13,23 +13,24 @@ public:
   virtual u8 get8(uint address) const = 0;
   virtual void set8(uint address, u8 value) = 0;
 
-  enum class BankingMode
-  {
-    ROM,
-    RAM
-  };
-
 protected:
   const std::vector<u8> &rom;
   std::vector<u8> &ram;
   uint active_rom_bank = 1;
   uint active_ram_bank = 0;
   bool ram_enabled = false;
-  BankingMode banking_mode = BankingMode::ROM;
 };
 
 class MBC1 final : public MemoryBankController
 {
+  enum class BankingMode
+  {
+    ROM,
+    RAM
+  };
+
+  BankingMode banking_mode = BankingMode::ROM;
+
 public:
   using MemoryBankController::MemoryBankController;
 
