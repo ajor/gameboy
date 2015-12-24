@@ -28,7 +28,7 @@ void Cartridge::init_mbc(uint type)
   {
     case 0x00:
       // ROM only
-      // TODO
+      mbc = std::make_unique<NoMBC>(rom, ram);
       break;
     case 0x01: case 0x02: case 0x03:
       // MBC1

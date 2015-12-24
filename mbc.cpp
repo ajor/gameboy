@@ -1,5 +1,31 @@
 #include "mbc.h"
 
+u8 NoMBC::get8(uint address) const
+{
+  if (address < 0x8000)
+  {
+    // ROM
+    return rom.at(address);
+  }
+  else if (address >= 0xa000 && address < 0xc000)
+  {
+    // RAM
+    return ram.at(address - 0xa000);
+  }
+
+  // Should never get here
+  return 0;
+}
+
+void NoMBC::set8(uint address, u8 value)
+{
+  if (address >= 0xa000 && address < 0xc000)
+  {
+    // RAM
+    ram.at(address - 0xa000) = value;
+  }
+}
+
 u8 MBC1::get8(uint address) const
 {
   if (address < 0x4000)

@@ -21,6 +21,15 @@ protected:
   bool ram_enabled = false;
 };
 
+class NoMBC final : public MemoryBankController
+{
+public:
+  using MemoryBankController::MemoryBankController;
+
+  u8 get8(uint address) const override;
+  void set8(uint address, u8 value) override;
+};
+
 class MBC1 final : public MemoryBankController
 {
   enum class BankingMode
