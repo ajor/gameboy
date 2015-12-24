@@ -26,10 +26,45 @@ class MBC1 final : public MemoryBankController
   enum class BankingMode
   {
     ROM,
-    RAM
+    RAM,
   };
 
   BankingMode banking_mode = BankingMode::ROM;
+
+public:
+  using MemoryBankController::MemoryBankController;
+
+  u8 get8(uint address) const override;
+  void set8(uint address, u8 value) override;
+};
+
+class MBC3 final : public MemoryBankController
+{
+  /*
+  struct RTCRegister
+  {
+    enum Reg
+    {
+      S  = 0,  // Seconds
+      M  = 1,  // Minutes
+      H  = 2,  // Hours
+      DL = 3,  // Day (lower 8 bits)
+      DH = 4,  // Day (upper 1 bit), Carry bit, Half flag
+    };
+  };
+  */
+
+  enum class BankingMode
+  {
+    RAM,
+    RTC,
+  };
+
+  BankingMode banking_mode = BankingMode::RAM;
+
+  uint active_rtc;
+  u8 rtc[5];
+  // TODO actually implement a clock
 
 public:
   using MemoryBankController::MemoryBankController;
