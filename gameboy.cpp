@@ -11,7 +11,7 @@ void Gameboy::load_rom(char *rom_file)
     abort();
   }
 
-  cart.load_rom(rom);
+  cart.init_cartridge(rom);
 }
 
 void Gameboy::step()

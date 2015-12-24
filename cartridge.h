@@ -8,18 +8,16 @@
 
 class Cartridge
 {
-  const static size_t max_rom_size = 0x400000; // 4 MB
   std::vector<u8> rom;
   std::vector<u8> ram;
   std::unique_ptr<MemoryBankController> mbc;
 
-public:
-  Cartridge() : rom(max_rom_size), ram(0x20000), mbc(new MBC1(rom, ram)) { }
+  void init_mbc(uint type);
+  void init_rom(uint size_code);
+  void init_ram(uint size_code);
 
-  void load_rom(std::istream& src)
-  {
-    src.read(reinterpret_cast<char *>(rom.data()), max_rom_size);
-  }
+public:
+  void init_cartridge(std::istream& src);
 
   u8 get8(uint address) const
   {
