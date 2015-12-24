@@ -286,6 +286,11 @@ void Display::draw_sprites()
       uint colour_id = ((sprite_byte1 >> bit) & 0x1) |
                        ((sprite_byte2 >> bit) & 0x1) << 1;
 
+      if (colour_id == 0) // Colour 0 is transparent
+      {
+        continue;
+      }
+
       // Get the colour from the background palette register
       // 0 = white, 3 = black
       u8 palette;
@@ -305,16 +310,15 @@ void Display::draw_sprites()
         // Pixel is off screen
         continue;
       }
-      if (colour != 0) // White is transparent
+
+      // Low priority sprites are only drawn on colour 0 backgrounds
+      //   Does this mean colour 0 or colour_id 0? Using colour for now
+      if (!low_priority ||
+          (framebuffer[LY][screenx].r == display_palette[0].r &&
+           framebuffer[LY][screenx].b == display_palette[0].b &&
+           framebuffer[LY][screenx].g == display_palette[0].g))
       {
-        // Low priority sprites are only drawn on white backgrounds
-        if (!low_priority ||
-            (framebuffer[LY][screenx].r == display_palette[0].r &&
-             framebuffer[LY][screenx].b == display_palette[0].b &&
-             framebuffer[LY][screenx].g == display_palette[0].g))
-        {
-          framebuffer[LY][screenx] = display_palette[colour];
-        }
+        framebuffer[LY][screenx] = display_palette[colour];
       }
     }
   }
