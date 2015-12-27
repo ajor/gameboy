@@ -6,34 +6,37 @@ void Timer::update(uint cycles)
 {
   update_divider(cycles);
 
-  // Should this be here, or updated when TAC is written to in Memory?
-  // Only update the frequency when counter reaches 0 / set counter to zero
-  // when we update the frequency?
-  update_clock_freq();
-
-  if (interrupt_pending)
+  if (timer_enabled())
   {
-    // An overflow occured on the previous cycle
-    // Reset TIMA and raise an interrupt
-    memory.set8(Memory::IO::TIMA, memory.get8(Memory::IO::TMA));
-    cpu.raise_interrupt(LR35902::Interrupt::TIMER);
-    interrupt_pending = false;
-  }
+    // Should this be here, or updated when TAC is written to in Memory?
+    // Only update the frequency when counter reaches 0 / set counter to zero
+    // when we update the frequency?
+    update_clock_freq();
 
-  counter -= cycles;
-
-  if (counter <= 0)
-  {
-    counter += cycles_per_tick;
-
-    u8 TIMA = memory.get8(Memory::IO::TIMA);
-    if (TIMA == 0xff)
+    if (interrupt_pending)
     {
-      // Overflow - raise an interrupt and reset TIMA on the next cycle
-      interrupt_pending = true;
+      // An overflow occured on the previous cycle
+      // Reset TIMA and raise an interrupt
+      memory.set8(Memory::IO::TIMA, memory.get8(Memory::IO::TMA));
+      cpu.raise_interrupt(LR35902::Interrupt::TIMER);
+      interrupt_pending = false;
     }
-    // 8-bit overflow expected:
-    memory.set8(Memory::IO::TIMA, TIMA+1);
+
+    counter -= cycles;
+
+    if (counter <= 0)
+    {
+      counter += cycles_per_tick;
+
+      u8 TIMA = memory.get8(Memory::IO::TIMA);
+      if (TIMA == 0xff)
+      {
+        // Overflow - raise an interrupt and reset TIMA on the next cycle
+        interrupt_pending = true;
+      }
+      // 8-bit overflow expected:
+      memory.set8(Memory::IO::TIMA, TIMA+1);
+    }
   }
 }
 
