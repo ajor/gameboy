@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <fstream>
 
 #include "gameboy.h"
 
@@ -44,7 +45,15 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  char *rom = argv[optind];
+  char *rom_file = argv[optind];
+
+  std::ifstream rom(rom_file);
+  if (!rom.is_open())
+  {
+    fprintf(stderr, "Couldn't load ROM from '%s'\n", rom_file);
+    abort();
+  }
+
   gb.load_rom(rom);
 
   render_loop(gb);

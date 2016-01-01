@@ -1,5 +1,7 @@
 #pragma once
 
+#include <istream>
+
 #include "lr35902.h"
 #include "memory.h"
 #include "cartridge.h"
@@ -20,7 +22,7 @@ public:
               display(cpu, memory),
               joypad(cpu, memory) { }
 
-  void load_rom(char *rom_file);
+  void load_rom(std::istream& rom);
   void step();
   void reset();
   void set_debug(bool debug);

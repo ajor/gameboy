@@ -155,8 +155,8 @@ void render_loop(Gameboy &gb)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  // Uncomment to change display FPS to confirm games still run at correct speed
-  glfwSwapInterval(0);
+  // Uncomment to change display FPS
+  //  glfwSwapInterval(0);
   while (!glfwWindowShouldClose(window))
   {
     for (int i=0; i<10000; i++)
