@@ -1,5 +1,5 @@
-#include "gameboy.h"
-#include "display.h"
+#include "core/gameboy.h"
+#include "core/display.h"
 
 #include <stdio.h>
 #include <stdlib.h>

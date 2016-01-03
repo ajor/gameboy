@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <fstream>
 
-#include "gameboy.h"
+#include "core/gameboy.h"
 
 static char *name;
 
