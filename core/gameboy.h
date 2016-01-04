@@ -22,7 +22,8 @@ public:
               display(cpu, memory),
               joypad(cpu, memory) { }
 
-  void load_rom(std::istream& rom);
+  void load_rom(std::istream& rom, std::istream& ram);
+  void set_save_callback(MemoryBankController::SaveRAMCallback save_ram);
   void step();
   void reset();
   void set_debug(bool debug);

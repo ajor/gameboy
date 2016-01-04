@@ -1,12 +1,20 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fstream>
+#include <string>
 
 #include "core/gameboy.h"
 
 static char *name;
+static std::string ram_file;
 
 void render_loop(Gameboy &gb);
+
+void save_ram(void *ram, unsigned int size)
+{
+  std::ofstream out(ram_file);
+  out.write(reinterpret_cast<char *>(ram), size);
+}
 
 void usage()
 {
@@ -54,7 +62,14 @@ int main(int argc, char *argv[])
     abort();
   }
 
-  gb.load_rom(rom);
+  ram_file = std::string(rom_file) + ".sav";
+  std::ifstream ram(ram_file);
+
+  gb.load_rom(rom, ram);
+  rom.close();
+  ram.close();
+
+  gb.set_save_callback(&save_ram);
 
   render_loop(gb);
 

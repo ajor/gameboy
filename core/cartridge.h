@@ -17,7 +17,8 @@ class Cartridge
   void init_ram(uint size_code);
 
 public:
-  void init_cartridge(std::istream& src);
+  void init_cartridge(std::istream& rom_stream, std::istream& ram_stream);
+  void set_save_callback(MemoryBankController::SaveRAMCallback save_ram);
 
   u8 get8(uint address) const
   {

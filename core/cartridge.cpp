@@ -1,13 +1,13 @@
 #include "cartridge.h"
 
-void Cartridge::init_cartridge(std::istream& src)
+void Cartridge::init_cartridge(std::istream& rom_stream, std::istream& ram_stream)
 {
   // The cartridge header is located at 0x100 - 0x14f
   // Include the first 0x100 bytes here to make addressing easier
   const uint header_size = 0x150;
   char header[header_size];
 
-  src.read(header, header_size);
+  rom_stream.read(header, header_size);
 
   u8 cartridge_type = header[0x147];
   u8 rom_size_code  = header[0x148];
@@ -18,8 +18,10 @@ void Cartridge::init_cartridge(std::istream& src)
   init_ram(ram_size_code);
 
   // Load the entire cartridge into our ROM buffer
-  src.seekg(0);
-  src.read(reinterpret_cast<char *>(rom.data()), rom.size());
+  rom_stream.seekg(0);
+  rom_stream.read(reinterpret_cast<char *>(rom.data()), rom.size());
+
+  ram_stream.read(reinterpret_cast<char *>(ram.data()), ram.size());
 }
 
 void Cartridge::init_mbc(uint type)
@@ -113,4 +115,9 @@ void Cartridge::init_ram(uint size_code)
       fprintf(stderr, "Unsupported RAM size: %02X\n", size_code);
       abort();
   }
+}
+
+void Cartridge::set_save_callback(MemoryBankController::SaveRAMCallback save_ram)
+{
+  mbc->save_ram_callback = save_ram;
 }

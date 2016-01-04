@@ -1,8 +1,13 @@
 #include "gameboy.h"
 
-void Gameboy::load_rom(std::istream& rom)
+void Gameboy::load_rom(std::istream& rom, std::istream& ram)
 {
-  cart.init_cartridge(rom);
+  cart.init_cartridge(rom, ram);
+}
+
+void Gameboy::set_save_callback(MemoryBankController::SaveRAMCallback save_ram)
+{
+  cart.set_save_callback(save_ram);
 }
 
 void Gameboy::step()

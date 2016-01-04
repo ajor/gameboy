@@ -1,5 +1,18 @@
 #include "mbc.h"
 
+MemoryBankController::~MemoryBankController()
+{
+  if (ram_enabled)
+  {
+    save();
+  }
+}
+
+void MemoryBankController::save()
+{
+  (*save_ram_callback)(ram.data(), ram.size());
+}
+
 u8 NoMBC::get8(uint address) const
 {
   if (address < 0x8000)
@@ -59,7 +72,10 @@ void MBC1::set8(uint address, u8 value)
     if ((value & 0xa) == 0xa)
       ram_enabled = true;
     else
+    {
       ram_enabled = false;
+      save();
+    }
   }
   else if (address >= 0x2000 && address < 0x4000)
   {
@@ -142,7 +158,10 @@ void MBC3::set8(uint address, u8 value)
     if ((value & 0xa) == 0xa)
       ram_enabled = true;
     else
+    {
       ram_enabled = false;
+      save();
+    }
   }
   else if (address >= 0x2000 && address < 0x4000)
   {

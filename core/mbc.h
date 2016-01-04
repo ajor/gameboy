@@ -8,12 +8,17 @@ class MemoryBankController
 public:
   MemoryBankController() = delete;
   MemoryBankController(const std::vector<u8> &rom, std::vector<u8> &ram) : rom(rom), ram(ram) {}
-  virtual ~MemoryBankController() {}
+  virtual ~MemoryBankController();
 
   virtual u8 get8(uint address) const = 0;
   virtual void set8(uint address, u8 value) = 0;
 
+  using SaveRAMCallback = void(*)(void *ram, uint size);
+  SaveRAMCallback save_ram_callback = nullptr;
+
 protected:
+  void save();
+
   const std::vector<u8> &rom;
   std::vector<u8> &ram;
   uint active_rom_bank = 1;
