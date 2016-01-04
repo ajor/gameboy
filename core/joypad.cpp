@@ -13,40 +13,6 @@ void Joypad::button_pressed(Button::Name b)
 {
   buttons[b] = true;
   memory.direct_io_write8(Memory::IO::JOYP, get_button_state());
-
-  /*
-  printf("button pressed");
-  switch (b)
-  {
-    case Button::UP:
-      printf(" UP\n");
-      break;
-    case Button::DOWN:
-      printf(" DOWN\n");
-      break;
-    case Button::LEFT:
-      printf(" LEFT\n");
-      break;
-    case Button::RIGHT:
-      printf(" RIGHT\n");
-      break;
-    case Button::START:
-      printf(" START\n");
-      break;
-    case Button::SELECT:
-      printf(" SELECT\n");
-      break;
-    case Button::A:
-      printf(" A\n");
-      break;
-    case Button::B:
-      printf(" B\n");
-      break;
-    default:
-      printf("error\n");
-      throw "sdf";
-  }
-  */
 }
 
 void Joypad::button_released(Button::Name b)

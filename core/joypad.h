@@ -10,7 +10,7 @@ class Joypad
   LR35902 &cpu;
   Memory &memory;
 
-  bool buttons[8];
+  bool buttons[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 public:
   struct Button
