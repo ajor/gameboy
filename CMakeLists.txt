@@ -27,5 +27,7 @@ add_compile_options("-Wdisabled-optimization")
 
 include_directories(${CMAKE_SOURCE_DIR})
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 add_subdirectory(core)
 add_subdirectory(glfw)
