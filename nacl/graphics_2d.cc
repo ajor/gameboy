@@ -35,7 +35,7 @@ class Graphics2DInstance : public pp::Instance {
   ~Graphics2DInstance() {};
 
   virtual bool Init(uint32_t argc, const char* argn[], const char* argv[]) {
-    //RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE);
+    RequestFilteringInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD);
 
     return true;
   }
@@ -81,6 +81,73 @@ class Graphics2DInstance : public pp::Instance {
   }
 
   virtual bool HandleInputEvent(const pp::InputEvent& event) {
+    switch (event.GetType())
+    {
+      case PP_INPUTEVENT_TYPE_KEYDOWN:
+      {
+        pp::KeyboardInputEvent key_event(event);
+        switch (key_event.GetKeyCode())
+        {
+          case 38:
+            gb_.button_pressed(Joypad::Button::UP);
+            break;
+          case 40:
+            gb_.button_pressed(Joypad::Button::DOWN);
+            break;
+          case 37:
+            gb_.button_pressed(Joypad::Button::LEFT);
+            break;
+          case 39:
+            gb_.button_pressed(Joypad::Button::RIGHT);
+            break;
+          case 90:
+            gb_.button_pressed(Joypad::Button::A);
+            break;
+          case 88:
+            gb_.button_pressed(Joypad::Button::B);
+            break;
+          case 13:
+            gb_.button_pressed(Joypad::Button::START);
+            break;
+          case 8:
+            gb_.button_pressed(Joypad::Button::SELECT);
+            break;
+        }
+	break;
+      }
+      case PP_INPUTEVENT_TYPE_KEYUP:
+      {
+        pp::KeyboardInputEvent key_event(event);
+        switch (key_event.GetKeyCode())
+        {
+          case 38:
+            gb_.button_released(Joypad::Button::UP);
+            break;
+          case 40:
+            gb_.button_released(Joypad::Button::DOWN);
+            break;
+          case 37:
+            gb_.button_released(Joypad::Button::LEFT);
+            break;
+          case 39:
+            gb_.button_released(Joypad::Button::RIGHT);
+            break;
+          case 90:
+            gb_.button_released(Joypad::Button::A);
+            break;
+          case 88:
+            gb_.button_released(Joypad::Button::B);
+            break;
+          case 13:
+            gb_.button_released(Joypad::Button::START);
+            break;
+          case 8:
+            gb_.button_released(Joypad::Button::SELECT);
+            break;
+        }
+	break;
+      }
+    }
     return true;
   }
 
