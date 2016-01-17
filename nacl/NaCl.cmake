@@ -20,3 +20,9 @@ macro(pnacl_finalise _target)
     COMMENT "Finalising ${_target}"
     COMMAND "${NACL_TOOLCHAIN_BIN}/pnacl-finalize" "$<TARGET_FILE:${_target}>")
 endmacro()
+
+macro(pnacl_compress _target)
+  add_custom_command(TARGET ${_target} POST_BUILD
+    COMMENT "Compressing ${_target}"
+    COMMAND "${NACL_TOOLCHAIN_BIN}/pnacl-compress" "$<TARGET_FILE:${_target}>")
+endmacro()
