@@ -109,7 +109,10 @@ void MBC1::set8(uint address, u8 value)
   else if (address >= 0xa000 && address < 0xc000)
   {
     // Switchable RAM bank (0 - 3)
-    ram.at(active_ram_bank*0x2000 + address - 0xa000) = value;
+    if (ram_enabled)
+    {
+      ram.at(active_ram_bank*0x2000 + address - 0xa000) = value;
+    }
   }
 }
 
