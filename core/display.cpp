@@ -317,11 +317,12 @@ void Display::draw_sprites()
       }
 
       // Low priority sprites are only drawn on colour 0 backgrounds
-      //   Does this mean colour 0 or colour_id 0? Using colour for now
+      u8 BGP = memory.get8(Memory::IO::BGP);
+      u8 colour_0 = (BGP & 0x3);
       if (!low_priority ||
-          (framebuffer[LY][screenx].r == display_palette[0].r &&
-           framebuffer[LY][screenx].b == display_palette[0].b &&
-           framebuffer[LY][screenx].g == display_palette[0].g))
+          (framebuffer[LY][screenx].r == display_palette[colour_0].r &&
+           framebuffer[LY][screenx].b == display_palette[colour_0].b &&
+           framebuffer[LY][screenx].g == display_palette[colour_0].g))
       {
         framebuffer[LY][screenx] = display_palette[colour];
       }
