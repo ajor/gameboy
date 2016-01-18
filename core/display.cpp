@@ -245,16 +245,12 @@ void Display::draw_sprites()
     // Sprite attribute blocks are 4 bytes each
     uint sprite_attr_addr = base_sprite_attr_addr + i*4;
 
-    u8 y_pos = memory.get8(sprite_attr_addr);
-    u8 x_pos = memory.get8(sprite_attr_addr + 1);
+    u8 y_pos = memory.get8(sprite_attr_addr);     // sprite top y coordinate + 16
+    u8 x_pos = memory.get8(sprite_attr_addr + 1); // sprite left x coordinate + 8
     u8 pattern_number = memory.get8(sprite_attr_addr + 2);
     u8 flags = memory.get8(sprite_attr_addr + 3);
 
-    // Set x and y coordinates to sprite's top left corner
-    y_pos -= 16;
-    x_pos -= 8;
-
-    if (y_pos > LY || y_pos + sprite_height <= LY)
+    if (y_pos > LY + 16 || y_pos + sprite_height <= (uint)(LY + 16))
     {
       // This sprite doesn't appear on the current scanline
       continue;
@@ -274,7 +270,7 @@ void Display::draw_sprites()
     uint sprite_size = 2 * sprite_height;
     uint sprite_data_addr = base_sprite_data_addr + pattern_number*sprite_size;
 
-    uint sprite_y = LY - y_pos;
+    uint sprite_y = LY - y_pos + 16;
     if (flip_y)
     {
       sprite_y = sprite_height - sprite_y;
@@ -309,7 +305,7 @@ void Display::draw_sprites()
       }
       u8 colour = (palette >> (colour_id * 2)) & 0x3;
 
-      uint screenx = (x_pos+sprite_x)%256;
+      uint screenx = (x_pos-8+sprite_x)%256;
       if (screenx >= width)
       {
         // Pixel is off screen
