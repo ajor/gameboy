@@ -4,6 +4,16 @@ This repository contains a Gameboy emulator core with a choice of two frontends:
 - [Native binary](#native-binary), only tested on Linux
 - [Google Chrome Native Client (NaCl)](#nacl) application
 
+## Controls
+
+The Gameboy's direction keys are mapped to the arrow keys.
+Start button = enter
+Select button = backspace
+A button = z
+B button = x
+
+Keyboard controls are currently not customisable at runtime.
+
 # Completeness / accuracy
 
 Save files are compatible with other popular Gameboy emulators.
@@ -40,19 +50,7 @@ make
 
     ./gb rom
 
-### Controls
-
-The Gameboy's direction keys are mapped to the arrow keys.
-Start button = enter
-Select button = backspace
-A button = z
-B button = x
-
-Keyboard controls are currently not customisable at runtime.
-
 # NaCl
-
-The Native Client version of this emulator is not yet complete, and is currently lacking any form of button input.
 
 A pre-built version is available for use at http://ajor.co.uk/gameboy/nacl/
 
