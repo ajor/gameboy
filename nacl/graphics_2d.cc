@@ -6,14 +6,13 @@
 #include <stdlib.h>
 #include <sstream>
 
-#include "ppapi/c/ppb_image_data.h"
 #include "ppapi/cpp/graphics_2d.h"
 #include "ppapi/cpp/image_data.h"
 #include "ppapi/cpp/input_event.h"
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/module.h"
-#include "ppapi/cpp/point.h"
 #include "ppapi/utility/completion_callback_factory.h"
+#include "ppapi/cpp/var_dictionary.h"
 #include "ppapi/cpp/var_array_buffer.h"
 
 #ifdef WIN32
@@ -40,16 +39,30 @@ class Graphics2DInstance : public pp::Instance {
     return true;
   }
 
-  virtual void HandleMessage(const pp::Var& message) {
-    if (!message.is_array_buffer())
+  virtual void HandleMessage(const pp::Var& var_message) {
+    if (!var_message.is_dictionary())
     {
-      PostMessage(pp::Var("invalid"));
+      PostMessage(pp::Var("Error: message should be a dictionary"));
       return;
     }
+    pp::VarDictionary dict_message(var_message);
 
-    pp::VarArrayBuffer buffer(message);
-    uint32_t rom_length = buffer.ByteLength();
-    char *rom_data = static_cast<char *>(buffer.Map());
+    pp::Var var_name = dict_message.Get("name");
+    if (!var_name.is_string()) {
+      PostMessage(pp::Var("Error: name should be a string"));
+      return;
+    }
+    std::string name = var_name.AsString();
+
+    pp::Var var_rom = dict_message.Get("rom");
+    if (!var_rom.is_array_buffer()) {
+      PostMessage(pp::Var("Error: rom should be an array buffer"));
+      return;
+    }
+    pp::VarArrayBuffer rom_buffer(var_rom);
+
+    uint32_t rom_length = rom_buffer.ByteLength();
+    char *rom_data = static_cast<char *>(rom_buffer.Map());
     std::string rom_str(rom_data, rom_length);
     std::istringstream rom_stream(rom_str);
 
@@ -58,8 +71,6 @@ class Graphics2DInstance : public pp::Instance {
 
     gb_.load_rom(rom_stream, ram_stream);
     rom_loaded_ = true;
-
-    PostMessage(pp::Var("loaded"));
   }
 
   virtual void DidChangeView(const pp::View& view) {
@@ -113,7 +124,7 @@ class Graphics2DInstance : public pp::Instance {
             gb_.button_pressed(Joypad::Button::SELECT);
             break;
         }
-	break;
+        break;
       }
       case PP_INPUTEVENT_TYPE_KEYUP:
       {
@@ -145,7 +156,7 @@ class Graphics2DInstance : public pp::Instance {
             gb_.button_released(Joypad::Button::SELECT);
             break;
         }
-	break;
+        break;
       }
     }
     return true;

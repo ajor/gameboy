@@ -10,12 +10,12 @@
   <title>Gameboy Emulator</title>
 
   <script type="text/javascript">
-    HelloTutorialModule = null;  // Global application object.
+    GameboyModule = null;  // Global application object.
     statusText = 'NO-STATUS';
 
     // Indicate load success.
     function moduleDidLoad() {
-      HelloTutorialModule = document.getElementById('gameboy_module');
+      GameboyModule = document.getElementById('gameboy_module');
       updateStatus('SUCCESS');
     }
 
@@ -31,7 +31,7 @@
     // status message indicating that the module is still loading.  Otherwise,
     // do not change the status message.
     function pageDidLoad() {
-      if (HelloTutorialModule == null) {
+      if (GameboyModule == null) {
         updateStatus('LOADING...');
       } else {
         // It's possible that the Native Client module onload event fired
@@ -61,11 +61,13 @@
 
       if (f) {
         var r = new FileReader();
-	r.onload = function(e) {
-	  var contents = e.target.result;
-	  HelloTutorialModule.postMessage(contents);
-	}
-	r.readAsArrayBuffer(f);
+        r.onload = function(e) {
+          var contents = e.target.result;
+          var file_name = document.getElementById("rom").files[0].name;
+
+          GameboyModule.postMessage({name:file_name, rom:contents});
+        }
+        r.readAsArrayBuffer(f);
       }
       else {
         alert("failed to load file\n");
