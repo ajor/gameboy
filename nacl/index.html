@@ -10,12 +10,14 @@
   <title>Gameboy Emulator</title>
 
   <script type="text/javascript">
-    GameboyModule = null;  // Global application object.
+    GameboyModule2 = null;  // Global application object.
+    GameboyModule3 = null;  // Global application object.
     statusText = 'NO-STATUS';
 
     // Indicate load success.
     function moduleDidLoad() {
-      GameboyModule = document.getElementById('gameboy_module');
+      GameboyModule2 = document.getElementById('gameboy_module2');
+      GameboyModule3 = document.getElementById('gameboy_module3');
       updateStatus('SUCCESS');
     }
 
@@ -31,7 +33,7 @@
     // status message indicating that the module is still loading.  Otherwise,
     // do not change the status message.
     function pageDidLoad() {
-      if (GameboyModule == null) {
+      if (GameboyModule2 == null || GameboyModule3 == null) {
         updateStatus('LOADING...');
       } else {
         // It's possible that the Native Client module onload event fired
@@ -65,7 +67,8 @@
           var contents = e.target.result;
           var file_name = document.getElementById("rom").files[0].name;
 
-          GameboyModule.postMessage({name:file_name, rom:contents});
+          GameboyModule2.postMessage({name:file_name, rom:contents});
+          GameboyModule3.postMessage({name:file_name, rom:contents});
         }
         r.readAsArrayBuffer(f);
       }
@@ -97,9 +100,14 @@
         listener.addEventListener('message', handleMessage, true);
       </script>
 
-      <embed id="gameboy_module"
+      <embed id="gameboy_module2"
              width=160 height=144
-             src="gameboy.nmf"
+             src="gameboy2.nmf"
+             type="application/x-pnacl" />
+
+      <embed id="gameboy_module3"
+             width=480 height=432
+             src="gameboy3.nmf"
              type="application/x-pnacl" />
     </div>
   </p>
