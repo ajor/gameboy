@@ -10,32 +10,89 @@
 
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
 
-void render_loop(Gameboy &gb)
-{
-  //
-  // Set up window
-  //
-  const unsigned int width = Display::width * 5;
-  const unsigned int height = Display::height * 5;
+GLuint compile_shader(GLenum type, const char* data) {
+  GLuint shader = glCreateShader(type);
+  glShaderSource(shader, 1, &data, NULL);
+  glCompileShader(shader);
+
+  GLint compile_status;
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_status);
+  if (compile_status != GL_TRUE) {
+    char buffer[1024];
+    GLsizei length;
+    glGetShaderInfoLog(shader, sizeof(buffer), &length, &buffer[0]);
+    fprintf(stderr, "Shader failed to compile: %s\n", buffer);
+    return 0;
+  }
+
+  return shader;
+}
+
+GLuint link_program(GLuint frag_shader, GLuint vert_shader) {
+  GLuint program = glCreateProgram();
+  glAttachShader(program, frag_shader);
+  glAttachShader(program, vert_shader);
+  glLinkProgram(program);
+
+  GLint link_status;
+  glGetProgramiv(program, GL_LINK_STATUS, &link_status);
+  if (link_status != GL_TRUE) {
+    char buffer[1024];
+    GLsizei length;
+    glGetProgramInfoLog(program, sizeof(buffer), &length, &buffer[0]);
+    fprintf(stderr, "Program failed to link: %s\n", buffer);
+    return 0;
+  }
+
+  return program;
+}
+
+const GLchar *kVertexShaderSource =
+    "#version 100\n"
+    "attribute vec2 a_position;"
+    "attribute vec2 a_texcoord;"
+    "varying vec2 v_texcoord;"
+    "void main() {"
+    "  gl_Position = vec4(a_position, 0.0, 1.0);"
+    "  v_texcoord = a_texcoord;"
+    "}";
+
+const GLchar *kFragmentShaderSource =
+    "#version 100\n"
+    "precision mediump float;"
+    "varying vec2 v_texcoord;"
+    "uniform sampler2D u_texture;"
+    "void main() {"
+    "  gl_FragColor = texture2D(u_texture, v_texcoord);"
+    "}";
+
+struct Vertex {
+  GLfloat pos[2];
+  GLfloat tex[2];
+};
+
+const Vertex kDisplayVertices[] = {
+ {{-1.0f,-1.0f},  {0.0f, 1.0f}},
+ {{-1.0f, 1.0f},  {0.0f, 0.0f}},
+ {{ 1.0f,-1.0f},  {1.0f, 1.0f}},
+ {{ 1.0f, 1.0f},  {1.0f, 0.0f}},
+ {{ 1.0f,-1.0f},  {1.0f, 1.0f}},
+ {{-1.0f, 1.0f},  {0.0f, 0.0f}},
+};
+
+GLFWwindow *initgl(int32_t width, int32_t height) {
   if (!glfwInit()) {
     fprintf(stderr, "Failed to initialise GLFW\n");
     abort();
   }
 
-  glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
   GLFWwindow *window = glfwCreateWindow(width, height, "Gameboy Emulator", NULL, NULL);
   if (window == NULL) {
     fprintf(stderr, "Failed to open window.\n");
-    glfwTerminate();
     abort();
   }
   glfwMakeContextCurrent(window);
-  glfwSetWindowUserPointer(window, &gb);
   glfwSetKeyCallback(window, key_callback);
 
   glewExperimental = true;
@@ -44,106 +101,73 @@ void render_loop(Gameboy &gb)
     abort();
   }
 
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  return window;
+}
+
+GLuint init_shaders() {
+  printf("opengl version: (%s)\n", glGetString(GL_VERSION));
+  GLuint vertex_shader = compile_shader(GL_VERTEX_SHADER, kVertexShaderSource);
+  if (!vertex_shader)
+    abort();
+
+  GLuint frag_shader = compile_shader(GL_FRAGMENT_SHADER, kFragmentShaderSource);
+  if (!frag_shader)
+    abort();
+
+  GLuint program = link_program(frag_shader, vertex_shader);
+  if (!program)
+    abort();
+
+  glUseProgram(program);
+
+  return program;
+}
+
+void render_loop(Gameboy &gb)
+{
+  const unsigned int width = Display::width * 5;
+  const unsigned int height = Display::height * 5;
+
+  GLFWwindow *window = initgl(width, height);
+  glfwSetWindowUserPointer(window, &gb);
+
   //
   // OpenGL settings
   //
-  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluOrtho2D(0, width, height, 0);
 
-  //
-  // Shaders
-  //
-  const GLchar *vertex_shader_source =
-    "#version 330 core\n"
-    "layout (location = 0) in vec2 position;"
-    "layout (location = 1) in vec2 texCoord;"
-    "out vec2 TexCoord;"
-    "void main()"
-    "{"
-    "  gl_Position = vec4(position, 0.0, 1.0);"
-    "  TexCoord = texCoord;"
-    "}";
+  GLuint program = init_shaders();
 
-  const GLchar *fragment_shader_source =
-    "#version 330 core\n"
-    "in vec2 TexCoord;"
-    "out vec4 colour;"
-    "uniform sampler2D display;"
-    "void main()"
-    "{"
-    "  colour = texture(display, TexCoord);"
-    "}";
-
-  GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
-  glCompileShader(vertex_shader);
-  GLint status;
-  glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &status);
-  if (!status)
-  {
-    char error_buffer[512];
-    glGetShaderInfoLog(vertex_shader, 512, NULL, error_buffer);
-    fprintf(stderr, "Vertex shader error:\n%s\n", error_buffer);
-    abort();
-  }
-
-  GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
-  glCompileShader(fragment_shader);
-  glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &status);
-  if (!status)
-  {
-    char error_buffer[512];
-    glGetShaderInfoLog(fragment_shader, 512, NULL, error_buffer);
-    fprintf(stderr, "Fragment shader error:\n%s\n", error_buffer);
-    abort();
-  }
-
-  GLuint shader_program = glCreateProgram();
-  glAttachShader(shader_program, vertex_shader);
-  glAttachShader(shader_program, fragment_shader);
-  glLinkProgram(shader_program);
-  glGetProgramiv(shader_program, GL_LINK_STATUS, &status);
-  if (!status)
-  {
-    char error_buffer[512];
-    glGetProgramInfoLog(shader_program, 512, NULL, error_buffer);
-    fprintf(stderr, "Shader link error:\n%s\n", error_buffer);
-    abort();
-  }
-  glUseProgram(shader_program);
+  GLuint texture_loc = glGetUniformLocation(program, "u_texture");
+  GLuint position_loc = glGetAttribLocation(program, "a_position");
+  GLuint texcoord_loc = glGetAttribLocation(program, "a_texcoord");
 
   //
   // Buffers
   //
-  GLfloat display_vertices[] = {
-    // Pos          Tex
-   -1.0f,-1.0f,  0.0f, 1.0f,
-   -1.0f, 1.0f,  0.0f, 0.0f,
-    1.0f,-1.0f,  1.0f, 1.0f,
-    1.0f, 1.0f,  1.0f, 0.0f,
-    1.0f,-1.0f,  1.0f, 1.0f,
-   -1.0f, 1.0f,  0.0f, 0.0f,
-  };
-
-  GLuint vao, vbo;
-  glGenVertexArrays(1, &vao);
+  GLuint vbo;
   glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(kDisplayVertices), kDisplayVertices, GL_STATIC_DRAW);
 
+  GLuint vao;
+  glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(display_vertices), display_vertices, GL_STATIC_DRAW);
+  // position attribute
+  glVertexAttribPointer(position_loc, 2,
+      GL_FLOAT, GL_FALSE, sizeof(Vertex),
+      reinterpret_cast<GLvoid*>(offsetof(Vertex, pos)));
+  glEnableVertexAttribArray(position_loc);
 
-  // Position attribute
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), 0);
-  glEnableVertexAttribArray(0);
-
-  // TexCoord attribute
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4*sizeof(GLfloat), (GLvoid*)(2*sizeof(GLfloat)));
-  glEnableVertexAttribArray(1);
+  // texcoord attribute
+  glVertexAttribPointer(texcoord_loc, 2,
+      GL_FLOAT, GL_FALSE, sizeof(Vertex),
+      reinterpret_cast<GLvoid*>(offsetof(Vertex, tex)));
+  glEnableVertexAttribArray(texcoord_loc);
 
   //
   // Texture
@@ -155,19 +179,24 @@ void render_loop(Gameboy &gb)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+  glActiveTexture(GL_TEXTURE0);
+
   // Uncomment to change display FPS
   //  glfwSwapInterval(0);
   while (!glfwWindowShouldClose(window))
   {
-    for (int i=0; i<10000; i++)
+    for (int i=0; i<16666; i++)
     {
       gb.step();
     }
 
     glClear(GL_COLOR_BUFFER_BIT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Display::width, Display::height, 0, GL_RGB, GL_UNSIGNED_BYTE, gb.get_framebuffer());
-    glUniform1i(glGetUniformLocation(shader_program, "display"), 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Display::width, Display::height,
+        0, GL_RGB, GL_UNSIGNED_BYTE, gb.get_framebuffer());
+    glUniform1i(texture_loc, 0);
     glDrawArrays(GL_TRIANGLES, 0, 6);
+
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
