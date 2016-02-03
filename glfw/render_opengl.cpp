@@ -8,7 +8,17 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
+namespace {
+
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
+void render();
+
+GLuint g_texture_loc;
+Gameboy *g_gb;
 
 GLuint compile_shader(GLenum type, const char* data) {
   GLuint shader = glCreateShader(type);
@@ -48,23 +58,23 @@ GLuint link_program(GLuint frag_shader, GLuint vert_shader) {
 }
 
 const GLchar *kVertexShaderSource =
-    "#version 100\n"
-    "attribute vec2 a_position;"
-    "attribute vec2 a_texcoord;"
-    "varying vec2 v_texcoord;"
-    "void main() {"
-    "  gl_Position = vec4(a_position, 0.0, 1.0);"
-    "  v_texcoord = a_texcoord;"
-    "}";
+  "#version 100\n"
+  "attribute vec2 a_position;"
+  "attribute vec2 a_texcoord;"
+  "varying vec2 v_texcoord;"
+  "void main() {"
+  "  gl_Position = vec4(a_position, 0.0, 1.0);"
+  "  v_texcoord = a_texcoord;"
+  "}";
 
 const GLchar *kFragmentShaderSource =
-    "#version 100\n"
-    "precision mediump float;"
-    "varying vec2 v_texcoord;"
-    "uniform sampler2D u_texture;"
-    "void main() {"
-    "  gl_FragColor = texture2D(u_texture, v_texcoord);"
-    "}";
+  "#version 100\n"
+  "precision mediump float;"
+  "varying vec2 v_texcoord;"
+  "uniform sampler2D u_texture;"
+  "void main() {"
+  "  gl_FragColor = texture2D(u_texture, v_texcoord);"
+  "}";
 
 struct Vertex {
   GLfloat pos[2];
@@ -72,12 +82,12 @@ struct Vertex {
 };
 
 const Vertex kDisplayVertices[] = {
- {{-1.0f,-1.0f},  {0.0f, 1.0f}},
- {{-1.0f, 1.0f},  {0.0f, 0.0f}},
- {{ 1.0f,-1.0f},  {1.0f, 1.0f}},
- {{ 1.0f, 1.0f},  {1.0f, 0.0f}},
- {{ 1.0f,-1.0f},  {1.0f, 1.0f}},
- {{-1.0f, 1.0f},  {0.0f, 0.0f}},
+  {{-1.0f,-1.0f},  {0.0f, 1.0f}},
+  {{-1.0f, 1.0f},  {0.0f, 0.0f}},
+  {{ 1.0f,-1.0f},  {1.0f, 1.0f}},
+  {{ 1.0f, 1.0f},  {1.0f, 0.0f}},
+  {{ 1.0f,-1.0f},  {1.0f, 1.0f}},
+  {{-1.0f, 1.0f},  {0.0f, 0.0f}},
 };
 
 GLFWwindow *initgl(int32_t width, int32_t height) {
@@ -124,82 +134,18 @@ GLuint init_shaders() {
   return program;
 }
 
-void render_loop(Gameboy &gb)
+void render()
 {
-  const unsigned int width = Display::width * 5;
-  const unsigned int height = Display::height * 5;
-
-  GLFWwindow *window = initgl(width, height);
-  glfwSetWindowUserPointer(window, &gb);
-
-  //
-  // OpenGL settings
-  //
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluOrtho2D(0, width, height, 0);
-
-  GLuint program = init_shaders();
-
-  GLuint texture_loc = glGetUniformLocation(program, "u_texture");
-  GLuint position_loc = glGetAttribLocation(program, "a_position");
-  GLuint texcoord_loc = glGetAttribLocation(program, "a_texcoord");
-
-  //
-  // Buffers
-  //
-  GLuint vbo;
-  glGenBuffers(1, &vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(kDisplayVertices), kDisplayVertices, GL_STATIC_DRAW);
-
-  GLuint vao;
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
-
-  // position attribute
-  glVertexAttribPointer(position_loc, 2,
-      GL_FLOAT, GL_FALSE, sizeof(Vertex),
-      reinterpret_cast<GLvoid*>(offsetof(Vertex, pos)));
-  glEnableVertexAttribArray(position_loc);
-
-  // texcoord attribute
-  glVertexAttribPointer(texcoord_loc, 2,
-      GL_FLOAT, GL_FALSE, sizeof(Vertex),
-      reinterpret_cast<GLvoid*>(offsetof(Vertex, tex)));
-  glEnableVertexAttribArray(texcoord_loc);
-
-  //
-  // Texture
-  //
-  GLuint texture;
-  glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D, texture);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-  glActiveTexture(GL_TEXTURE0);
-
-  // Uncomment to change display FPS
-  //  glfwSwapInterval(0);
-  while (!glfwWindowShouldClose(window))
+  for (int i=0; i<16666; i++)
   {
-    for (int i=0; i<16666; i++)
-    {
-      gb.step();
-    }
-
-    glClear(GL_COLOR_BUFFER_BIT);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Display::width, Display::height,
-        0, GL_RGB, GL_UNSIGNED_BYTE, gb.get_framebuffer());
-    glUniform1i(texture_loc, 0);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+    g_gb->step();
   }
+
+  glClear(GL_COLOR_BUFFER_BIT);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Display::width, Display::height,
+      0, GL_RGB, GL_UNSIGNED_BYTE, g_gb->get_framebuffer());
+  glUniform1i(g_texture_loc, 0);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
@@ -241,4 +187,75 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
                 gb->button_released(Joypad::Button::SELECT);
       break;
   }
+}
+
+}  // namespace
+
+void render_loop(Gameboy &gb)
+{
+  g_gb = &gb;
+
+  const unsigned int width = Display::width * 5;
+  const unsigned int height = Display::height * 5;
+
+  GLFWwindow *window = initgl(width, height);
+  glfwSetWindowUserPointer(window, &gb);
+
+  GLuint program = init_shaders();
+
+  GLuint position_loc = glGetAttribLocation(program, "a_position");
+  GLuint texcoord_loc = glGetAttribLocation(program, "a_texcoord");
+  g_texture_loc = glGetUniformLocation(program, "u_texture");
+
+  //
+  // Buffers
+  //
+  GLuint vbo;
+  glGenBuffers(1, &vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(kDisplayVertices), kDisplayVertices, GL_STATIC_DRAW);
+
+  GLuint vao;
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+
+  // position attribute
+  glVertexAttribPointer(position_loc, 2,
+      GL_FLOAT, GL_FALSE, sizeof(Vertex),
+      reinterpret_cast<GLvoid*>(offsetof(Vertex, pos)));
+  glEnableVertexAttribArray(position_loc);
+
+  // texcoord attribute
+  glVertexAttribPointer(texcoord_loc, 2,
+      GL_FLOAT, GL_FALSE, sizeof(Vertex),
+      reinterpret_cast<GLvoid*>(offsetof(Vertex, tex)));
+  glEnableVertexAttribArray(texcoord_loc);
+
+  //
+  // Texture
+  //
+  GLuint texture;
+  glGenTextures(1, &texture);
+  glBindTexture(GL_TEXTURE_2D, texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+  glActiveTexture(GL_TEXTURE0);
+
+  // Uncomment to change display FPS
+  //  glfwSwapInterval(0);
+
+#ifdef __EMSCRIPTEN__
+  emscripten_set_main_loop(render, 0, 1);
+#else
+  while (!glfwWindowShouldClose(window))
+  {
+    render();
+
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+  }
+#endif
 }
