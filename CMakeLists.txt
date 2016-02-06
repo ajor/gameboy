@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.12)
 
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   message(STATUS "No build type selected, default to Release")
-  set(CMAKE_BUILD_TYPE "Release")
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type")
 endif()
 
 project(Gameboy)
