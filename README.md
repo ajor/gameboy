@@ -1,8 +1,11 @@
 # Gameboy Emulator
 
-This repository contains a Gameboy emulator core with a choice of two frontends:
+This repository contains a Gameboy emulator core with a choice of three frontends:
 - [Native binary](#native-binary), only tested on Linux
+- [asm.js](#asmjs), compiled using Emscripten
 - [Google Chrome Native Client (NaCl)](#nacl) application
+
+Online demos are available at http://ajor.co.uk/gameboy/
 
 ## Controls
 
@@ -50,9 +53,28 @@ make
 
     ./gb rom
 
-# NaCl
+# asm.js
 
-A pre-built version is available for use at http://ajor.co.uk/gameboy/nacl/
+## Building
+
+### Requirements
+- [Emscripten SDK](https://kripken.github.io/emscripten-site/)
+- Node.js
+- CMake 2.8.12+
+
+### Compilation
+Compile using CMake, substituting the path to the Emscripten.cmake toolchain file on your system:
+```
+mkdir build
+cd build
+cmake ../ -DCMAKE_TOOLCHAIN_FILE=/usr/lib/emscripten/cmake/Modules/Platform/Emscripten.cmake
+make
+```
+
+## Usage
+Place glfw/emscripten.html and the generated gb.js and gb.js.mem files in the same directory and open in a web browser.
+
+# NaCl
 
 ## Building
 
