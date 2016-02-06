@@ -5,6 +5,10 @@
 
 #include "core/gameboy.h"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 static char *name;
 static std::string ram_file;
 
@@ -14,13 +18,25 @@ void save_ram(void *ram, unsigned int size)
 {
   std::ofstream out(ram_file);
   out.write(reinterpret_cast<char *>(ram), size);
+
+#ifdef __EMSCRIPTEN__
+  // Sync the browser's persistent data storage with Emscripten's filesystem
+  EM_ASM(
+    FS.syncfs(false, function(err) {
+      if (err) {
+        console.error("Error saving game: " + err);
+      }
+    });
+  );
+#endif
 }
 
 void usage()
 {
   printf("Usage: %s [options] rom\n", name);
   printf("Options:\n");
-  printf("  -d  Run in debug mode\n");
+  printf("  -o file   Save game output file\n");
+  printf("  -d        Run in debug mode\n");
 }
 
 int main(int argc, char *argv[])
@@ -34,19 +50,26 @@ int main(int argc, char *argv[])
 
   Gameboy gb;
 
+  bool ram_file_set = false;
   int c;
-  while ((c = getopt(argc, argv, "d")) != -1)
+  while ((c = getopt(argc, argv, "do:")) != -1)
   {
     switch (c)
     {
       case 'd':
         gb.set_debug(true);
         break;
+      case 'o':
+        ram_file = optarg;
+        ram_file_set = true;
+        break;
       default:
         usage();
         return 1;
     }
   }
+
+  // There should only be 1 non-option argument (the rom file)
   if (optind != argc-1)
   {
     usage();
@@ -62,7 +85,11 @@ int main(int argc, char *argv[])
     abort();
   }
 
-  ram_file = std::string(rom_file) + ".sav";
+  if (!ram_file_set)
+  {
+    // Save the RAM with the ROM if no other file has been specified
+    ram_file = std::string(rom_file) + ".sav";
+  }
   std::ifstream ram(ram_file);
 
   gb.load_rom(rom, ram);

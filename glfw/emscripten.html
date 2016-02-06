@@ -161,12 +161,23 @@
           r.onload = function(e) {
             var contents = e.target.result;
             var file_name = document.getElementById("rom").files[0].name;
-
             FS.writeFile(file_name, new Uint8Array(contents), {encoding: "binary"});
-            Module.callMain([file_name]);
-            document.getElementById("rom").style.display = "none";
+
+            // Create directory for persistent storage of saved games
+            FS.mkdir("/data");
+            FS.mount(IDBFS, {}, "/data");
+
+            // Make sure any saved games are loaded before running
+            FS.syncfs(true, function(err) {
+              if (err) {
+                console.error(err);
+              } else {
+                Module.callMain(["-o", "/data/"+file_name+".sav", file_name]);
+              }
+            });
           }
           r.readAsArrayBuffer(f);
+          document.getElementById("rom").style.display = "none";
         }
         else {
           alert("failed to load file\n");
