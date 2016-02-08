@@ -72,11 +72,10 @@
       }
 
       #controls {
-        display: inline-block;
-        float: right;
-        vertical-align: top;
-        margin-top: 30px;
-        margin-right: 20px;
+        display: none;
+        position: absolute;
+        top: 30px;
+        right: 20px;
       }
 
     </style>
@@ -87,7 +86,8 @@
     <div class="emscripten" id="status">Downloading...</div>
 
 <span id='controls'>
-  <span><input type="button" value="Fullscreen" onclick="Module.requestFullScreen(true, false)"></span>
+  <span><input type="button" value="Save game" onclick="Module.ccall('save_game', 'void', 'void', null);"></span>
+  <span><input type="button" value="Fullscreen" onclick="Module.requestFullScreen(true, false);"></span>
 </span>
 
     <div class="emscripten">
@@ -178,6 +178,7 @@
           }
           r.readAsArrayBuffer(f);
           document.getElementById("rom").style.display = "none";
+          document.getElementById("controls").style.display = "block";
         }
         else {
           alert("failed to load file\n");

@@ -29,4 +29,9 @@ public:
   {
     mbc->set8(address, value);
   }
+
+  void save()
+  {
+    mbc->save();
+  }
 };

@@ -16,9 +16,9 @@ public:
   using SaveRAMCallback = void(*)(void *ram, uint size);
   SaveRAMCallback save_ram_callback = nullptr;
 
-protected:
   void save();
 
+protected:
   const std::vector<u8> &rom;
   std::vector<u8> &ram;
   uint active_rom_bank = 1;

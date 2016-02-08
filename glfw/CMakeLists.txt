@@ -4,6 +4,7 @@ target_link_libraries(gb gb_core)
 if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
 
   target_link_libraries(gb "-s USE_GLFW=3")
+  target_link_libraries(gb "-s EXPORTED_FUNCTIONS=\"['_main', '_save_game']\"")
 
 else()
 

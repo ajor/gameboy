@@ -30,4 +30,5 @@ public:
   const Display::Colour *get_framebuffer() const { return display.get_framebuffer(); }
   void button_pressed(Joypad::Button::Name b) { joypad.button_pressed(b); }
   void button_released(Joypad::Button::Name b) { joypad.button_released(b); }
+  void save() { cart.save(); }
 };

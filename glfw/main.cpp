@@ -11,6 +11,7 @@
 
 static char *name;
 static std::string ram_file;
+Gameboy gb;
 
 void render_loop(Gameboy &gb);
 
@@ -47,8 +48,6 @@ int main(int argc, char *argv[])
     usage();
     return 1;
   }
-
-  Gameboy gb;
 
   bool ram_file_set = false;
   int c;
@@ -102,3 +101,13 @@ int main(int argc, char *argv[])
 
   return 0;
 }
+
+#ifdef __EMSCRIPTEN__
+extern "C"
+{
+  void save_game()
+  {
+    gb.save();
+  }
+}
+#endif
