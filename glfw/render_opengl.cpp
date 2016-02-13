@@ -15,6 +15,7 @@
 namespace {
 
 static void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode);
+static void window_size_callback(GLFWwindow *window, int width, int height);
 void render();
 
 GLuint g_texture_loc;
@@ -96,6 +97,7 @@ GLFWwindow *initgl(int32_t width, int32_t height) {
     abort();
   }
 
+  glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
 
   GLFWwindow *window = glfwCreateWindow(width, height, "Gameboy Emulator", NULL, NULL);
   if (window == NULL) {
@@ -104,6 +106,7 @@ GLFWwindow *initgl(int32_t width, int32_t height) {
   }
   glfwMakeContextCurrent(window);
   glfwSetKeyCallback(window, key_callback);
+  glfwSetWindowSizeCallback(window, window_size_callback);
 
   glewExperimental = true;
   if (glewInit() != GLEW_OK) {
@@ -148,7 +151,7 @@ void render()
   glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mode)
+void key_callback(GLFWwindow *window, int key, int /*scancode*/, int action, int /*mode*/)
 {
   Gameboy *gb = (Gameboy *)glfwGetWindowUserPointer(window);
   bool pressed = (action != GLFW_RELEASE);
@@ -186,7 +189,34 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
       pressed ? gb->button_pressed(Joypad::Button::SELECT) :
                 gb->button_released(Joypad::Button::SELECT);
       break;
+    default:
+      break;
   }
+}
+
+void window_size_callback(GLFWwindow * /*window*/, int width, int height)
+{
+  // Maintain correct aspect ratio
+
+  double w = static_cast<double>(width);
+  double h = static_cast<double>(height);
+  int new_width, new_height;
+  if (w/h > 160.0/144.0)
+  {
+    // Window is too wide
+    new_width = height * 160.0/144.0;
+    new_height = height;
+  }
+  else
+  {
+    // Window is too tall
+    new_height = width * 144.0/160.0;
+    new_width = width;
+  }
+
+  int x = (width-new_width)/2;
+  int y = (height-new_height)/2;
+  glViewport(x, y, new_width, new_height);
 }
 
 }  // namespace
