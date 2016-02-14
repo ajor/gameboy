@@ -256,19 +256,19 @@ void Display::draw_sprites()
       continue;
     }
 
-    if (use_8x16_sprites)
-    {
-      pattern_number &= 0xfe; // Set LSB to 0
-    }
-
     bool low_priority = (flags >> 7) & 0x1;
     bool flip_y = (flags >> 6) & 0x1;
     bool flip_x = (flags >> 5) & 0x1;
     uint palette_num = (flags >> 4) & 0x1;
 
-    // Sprites are either 8x8 or 8x16 pixels, with eiter 16 or 32 bytes each
-    uint sprite_size = 2 * sprite_height;
-    uint sprite_data_addr = base_sprite_data_addr + pattern_number*sprite_size;
+    // Sprites are either 8x8 or 8x16 pixels, with eiter 16 or 32 bytes each.
+    // 8x16 sprites are restricted to only even pattern numbers, so we can
+    // just treat all patterns as 16 bytes wide
+    if (use_8x16_sprites)
+    {
+      pattern_number &= 0xfe; // Set LSB to 0
+    }
+    uint sprite_data_addr = base_sprite_data_addr + pattern_number*0x10;
 
     uint sprite_y = LY - y_pos + 16;
     if (flip_y)
