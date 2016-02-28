@@ -28,6 +28,7 @@ public:
 
   void update(uint cycles);
   const Colour *get_framebuffer() const { return &framebuffer[0][0]; }
+  bool in_vblank() { return vblank; }
 
 private:
   LR35902 &cpu;
@@ -39,6 +40,8 @@ private:
 
   // Numer of cycles remaining until we move on to the next scanline
   int scanline_counter = 456;
+
+  bool vblank = false;
 
   struct MODE
   {

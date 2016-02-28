@@ -139,10 +139,7 @@ GLuint init_shaders() {
 
 void render()
 {
-  for (int i=0; i<16666; i++)
-  {
-    g_gb->step();
-  }
+  g_gb->run_to_vblank();
 
   glClear(GL_COLOR_BUFFER_BIT);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Display::width, Display::height,

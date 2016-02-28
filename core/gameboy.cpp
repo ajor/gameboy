@@ -10,6 +10,18 @@ void Gameboy::set_save_callback(MemoryBankController::SaveRAMCallback save_ram)
   cart.set_save_callback(save_ram);
 }
 
+void Gameboy::run_to_vblank()
+{
+  while (!display.in_vblank())
+  {
+    step();
+  }
+  while (display.in_vblank())
+  {
+    step();
+  }
+}
+
 void Gameboy::step()
 {
   uint cycles = cpu.step();

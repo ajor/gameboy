@@ -18,6 +18,7 @@ void Display::update(uint cycles)
       if (scanline > 153)
       {
         scanline = 0;
+        vblank = false;
       }
       memory.direct_io_write8(Memory::IO::LY, scanline);
 
@@ -28,6 +29,7 @@ void Display::update(uint cycles)
       else if (scanline == 144)
       {
         cpu.raise_interrupt(LR35902::Interrupt::VBLANK);
+        vblank = true;
       }
     }
 

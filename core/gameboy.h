@@ -24,6 +24,7 @@ public:
 
   void load_rom(std::istream& rom, std::istream& ram);
   void set_save_callback(MemoryBankController::SaveRAMCallback save_ram);
+  void run_to_vblank();
   void step();
   void reset();
   void set_debug(bool debug);
