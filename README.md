@@ -10,12 +10,11 @@ Online demos are available at http://ajor.co.uk/gameboy/
 ## Controls
 
 The Gameboy's direction keys are mapped to the arrow keys.
-Start button = enter
-Select button = backspace
-A button = z
-B button = x
 
-Keyboard controls are currently not customisable at runtime.
+    Start button = enter
+    Select button = backspace
+    A button = z
+    B button = x
 
 # Completeness / accuracy
 
