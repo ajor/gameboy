@@ -1,6 +1,7 @@
 #include "memory.h"
 #include "cartridge.h"
 #include "joypad.h"
+#include "audio.h"
 
 u8 Memory::read_byte(uint address) const
 {
@@ -42,7 +43,12 @@ u8 Memory::read_byte(uint address) const
   }
   else if (address >= 0xff00 && address < 0xff80)
   {
-    // IO registers
+    // Audio IO registers
+    if (address >= IO::NR10 && address <= IO::WAVE + 0xf)
+    {
+      return audio.read_byte(address);
+    }
+    // General IO registers
     return io.at(address - 0xff00);
   }
   else if (address >= 0xff80 && address < 0xffff)
@@ -114,6 +120,10 @@ void Memory::write_byte(uint address, u8 value)
       // First set the control bits, then update the joypad state
       io.at(IO::JOYP - 0xff00) = value;
       value = joypad.get_button_state();
+    }
+    else if (address >= IO::NR10 && address <= IO::WAVE + 0xf)
+    {
+      audio.write_byte(address, value);
     }
 
     io.at(address - 0xff00) = value;

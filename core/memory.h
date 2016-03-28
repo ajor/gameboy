@@ -5,11 +5,13 @@
 
 class Cartridge;
 class Joypad;
+class Audio;
 
 class Memory
 {
   Cartridge &cart;
   Joypad &joypad;
+  Audio &audio;
 
   std::vector<u8> vram = std::vector<u8>(0x2000);
   std::vector<u8> wram = std::vector<u8>(0x2000);
@@ -20,8 +22,9 @@ class Memory
 
 public:
   Memory() = delete;
-  explicit Memory(Cartridge &cartridge, Joypad &j) : cart(cartridge),
-                                                     joypad(j) { }
+  explicit Memory(Cartridge &cartridge, Joypad &j, Audio &a) : cart(cartridge),
+                                                               joypad(j),
+                                                               audio(a) { }
 
   void set8(uint address, u8 value)
   {
@@ -73,6 +76,40 @@ public:
       TIMA = 0xff05,    // Timer counter
       TMA  = 0xff06,    // Timer Modulo
       TAC  = 0xff07,    // Timer Control
+
+      // Audio
+      //   Channel 1 - tone & sweep
+      NR10 = 0xff10,    // Channel 1 sweep
+      NR11 = 0xff11,    // Channel 1 sound length/wave pattern duty
+      NR12 = 0xff12,    // Channel 1 volume envelope
+      NR13 = 0xff13,    // Channel 1 frequency low
+      NR14 = 0xff14,    // Channel 1 frequency high
+
+      //   Channel 2 - tone
+      NR21 = 0xff16,    // Channel 2 sound length/wave pattern duty
+      NR22 = 0xff17,    // Channel 2 volume envelope
+      NR23 = 0xff18,    // Channel 2 frequency low
+      NR24 = 0xff19,    // Channel 2 frequency high
+
+      //   Channel 3 - wave output
+      NR30 = 0xff1a,    // Channel 3 sound on/off
+      NR31 = 0xff1b,    // Channel 3 sound length
+      NR32 = 0xff1c,    // Channel 3 select output level
+      NR33 = 0xff1d,    // Channel 3 frequency low
+      NR34 = 0xff1e,    // Channel 3 frequency high
+
+      //   Channel 4 - noise
+      NR41 = 0xff20,    // Channel 4 sound length
+      NR42 = 0xff21,    // Channel 4 volume envelope
+      NR43 = 0xff22,    // Channel 4 polynomial counter
+      NR44 = 0xff23,    // Channel 4 counter/consecutive; initial
+
+      //   Sound control registers
+      NR50 = 0xff24,    // Channel control / on-off / volume
+      NR51 = 0xff25,    // Sound output terminal selection
+      NR52 = 0xff26,    // Sound on/off
+
+      WAVE = 0xff30,    // Wave pattern RAM, 16 bytes
 
       // Display
       LCDC = 0xff40,    // LCD Control

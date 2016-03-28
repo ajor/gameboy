@@ -1,4 +1,4 @@
-add_executable(gb main.cpp render_opengl.cpp)
+add_executable(gb main.cpp render_opengl.cpp openal.cpp)
 target_link_libraries(gb gb_core)
 
 if (CMAKE_SYSTEM_NAME MATCHES "Emscripten")
@@ -26,6 +26,12 @@ else()
   if (GLFW_FOUND)
     include_directories(${GLFW_INCLUDE_DIRS})
     target_link_libraries(gb ${GLFW_LIBRARIES})
+  endif()
+
+  find_package(OpenAL REQUIRED)
+  if (OPENAL_FOUND)
+    include_directories(${OPENAL_INCLUDE_DIR})
+    target_link_libraries(gb ${OPENAL_LIBRARY})
   endif()
 
 endif()

@@ -7,6 +7,7 @@
 #include "cartridge.h"
 #include "display.h"
 #include "joypad.h"
+#include "audio.h"
 
 class Gameboy
 {
@@ -15,12 +16,14 @@ class Gameboy
   Cartridge cart;
   Display display;
   Joypad joypad;
+  Audio audio;
 
 public:
   Gameboy() : cpu(memory),
-              memory(cart, joypad),
+              memory(cart, joypad, audio),
               display(cpu, memory),
-              joypad(cpu, memory) { }
+              joypad(cpu, memory),
+              audio(memory) { }
 
   void load_rom(std::istream& rom, std::istream& ram);
   void set_save_callback(MemoryBankController::SaveRAMCallback save_ram);
