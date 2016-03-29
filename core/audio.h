@@ -30,6 +30,8 @@ private:
   static int freq_to_hz(int freq);
   static int length_to_cycles(int cnt);
 
+  void reset();
+
   void update_channel1();
   void update_channel2();
   void update_channel3();
@@ -47,7 +49,7 @@ private:
 
   int volume[2];
   u8 terminal_selection = 0;
-  bool sound_enabled = true;
+  bool sound_enabled = false;
 
   u8 wave_data[16];
 

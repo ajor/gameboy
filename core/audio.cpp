@@ -24,6 +24,35 @@ void Audio::update(uint cycles)
   }
 }
 
+void Audio::reset()
+{
+  write_byte(Memory::IO::NR10, 0);
+  write_byte(Memory::IO::NR11, 0);
+  write_byte(Memory::IO::NR12, 0);
+  write_byte(Memory::IO::NR13, 0);
+  write_byte(Memory::IO::NR14, 0);
+
+  write_byte(Memory::IO::NR21, 0);
+  write_byte(Memory::IO::NR22, 0);
+  write_byte(Memory::IO::NR23, 0);
+  write_byte(Memory::IO::NR24, 0);
+
+  write_byte(Memory::IO::NR30, 0);
+  write_byte(Memory::IO::NR31, 0);
+  write_byte(Memory::IO::NR32, 0);
+  write_byte(Memory::IO::NR33, 0);
+  write_byte(Memory::IO::NR34, 0);
+
+  write_byte(Memory::IO::NR41, 0);
+  write_byte(Memory::IO::NR42, 0);
+  write_byte(Memory::IO::NR43, 0);
+  write_byte(Memory::IO::NR44, 0);
+
+  write_byte(Memory::IO::NR50, 0);
+  write_byte(Memory::IO::NR51, 0);
+  write_byte(Memory::IO::NR52, 0);
+}
+
 void Audio::update_channel1()
 {
   if (!sound_enabled ||
@@ -276,18 +305,35 @@ void Audio::write_byte(uint address, u8 value)
     case Memory::IO::NR50:
       volume[1] = (value >> 4) & 0x7; // Bits 6-4
       volume[0] = (value >> 0) & 0x7; // Bits 2-0
+      update_channel1();
+      update_channel2();
+      update_channel3();
+      update_channel4();
       break;
     case Memory::IO::NR51:
       terminal_selection = value;
+      update_channel1();
+      update_channel2();
+      update_channel3();
+      update_channel4();
       break;
     case Memory::IO::NR52:
       sound_enabled = (value >> 7) & 0x1; // Bit 7
+      if (!sound_enabled)
+      {
+        reset();
+      }
+      update_channel1();
+      update_channel2();
+      update_channel3();
+      update_channel4();
       break;
 
     default:
       if (address >= Memory::IO::WAVE && address <= Memory::IO::WAVE + 0xf)
       {
         wave_data[address - Memory::IO::WAVE] = value;
+        update_channel3();
       }
       else
       {
