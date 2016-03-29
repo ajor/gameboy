@@ -26,6 +26,7 @@ void Gameboy::step()
 {
   uint cycles = cpu.step();
   display.update(cycles);
+  audio.update(cycles);
   cpu.handle_interrupts();
 }
 

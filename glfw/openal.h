@@ -12,9 +12,13 @@ public:
   explicit AudioOut(Audio &audio_);
   ~AudioOut();
 
-  void update_channel1(int freq);
-  void update_channel2(int freq);
-  void update_channel3();
+  void play_channel1(int freq);
+  void play_channel2(int freq);
+  void play_channel3();
+
+  void stop_channel1();
+  void stop_channel2();
+  void stop_channel3();
 
 private:
   Audio &audio;

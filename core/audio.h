@@ -13,6 +13,8 @@ public:
   explicit Audio(Memory &mem) : memory(mem),
                                 aout(*this) { }
 
+  void update(uint cycles);
+
   u8 read_byte(uint address) const;
   void write_byte(uint address, u8 value);
 
@@ -23,6 +25,9 @@ public:
 private:
   Memory &memory;
   AudioOut aout;
+
+  static int freq_to_hz(int freq);
+  static int length_to_cycles(int cnt);
 
   void update_channel1();
   void update_channel2();
@@ -42,6 +47,7 @@ private:
   {
     int wave_duty;
     int snd_len;
+    bool counter_enabled;
 
     int sweep_time;
     int sweep_direction;
@@ -54,4 +60,9 @@ private:
     int freq;
   } channel_data[4];
   bool wave_enabled = false;
+
+  struct
+  {
+    int counter = 0;
+  } channel_state[4];
 };

@@ -3,26 +3,61 @@
 
 #include <stdlib.h>
 
+int Audio::freq_to_hz(int freq)
+{
+  return 131072 / (2048 - freq);
+}
+
+int Audio::length_to_cycles(int cnt)
+{
+  return (64 - cnt) * (4194304 / 256);
+}
+
+void Audio::update(uint cycles)
+{
+  for (int i=0; i<4; i++)
+  {
+    if (channel_data[i].counter_enabled)
+    {
+      channel_state[i].counter += cycles;
+    }
+  }
+}
+
 void Audio::update_channel1()
 {
+  if (channel_data[0].counter_enabled &&
+      length_to_cycles(channel_data[0].snd_len) < channel_state[0].counter)
+  {
+    // don't play sound
+    aout.stop_channel1();
+    return;
+  }
+
   for (int i=0; i<8; i++)
   {
     channels[0][i] = square_wave[channel_data[0].wave_duty][i];
   }
 
-  int real_freq = 131072 / (2048 - channel_data[0].freq);
-  aout.update_channel1(real_freq);
+  aout.play_channel1(freq_to_hz(channel_data[0].freq));
 }
 
 void Audio::update_channel2()
 {
+  if (channel_data[1].counter_enabled &&
+      length_to_cycles(channel_data[1].snd_len) < channel_state[1].counter)
+  {
+    // don't play sound
+    aout.stop_channel2();
+    return;
+  }
+
   for (int i=0; i<8; i++)
   {
     channels[1][i] = square_wave[channel_data[1].wave_duty][i];
   }
 
-  int real_freq = 131072 / (2048 - channel_data[1].freq);
-  aout.update_channel2(real_freq);
+  aout.play_channel2(freq_to_hz(channel_data[1].freq));
 }
 
 void Audio::update_channel3()
@@ -32,7 +67,7 @@ void Audio::update_channel3()
 //    channels[3][i] = memory.get8(Memory::IO::WAVE + i);
   }
 
-  aout.update_channel3();
+  aout.play_channel3();
 }
 
 u8 Audio::read_byte(uint address) const
@@ -50,10 +85,9 @@ u8 Audio::read_byte(uint address) const
              (channel_data[0].envelope_direction << 3) |
              (channel_data[0].envelope_count);
     case Memory::IO::NR13:
-      return 0;
+      return 0; // Write only
     case Memory::IO::NR14:
-      // TODO counter/consecutive selection
-      return 0;
+      return channel_data[0].counter_enabled << 6;
 
     case Memory::IO::NR21:
       return channel_data[1].wave_duty << 6; // Low bits are write-only
@@ -62,10 +96,21 @@ u8 Audio::read_byte(uint address) const
              (channel_data[1].envelope_direction << 3) |
              (channel_data[1].envelope_count);
     case Memory::IO::NR23:
-      return 0;
+      return 0; // Write only
     case Memory::IO::NR24:
-      // TODO counter/consecutive selection
-      return 0;
+      return channel_data[1].counter_enabled << 6;
+
+    case Memory::IO::NR30:
+      return wave_enabled << 7;
+    case Memory::IO::NR31:
+      return channel_data[2].snd_len;
+    case Memory::IO::NR32:
+      return channel_data[2].envelope_volume << 5;
+    case Memory::IO::NR33:
+      return 0; // Write only
+    case Memory::IO::NR34:
+      return channel_data[2].counter_enabled << 6;
+
     default:
       break;
 //      abort();
@@ -104,10 +149,11 @@ void Audio::write_byte(uint address, u8 value)
       {
         int freq_low = channel_data[0].freq & 0xff;             // Bits 7-0
         channel_data[0].freq = ((value & 0x7) << 8) | freq_low; // Bits 2-0
+
+        channel_data[0].counter_enabled = (value >> 6) & 0x1;   // Bit 6
         update_channel1();
 
         // TODO Initial / restart sound
-        //      counter selection
         break;
       }
 
@@ -133,10 +179,11 @@ void Audio::write_byte(uint address, u8 value)
       {
         int freq_low = channel_data[1].freq & 0xff;             // Bits 7-0
         channel_data[1].freq = ((value & 0x7) << 8) | freq_low; // Bits 2-0
+
+        channel_data[1].counter_enabled = (value >> 6) & 0x1;   // Bit 6
         update_channel2();
 
         // TODO Initial / restart sound
-        //      counter selection
         break;
       }
 
@@ -163,10 +210,11 @@ void Audio::write_byte(uint address, u8 value)
       {
         int freq_low = channel_data[2].freq & 0xff;             // Bits 7-0
         channel_data[2].freq = ((value & 0x7) << 8) | freq_low; // Bits 2-0
+
+        channel_data[2].counter_enabled = (value >> 6) & 0x1;   // Bit 6
         update_channel3();
 
         // TODO Initial / restart sound
-        //      counter selection
         break;
       }
 
