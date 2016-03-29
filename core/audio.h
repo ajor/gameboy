@@ -21,6 +21,7 @@ public:
   const u8 *get_channel_1() const { return &channels[0][0]; }
   const u8 *get_channel_2() const { return &channels[1][0]; }
   const u8 *get_channel_3() const { return &channels[2][0]; }
+  const u8 *get_channel_4() const { return &channels[3][0]; }
 
 private:
   Memory &memory;
@@ -32,6 +33,7 @@ private:
   void update_channel1();
   void update_channel2();
   void update_channel3();
+  void update_channel4();
 
   u8 channels[4][400];
 
@@ -42,6 +44,12 @@ private:
     {   0,    0,    0,    0, 0xff, 0xff, 0xff, 0xff},
     {   0,    0,    0,    0,    0,    0, 0xff, 0xff},
   };
+
+  int volume[2];
+  u8 terminal_selection = 0;
+  bool sound_enabled = true;
+
+  u8 wave_data[16];
 
   struct
   {

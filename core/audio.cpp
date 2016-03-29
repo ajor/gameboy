@@ -26,8 +26,9 @@ void Audio::update(uint cycles)
 
 void Audio::update_channel1()
 {
-  if (channel_data[0].counter_enabled &&
-      length_to_cycles(channel_data[0].snd_len) < channel_state[0].counter)
+  if (!sound_enabled ||
+      (channel_data[0].counter_enabled &&
+       length_to_cycles(channel_data[0].snd_len) < channel_state[0].counter))
   {
     // don't play sound
     aout.stop_channel1();
@@ -44,8 +45,9 @@ void Audio::update_channel1()
 
 void Audio::update_channel2()
 {
-  if (channel_data[1].counter_enabled &&
-      length_to_cycles(channel_data[1].snd_len) < channel_state[1].counter)
+  if (!sound_enabled ||
+      (channel_data[1].counter_enabled &&
+       length_to_cycles(channel_data[1].snd_len) < channel_state[1].counter))
   {
     // don't play sound
     aout.stop_channel2();
@@ -68,6 +70,10 @@ void Audio::update_channel3()
   }
 
   aout.play_channel3();
+}
+
+void Audio::update_channel4()
+{
 }
 
 u8 Audio::read_byte(uint address) const
@@ -111,9 +117,35 @@ u8 Audio::read_byte(uint address) const
     case Memory::IO::NR34:
       return channel_data[2].counter_enabled << 6;
 
+    case Memory::IO::NR41:
+      return channel_data[3].snd_len;
+    case Memory::IO::NR42:
+      return (channel_data[3].envelope_volume << 4) |
+             (channel_data[3].envelope_direction << 3) |
+             (channel_data[3].envelope_count);
+    case Memory::IO::NR43:
+      return (channel_data[3].freq << 4) |
+             (channel_data[3].sweep_direction << 3) |
+             (channel_data[3].sweep_count);
+    case Memory::IO::NR44:
+      return channel_data[3].counter_enabled << 6;
+
+    case Memory::IO::NR50:
+      return (volume[1] << 4) | volume[0];
+    case Memory::IO::NR51:
+      return terminal_selection;
+    case Memory::IO::NR52:
+      return (sound_enabled << 7); // TODO sound 1,2,3,4 ON flags
+
     default:
-      break;
-//      abort();
+      if (address >= Memory::IO::WAVE && address <= Memory::IO::WAVE + 0xf)
+      {
+        return wave_data[address - Memory::IO::WAVE];
+      }
+      else
+      {
+        abort();
+      }
   }
 }
 
@@ -218,8 +250,48 @@ void Audio::write_byte(uint address, u8 value)
         break;
       }
 
-    default:
+    case Memory::IO::NR41:
+      channel_data[3].snd_len = value & 0x3f; // Bits 5-0
+      update_channel4();
       break;
-//      abort();
+    case Memory::IO::NR42:
+      channel_data[3].envelope_volume    = (value >> 4) & 0xf; // Bits 7-4
+      channel_data[3].envelope_direction = (value >> 3) & 0x1; // Bit 3
+      channel_data[3].envelope_count     = (value >> 0) & 0x7; // Bits 2-0
+      update_channel4();
+      break;
+    case Memory::IO::NR43:
+      // TODO store to correctly named variables?
+      channel_data[3].freq            = (value >> 4) & 0xf; // Bits 7-4
+      channel_data[3].sweep_direction = (value >> 3) & 0x1; // Bit 3
+      channel_data[3].sweep_count     = (value >> 0) & 0x7; // Bits 2-0
+      update_channel4();
+      break;
+    case Memory::IO::NR44:
+      // TODO initial
+      channel_data[3].counter_enabled = (value >> 6) & 0x1; // Bit 6
+      update_channel4();
+      break;
+
+    case Memory::IO::NR50:
+      volume[1] = (value >> 4) & 0x7; // Bits 6-4
+      volume[0] = (value >> 0) & 0x7; // Bits 2-0
+      break;
+    case Memory::IO::NR51:
+      terminal_selection = value;
+      break;
+    case Memory::IO::NR52:
+      sound_enabled = (value >> 7) & 0x1; // Bit 7
+      break;
+
+    default:
+      if (address >= Memory::IO::WAVE && address <= Memory::IO::WAVE + 0xf)
+      {
+        wave_data[address - Memory::IO::WAVE] = value;
+      }
+      else
+      {
+        abort();
+      }
   }
 }
