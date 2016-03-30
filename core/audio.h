@@ -32,6 +32,8 @@ private:
 
   void reset();
 
+  void restart_channel(int channel);
+
   void update_channel1();
   void update_channel2();
   void update_channel3();
@@ -68,6 +70,8 @@ private:
     int envelope_count;
 
     int freq;
+
+    bool on;
   } channel_data[4];
   bool wave_enabled = false;
 

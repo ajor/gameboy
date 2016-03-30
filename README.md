@@ -20,7 +20,7 @@ The Gameboy's direction keys are mapped to the arrow keys.
 
 Save files are compatible with other popular Gameboy emulators.
 
-Audio is not implemented :(
+Audio support is not complete.
 
 Memory bank controllers (MBCs) 1 and 3 are the only ones currently supported, although the vast majority of Gameboy games use one of these two (or no MBC at all). The Real Time Clock (RTC) used in MBC3 is not implemented, so games which use it to keep track of time while the Gameboy is powered off will not function correctly in some aspects.
 

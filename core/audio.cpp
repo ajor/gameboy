@@ -17,10 +17,7 @@ void Audio::update(uint cycles)
 {
   for (int i=0; i<4; i++)
   {
-    if (channel_data[i].counter_enabled)
-    {
-      channel_state[i].counter += cycles;
-    }
+    channel_state[i].counter += cycles;
   }
 }
 
@@ -53,6 +50,12 @@ void Audio::reset()
   write_byte(Memory::IO::NR52, 0);
 }
 
+void Audio::restart_channel(int channel)
+{
+  channel_state[channel].counter = 0;
+  channel_data[channel].on = true;
+}
+
 void Audio::update_channel1()
 {
   if (!sound_enabled ||
@@ -61,6 +64,7 @@ void Audio::update_channel1()
   {
     // don't play sound
     aout.stop_channel1();
+    channel_data[0].on = false;
     return;
   }
 
@@ -80,6 +84,7 @@ void Audio::update_channel2()
   {
     // don't play sound
     aout.stop_channel2();
+    channel_data[1].on = false;
     return;
   }
 
@@ -164,7 +169,11 @@ u8 Audio::read_byte(uint address) const
     case Memory::IO::NR51:
       return terminal_selection;
     case Memory::IO::NR52:
-      return (sound_enabled << 7); // TODO sound 1,2,3,4 ON flags
+      return (sound_enabled << 7) |
+             (channel_data[3].on << 3) |
+             (channel_data[2].on << 2) |
+             (channel_data[1].on << 1) |
+             (channel_data[0].on << 0);
 
     default:
       if (address >= Memory::IO::WAVE && address <= Memory::IO::WAVE + 0xf)
@@ -212,9 +221,13 @@ void Audio::write_byte(uint address, u8 value)
         channel_data[0].freq = ((value & 0x7) << 8) | freq_low; // Bits 2-0
 
         channel_data[0].counter_enabled = (value >> 6) & 0x1;   // Bit 6
-        update_channel1();
 
-        // TODO Initial / restart sound
+        if ((value >> 7) & 0x1) // Bit 7
+        {
+          restart_channel(0);
+        }
+
+        update_channel1();
         break;
       }
 
@@ -242,9 +255,13 @@ void Audio::write_byte(uint address, u8 value)
         channel_data[1].freq = ((value & 0x7) << 8) | freq_low; // Bits 2-0
 
         channel_data[1].counter_enabled = (value >> 6) & 0x1;   // Bit 6
-        update_channel2();
 
-        // TODO Initial / restart sound
+        if ((value >> 7) & 0x1) // Bit 7
+        {
+          restart_channel(1);
+        }
+
+        update_channel2();
         break;
       }
 
@@ -273,9 +290,13 @@ void Audio::write_byte(uint address, u8 value)
         channel_data[2].freq = ((value & 0x7) << 8) | freq_low; // Bits 2-0
 
         channel_data[2].counter_enabled = (value >> 6) & 0x1;   // Bit 6
-        update_channel3();
 
-        // TODO Initial / restart sound
+        if ((value >> 7) & 0x1) // Bit 7
+        {
+          restart_channel(2);
+        }
+
+        update_channel3();
         break;
       }
 
@@ -297,8 +318,13 @@ void Audio::write_byte(uint address, u8 value)
       update_channel4();
       break;
     case Memory::IO::NR44:
-      // TODO initial
       channel_data[3].counter_enabled = (value >> 6) & 0x1; // Bit 6
+
+      if ((value >> 7) & 0x1) // Bit 7
+      {
+        restart_channel(3);
+      }
+
       update_channel4();
       break;
 
