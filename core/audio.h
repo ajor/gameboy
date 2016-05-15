@@ -21,10 +21,13 @@ public:
   const s8 *get_channel(int channel) const { return &channels[channel][0]; }
 
   void set_muted(bool muted);
+  void set_debug(bool debug_);
 
 private:
   Memory &memory;
   AudioOut aout;
+
+  bool debug = false;
 
   static int freq_to_hz(int freq);
   static int snd_len_to_cycles(int len);

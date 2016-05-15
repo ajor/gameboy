@@ -25,12 +25,19 @@ public:
               joypad(cpu, memory),
               audio(memory) { }
 
+  enum DEBUG_MODE
+  {
+    DEBUG_MODE_ALL,
+    DEBUG_MODE_CPU,
+    DEBUG_MODE_AUDIO,
+  };
+
   void load_rom(std::istream& rom, std::istream& ram);
   void set_save_callback(MemoryBankController::SaveRAMCallback save_ram);
   void run_to_vblank();
   void step();
   void reset();
-  void set_debug(bool debug);
+  void set_debug(DEBUG_MODE debug_mode, bool debug);
   void set_muted(bool muted);
   const Display::Colour *get_framebuffer() const { return display.get_framebuffer(); }
   void button_pressed(Joypad::Button::Name b) { joypad.button_pressed(b); }

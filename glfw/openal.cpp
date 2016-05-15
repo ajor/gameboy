@@ -47,7 +47,8 @@ void AudioOut::play_channel(int channel, int freq)
   if (muted)
     return;
 
-  printf("playing %d at %dhz\n", channel, freq);
+  if (debug)
+    printf("playing %d at %dhz\n", channel, freq);
 
   stop_channel(channel);
   alGenBuffers(1, &buffer[channel]);
@@ -63,7 +64,9 @@ void AudioOut::play_channel(int channel, int freq)
 
 void AudioOut::stop_channel(int channel)
 {
-  printf("stopppped %d\n", channel);
+  if (debug)
+    printf("stopppped %d\n", channel);
+
   alSourceStop(source[channel]);
   alDeleteSources(1, &source[channel]);
   alDeleteBuffers(1, &buffer[channel]);

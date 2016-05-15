@@ -30,9 +30,16 @@ void Gameboy::step()
   cpu.handle_interrupts();
 }
 
-void Gameboy::set_debug(bool debug)
+void Gameboy::set_debug(DEBUG_MODE debug_mode, bool debug)
 {
-  cpu.debug = debug;
+  if (debug_mode == DEBUG_MODE_CPU || debug_mode == DEBUG_MODE_ALL)
+  {
+    cpu.debug = debug;
+  }
+  if (debug_mode == DEBUG_MODE_AUDIO || debug_mode == DEBUG_MODE_ALL)
+  {
+    audio.set_debug(debug);
+  }
 }
 
 void Gameboy::set_muted(bool muted)

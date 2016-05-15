@@ -35,7 +35,8 @@ void Audio::update(uint cycles)
         channel_state[i].envelope_step -= 1;
         if (channel_state[i].envelope_step < 0)
           channel_state[i].envelope_step = 0;
-        printf("step %d\n", channel_state[i].envelope_step);
+        if (debug)
+          printf("step %d\n", channel_state[i].envelope_step);
 
         // TODO only update correct channel here
         update_channel1();
@@ -110,14 +111,17 @@ void Audio::update_channel1()
     // Reverse envelope direction (increase volume with steps)
     volume = channel_data[0].envelope_volume - volume;
   }
-  printf("vol = %d  ", volume);
+  if (debug)
+    printf("vol = %d  ", volume);
 
   for (int i=0; i<8; i++)
   {
     channels[0][i] = square_wave[channel_data[0].wave_duty][i] * volume / 0xf;
-    printf("%d, ", channels[0][i]);
+    if (debug)
+      printf("%d, ", channels[0][i]);
   }
-  puts("\n");
+  if (debug)
+    puts("\n");
 
   aout.play_channel(0, freq_to_hz(channel_data[0].freq));
 }
@@ -139,13 +143,16 @@ void Audio::update_channel2()
   int step = channel_state[1].envelope_step;
   if (steps > 0)
     volume = volume * step/steps;
-  printf("vol = %d  ", volume);
+  if (debug)
+    printf("vol = %d  ", volume);
   for (int i=0; i<8; i++)
   {
     channels[1][i] = square_wave[channel_data[1].wave_duty][i] * volume / 0xf;
-    printf("%d, ", channels[1][i]);
+    if (debug)
+      printf("%d, ", channels[1][i]);
   }
-  puts("\n");
+  if (debug)
+    puts("\n");
 
   aout.play_channel(1, freq_to_hz(channel_data[1].freq));
 }
@@ -429,4 +436,10 @@ void Audio::write_byte(uint address, u8 value)
 void Audio::set_muted(bool muted)
 {
   aout.muted = muted;
+}
+
+void Audio::set_debug(bool debug_)
+{
+  debug = debug_;
+  aout.debug = debug_;
 }

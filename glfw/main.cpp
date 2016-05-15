@@ -36,9 +36,9 @@ void usage()
 {
   printf("Usage: %s [options] rom\n", name);
   printf("Options:\n");
-  printf("  -o file   Save game output file\n");
-  printf("  -d        Run in debug mode\n");
-  printf("  -m        Mute audio\n");
+  printf("  -o file               Save game output file\n");
+  printf("  -d [all|cpu|audio]    Run in debug mode\n");
+  printf("  -m                    Mute audio\n");
 }
 
 int main(int argc, char *argv[])
@@ -52,13 +52,27 @@ int main(int argc, char *argv[])
 
   bool ram_file_set = false;
   int c;
-  while ((c = getopt(argc, argv, "do:m")) != -1)
+  while ((c = getopt(argc, argv, "d:o:m")) != -1)
   {
     switch (c)
     {
       case 'd':
-        gb.set_debug(true);
+      {
+        std::string arg = optarg;
+        if (arg == "all")
+        {
+          gb.set_debug(Gameboy::DEBUG_MODE_ALL, true);
+        }
+        else if (arg == "cpu")
+        {
+          gb.set_debug(Gameboy::DEBUG_MODE_CPU, true);
+        }
+        else if (arg == "audio")
+        {
+          gb.set_debug(Gameboy::DEBUG_MODE_AUDIO, true);
+        }
         break;
+      }
       case 'o':
         ram_file = optarg;
         ram_file_set = true;
