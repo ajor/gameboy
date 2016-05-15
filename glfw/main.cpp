@@ -38,6 +38,7 @@ void usage()
   printf("Options:\n");
   printf("  -o file   Save game output file\n");
   printf("  -d        Run in debug mode\n");
+  printf("  -m        Mute audio\n");
 }
 
 int main(int argc, char *argv[])
@@ -51,7 +52,7 @@ int main(int argc, char *argv[])
 
   bool ram_file_set = false;
   int c;
-  while ((c = getopt(argc, argv, "do:")) != -1)
+  while ((c = getopt(argc, argv, "do:m")) != -1)
   {
     switch (c)
     {
@@ -61,6 +62,9 @@ int main(int argc, char *argv[])
       case 'o':
         ram_file = optarg;
         ram_file_set = true;
+        break;
+      case 'm':
+        gb.set_muted(true);
         break;
       default:
         usage();

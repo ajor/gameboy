@@ -44,6 +44,9 @@ AudioOut::~AudioOut()
 
 void AudioOut::play_channel(int channel, int freq)
 {
+  if (muted)
+    return;
+
   printf("playing %d at %dhz\n", channel, freq);
 
   stop_channel(channel);

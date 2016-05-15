@@ -20,6 +20,8 @@ public:
 
   const s8 *get_channel(int channel) const { return &channels[channel][0]; }
 
+  void set_muted(bool muted);
+
 private:
   Memory &memory;
   AudioOut aout;

@@ -34,3 +34,8 @@ void Gameboy::set_debug(bool debug)
 {
   cpu.debug = debug;
 }
+
+void Gameboy::set_muted(bool muted)
+{
+  audio.set_muted(muted);
+}

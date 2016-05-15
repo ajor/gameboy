@@ -425,3 +425,8 @@ void Audio::write_byte(uint address, u8 value)
       }
   }
 }
+
+void Audio::set_muted(bool muted)
+{
+  aout.muted = muted;
+}

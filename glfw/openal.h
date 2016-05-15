@@ -16,6 +16,8 @@ public:
 
   void stop_channel(int channel);
 
+  bool muted = false;
+
 private:
   Audio &audio;
 
