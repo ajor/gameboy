@@ -2,15 +2,21 @@
 #include "memory.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 int Audio::freq_to_hz(int freq)
 {
   return 131072 / (2048 - freq);
 }
 
-int Audio::length_to_cycles(int cnt)
+int Audio::snd_len_to_cycles(int len)
 {
-  return (64 - cnt) * (4194304 / 256);
+  return (64 - len) * (4194304 / 256);
+}
+
+int Audio::envelope_cycles_per_step(int len)
+{
+  return len * (4194304 / 64);
 }
 
 void Audio::update(uint cycles)
@@ -18,6 +24,24 @@ void Audio::update(uint cycles)
   for (int i=0; i<4; i++)
   {
     channel_state[i].counter += cycles;
+    channel_state[i].envelope_counter += cycles;
+
+    if (channel_data[i].envelope_steps > 0 && channel_state[i].envelope_step > 0)
+    {
+      int env_step_length = envelope_cycles_per_step(channel_data[i].envelope_steps);
+      if (channel_state[i].envelope_counter > env_step_length)
+      {
+        channel_state[i].envelope_counter -= env_step_length;
+        channel_state[i].envelope_step -= 1;
+        if (channel_state[i].envelope_step < 0)
+          channel_state[i].envelope_step = 0;
+        printf("step %d\n", channel_state[i].envelope_step);
+
+        // TODO only update correct channel here
+        update_channel1();
+        update_channel2();
+      }
+    }
   }
 }
 
@@ -53,14 +77,21 @@ void Audio::reset()
 void Audio::restart_channel(int channel)
 {
   channel_state[channel].counter = 0;
+
   channel_data[channel].on = true;
+}
+
+void Audio::restart_channel_envelope(int channel)
+{
+  channel_state[channel].envelope_counter = 0;
+  channel_state[channel].envelope_step = channel_data[channel].envelope_steps;
 }
 
 void Audio::update_channel1()
 {
   if (!sound_enabled ||
       (channel_data[0].counter_enabled &&
-       length_to_cycles(channel_data[0].snd_len) < channel_state[0].counter))
+       snd_len_to_cycles(channel_data[0].snd_len) < channel_state[0].counter))
   {
     // don't play sound
     aout.stop_channel1();
@@ -68,10 +99,25 @@ void Audio::update_channel1()
     return;
   }
 
+  int volume = channel_data[0].envelope_volume;
+  int steps = channel_data[0].envelope_steps;
+  int step = channel_state[0].envelope_step;
+  if (steps > 0)
+    volume = volume * step/steps;
+
+  if (channel_data[0].envelope_direction == 1)
+  {
+    // Reverse envelope direction (increase volume with steps)
+    volume = channel_data[0].envelope_volume - volume;
+  }
+  printf("vol = %d  ", volume);
+
   for (int i=0; i<8; i++)
   {
-    channels[0][i] = square_wave[channel_data[0].wave_duty][i];
+    channels[0][i] = square_wave[channel_data[0].wave_duty][i] * volume / 0xf;
+    printf("%d, ", channels[0][i]);
   }
+  puts("\n");
 
   aout.play_channel1(freq_to_hz(channel_data[0].freq));
 }
@@ -80,7 +126,7 @@ void Audio::update_channel2()
 {
   if (!sound_enabled ||
       (channel_data[1].counter_enabled &&
-       length_to_cycles(channel_data[1].snd_len) < channel_state[1].counter))
+       snd_len_to_cycles(channel_data[1].snd_len) < channel_state[1].counter))
   {
     // don't play sound
     aout.stop_channel2();
@@ -88,10 +134,18 @@ void Audio::update_channel2()
     return;
   }
 
+  int volume = channel_data[1].envelope_volume;
+  int steps = channel_data[1].envelope_steps;
+  int step = channel_state[1].envelope_step;
+  if (steps > 0)
+    volume = volume * step/steps;
+  printf("vol = %d  ", volume);
   for (int i=0; i<8; i++)
   {
-    channels[1][i] = square_wave[channel_data[1].wave_duty][i];
+    channels[1][i] = square_wave[channel_data[1].wave_duty][i] * volume / 0xf;
+    printf("%d, ", channels[1][i]);
   }
+  puts("\n");
 
   aout.play_channel2(freq_to_hz(channel_data[1].freq));
 }
@@ -123,7 +177,7 @@ u8 Audio::read_byte(uint address) const
     case Memory::IO::NR12:
       return (channel_data[0].envelope_volume << 4) |
              (channel_data[0].envelope_direction << 3) |
-             (channel_data[0].envelope_count);
+             (channel_data[0].envelope_steps);
     case Memory::IO::NR13:
       return 0; // Write only
     case Memory::IO::NR14:
@@ -134,7 +188,7 @@ u8 Audio::read_byte(uint address) const
     case Memory::IO::NR22:
       return (channel_data[1].envelope_volume << 4) |
              (channel_data[1].envelope_direction << 3) |
-             (channel_data[1].envelope_count);
+             (channel_data[1].envelope_steps);
     case Memory::IO::NR23:
       return 0; // Write only
     case Memory::IO::NR24:
@@ -156,7 +210,7 @@ u8 Audio::read_byte(uint address) const
     case Memory::IO::NR42:
       return (channel_data[3].envelope_volume << 4) |
              (channel_data[3].envelope_direction << 3) |
-             (channel_data[3].envelope_count);
+             (channel_data[3].envelope_steps);
     case Memory::IO::NR43:
       return (channel_data[3].freq << 4) |
              (channel_data[3].sweep_direction << 3) |
@@ -205,7 +259,8 @@ void Audio::write_byte(uint address, u8 value)
     case Memory::IO::NR12:
       channel_data[0].envelope_volume    = (value >> 4) & 0xf; // Bits 7-4
       channel_data[0].envelope_direction = (value >> 3) & 0x1; // Bit 3
-      channel_data[0].envelope_count     = (value >> 0) & 0x7; // Bits 2-0
+      channel_data[0].envelope_steps     = (value >> 0) & 0x7; // Bits 2-0
+      restart_channel_envelope(0);
       update_channel1();
       break;
     case Memory::IO::NR13:
@@ -239,7 +294,8 @@ void Audio::write_byte(uint address, u8 value)
     case Memory::IO::NR22:
       channel_data[1].envelope_volume    = (value >> 4) & 0xf; // Bits 7-4
       channel_data[1].envelope_direction = (value >> 3) & 0x1; // Bit 3
-      channel_data[1].envelope_count     = (value >> 0) & 0x7; // Bits 2-0
+      channel_data[1].envelope_steps     = (value >> 0) & 0x7; // Bits 2-0
+      restart_channel_envelope(1);
       update_channel2();
       break;
     case Memory::IO::NR23:
@@ -275,6 +331,7 @@ void Audio::write_byte(uint address, u8 value)
       break;
     case Memory::IO::NR32:
       channel_data[2].envelope_volume = (value >> 5) & 0x3; // Bits 6-5
+      restart_channel_envelope(2);
       update_channel3();
       break;
     case Memory::IO::NR33:
@@ -307,7 +364,8 @@ void Audio::write_byte(uint address, u8 value)
     case Memory::IO::NR42:
       channel_data[3].envelope_volume    = (value >> 4) & 0xf; // Bits 7-4
       channel_data[3].envelope_direction = (value >> 3) & 0x1; // Bit 3
-      channel_data[3].envelope_count     = (value >> 0) & 0x7; // Bits 2-0
+      channel_data[3].envelope_steps     = (value >> 0) & 0x7; // Bits 2-0
+      restart_channel_envelope(3);
       update_channel4();
       break;
     case Memory::IO::NR43:

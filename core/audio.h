@@ -18,35 +18,37 @@ public:
   u8 read_byte(uint address) const;
   void write_byte(uint address, u8 value);
 
-  const u8 *get_channel_1() const { return &channels[0][0]; }
-  const u8 *get_channel_2() const { return &channels[1][0]; }
-  const u8 *get_channel_3() const { return &channels[2][0]; }
-  const u8 *get_channel_4() const { return &channels[3][0]; }
+  const s8 *get_channel_1() const { return &channels[0][0]; }
+  const s8 *get_channel_2() const { return &channels[1][0]; }
+  const s8 *get_channel_3() const { return &channels[2][0]; }
+  const s8 *get_channel_4() const { return &channels[3][0]; }
 
 private:
   Memory &memory;
   AudioOut aout;
 
   static int freq_to_hz(int freq);
-  static int length_to_cycles(int cnt);
+  static int snd_len_to_cycles(int len);
+  static int envelope_cycles_per_step(int len);
 
   void reset();
 
   void restart_channel(int channel);
+  void restart_channel_envelope(int channel);
 
   void update_channel1();
   void update_channel2();
   void update_channel3();
   void update_channel4();
 
-  u8 channels[4][400];
+  s8 channels[4][400];
 
-  const u8 square_wave[4][8] =
+  const s8 square_wave[4][8] =
   {
-    {   0, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
-    {   0,    0, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
-    {   0,    0,    0,    0, 0xff, 0xff, 0xff, 0xff},
-    {   0,    0,    0,    0,    0,    0, 0xff, 0xff},
+    {-0x7f,  0x7f,  0x7f,  0x7f,  0x7f,  0x7f,  0x7f,  0x7f},
+    {-0x7f, -0x7f,  0x7f,  0x7f,  0x7f,  0x7f,  0x7f,  0x7f},
+    {-0x7f, -0x7f, -0x7f, -0x7f,  0x7f,  0x7f,  0x7f,  0x7f},
+    {-0x7f, -0x7f, -0x7f, -0x7f, -0x7f, -0x7f,  0x7f,  0x7f},
   };
 
   int volume[2];
@@ -67,7 +69,18 @@ private:
 
     int envelope_volume;
     int envelope_direction;
-    int envelope_count;
+    int envelope_steps;
+
+    //              ___
+    //            ^ |  |__
+    //  initial   | |     |__
+    //  envelope  | |        |__
+    //  volume    | |           |__
+    //            | |              |__
+    //            v |                 |_____
+    //               <--------------->
+    //                  number of     n/64 seconds
+    //                  steps (n)      long each
 
     int freq;
 
@@ -77,6 +90,8 @@ private:
 
   struct
   {
-    int counter = 0;
+    int counter;
+    int envelope_counter;
+    int envelope_step;
   } channel_state[4];
 };
