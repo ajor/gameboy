@@ -42,72 +42,26 @@ AudioOut::~AudioOut()
   alcCloseDevice(dev);
 }
 
-void AudioOut::play_channel1(int freq)
+void AudioOut::play_channel(int channel, int freq)
 {
-  printf("Hello1 %d\n", freq);
+  printf("playing %d at %dhz\n", channel, freq);
 
-  alSourceStop(source[0]);
-  alDeleteSources(1, &source[0]);
-  alDeleteBuffers(1, &buffer[0]);
-  alGenBuffers(1, &buffer[0]);
-  alGenSources(1, &source[0]);
+  stop_channel(channel);
+  alGenBuffers(1, &buffer[channel]);
+  alGenSources(1, &source[channel]);
 
-  alBufferData(buffer[0], AL_FORMAT_MONO8, audio.get_channel_1(), 8, freq*8);
+  alBufferData(buffer[channel], AL_FORMAT_MONO8, audio.get_channel(channel), 8, freq*8);
 
-  alSourcei(source[0], AL_BUFFER, buffer[0]);
-  alSourcei(source[0], AL_LOOPING, AL_TRUE);
+  alSourcei(source[channel], AL_BUFFER, buffer[channel]);
+  alSourcei(source[channel], AL_LOOPING, AL_TRUE);
 
-  alSourcePlay(source[0]);
+  alSourcePlay(source[channel]);
 }
 
-void AudioOut::play_channel2(int freq)
+void AudioOut::stop_channel(int channel)
 {
-  printf("Hello2 %d\n", freq);
-
-  alSourceStop(source[1]);
-  alDeleteSources(1, &source[1]);
-  alDeleteBuffers(1, &buffer[1]);
-  alGenBuffers(1, &buffer[1]);
-  alGenSources(1, &source[1]);
-
-  alBufferData(buffer[1], AL_FORMAT_MONO8, audio.get_channel_2(), 8, freq*8);
-
-  alSourcei(source[1], AL_BUFFER, buffer[1]);
-  alSourcei(source[1], AL_LOOPING, AL_TRUE);
-
-  alSourcePlay(source[1]);
-}
-
-void AudioOut::play_channel3()
-{
-//  printf("Hello3\n");
-//  alBufferData(buffer[2], AL_FORMAT_MONO8, audio.get_channel_3(), 400, 44100);
-//
-//  alSourcei(source[2], AL_BUFFER, buffer[2]);
-//  alSourcei(source[2], AL_LOOPING, AL_TRUE);
-//
-//  alSourcePlay(source[2]);
-}
-
-void AudioOut::stop_channel1()
-{
-  printf("stopppped 1\n");
-  alSourceStop(source[0]);
-  alDeleteSources(1, &source[0]);
-  alDeleteBuffers(1, &buffer[0]);
-}
-
-void AudioOut::stop_channel2()
-{
-  printf("stopppped 2\n");
-  alSourceStop(source[1]);
-  alDeleteSources(1, &source[1]);
-  alDeleteBuffers(1, &buffer[1]);
-}
-
-void AudioOut::stop_channel3()
-{
-  alSourceStop(source[2]);
-  alDeleteSources(1, &source[2]);
-  alDeleteBuffers(1, &buffer[2]);
+  printf("stopppped %d\n", channel);
+  alSourceStop(source[channel]);
+  alDeleteSources(1, &source[channel]);
+  alDeleteBuffers(1, &buffer[channel]);
 }

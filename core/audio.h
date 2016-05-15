@@ -18,10 +18,7 @@ public:
   u8 read_byte(uint address) const;
   void write_byte(uint address, u8 value);
 
-  const s8 *get_channel_1() const { return &channels[0][0]; }
-  const s8 *get_channel_2() const { return &channels[1][0]; }
-  const s8 *get_channel_3() const { return &channels[2][0]; }
-  const s8 *get_channel_4() const { return &channels[3][0]; }
+  const s8 *get_channel(int channel) const { return &channels[channel][0]; }
 
 private:
   Memory &memory;

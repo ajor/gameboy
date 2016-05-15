@@ -94,7 +94,7 @@ void Audio::update_channel1()
        snd_len_to_cycles(channel_data[0].snd_len) < channel_state[0].counter))
   {
     // don't play sound
-    aout.stop_channel1();
+    aout.stop_channel(0);
     channel_data[0].on = false;
     return;
   }
@@ -119,7 +119,7 @@ void Audio::update_channel1()
   }
   puts("\n");
 
-  aout.play_channel1(freq_to_hz(channel_data[0].freq));
+  aout.play_channel(0, freq_to_hz(channel_data[0].freq));
 }
 
 void Audio::update_channel2()
@@ -129,7 +129,7 @@ void Audio::update_channel2()
        snd_len_to_cycles(channel_data[1].snd_len) < channel_state[1].counter))
   {
     // don't play sound
-    aout.stop_channel2();
+    aout.stop_channel(1);
     channel_data[1].on = false;
     return;
   }
@@ -147,17 +147,17 @@ void Audio::update_channel2()
   }
   puts("\n");
 
-  aout.play_channel2(freq_to_hz(channel_data[1].freq));
+  aout.play_channel(1, freq_to_hz(channel_data[1].freq));
 }
 
 void Audio::update_channel3()
 {
-  for (int i=0; i<=0xf; i++)
-  {
+//  for (int i=0; i<=0xf; i++)
+//  {
 //    channels[3][i] = memory.get8(Memory::IO::WAVE + i);
-  }
-
-  aout.play_channel3();
+//  }
+//
+//  aout.play_channel3();
 }
 
 void Audio::update_channel4()
