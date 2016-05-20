@@ -6,8 +6,12 @@
 #include "types.h"
 #include "mbc.h"
 
+class Gameboy;
+
 class Cartridge
 {
+  Gameboy &gb;
+
   std::vector<u8> rom;
   std::vector<u8> ram;
   std::unique_ptr<MemoryBankController> mbc;
@@ -17,6 +21,8 @@ class Cartridge
   void init_ram(uint size_code);
 
 public:
+  explicit Cartridge(Gameboy &gb_) : gb(gb_) { }
+
   void init_cartridge(std::istream& rom_stream, std::istream& ram_stream);
   void set_save_callback(MemoryBankController::SaveRAMCallback save_ram);
 

@@ -38,6 +38,7 @@ void usage()
   printf("Options:\n");
   printf("  -o file               Save game output file\n");
   printf("  -d [all|cpu|audio]    Run in debug mode\n");
+  printf("  -v [original|colour]  Select version of Gameboy to emulate\n");
   printf("  -m                    Mute audio\n");
 }
 
@@ -52,7 +53,7 @@ int main(int argc, char *argv[])
 
   bool ram_file_set = false;
   int c;
-  while ((c = getopt(argc, argv, "d:o:m")) != -1)
+  while ((c = getopt(argc, argv, "d:v:o:m")) != -1)
   {
     switch (c)
     {
@@ -70,6 +71,29 @@ int main(int argc, char *argv[])
         else if (arg == "audio")
         {
           gb.set_debug(Gameboy::DEBUG_MODE_AUDIO, true);
+        }
+        else
+        {
+          fprintf(stderr, "Invalid debug mode: '%s'\n", optarg);
+          return 1;
+        }
+        break;
+      }
+      case 'v':
+      {
+        std::string arg = optarg;
+        if (arg == "original")
+        {
+          gb.gb_version = Gameboy::GB_VERSION_ORIGINAL;
+        }
+        else if (arg == "colour")
+        {
+          gb.gb_version = Gameboy::GB_VERSION_COLOUR;
+        }
+        else
+        {
+          fprintf(stderr, "Invalid Gameboy version: '%s'\n", optarg);
+          return 1;
         }
         break;
       }

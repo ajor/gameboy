@@ -1,4 +1,5 @@
 #include "cartridge.h"
+#include "gameboy.h"
 
 void Cartridge::init_cartridge(std::istream& rom_stream, std::istream& ram_stream)
 {
@@ -9,9 +10,36 @@ void Cartridge::init_cartridge(std::istream& rom_stream, std::istream& ram_strea
 
   rom_stream.read(header, header_size);
 
+  u8 cgb_flag       = header[0x143];
   u8 cartridge_type = header[0x147];
   u8 rom_size_code  = header[0x148];
   u8 ram_size_code  = header[0x149];
+
+  if (cgb_flag & (1<<7))
+  {
+    if (cgb_flag & (1<<6))
+    {
+      // Game only works on CGB
+      gb.gb_version = Gameboy::GB_VERSION_COLOUR;
+      printf("Running in Gameboy Colour mode\n");
+    }
+    else
+    {
+      // Game supports colour and original - choose colour here
+      // if user hasn't specified a preference
+      if (gb.gb_version == Gameboy::GB_VERSION_UNDEFINED)
+      {
+        gb.gb_version = Gameboy::GB_VERSION_COLOUR;
+        printf("Running in Gameboy Colour mode\n");
+      }
+    }
+  }
+  else
+  {
+    // Game only supports original
+    gb.gb_version = Gameboy::GB_VERSION_ORIGINAL;
+    printf("Running in original Gameboy mode\n");
+  }
 
   init_mbc(cartridge_type);
   init_rom(rom_size_code);

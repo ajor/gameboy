@@ -21,6 +21,7 @@ class Gameboy
 public:
   Gameboy() : cpu(memory),
               memory(cart, joypad, audio),
+              cart(*this),
               display(cpu, memory),
               joypad(cpu, memory),
               audio(memory) { }
@@ -31,6 +32,15 @@ public:
     DEBUG_MODE_CPU,
     DEBUG_MODE_AUDIO,
   };
+
+  enum GB_VERSION
+  {
+    GB_VERSION_UNDEFINED,
+    GB_VERSION_ORIGINAL,
+    GB_VERSION_COLOUR,
+  };
+
+  GB_VERSION gb_version = GB_VERSION_UNDEFINED;
 
   void load_rom(std::istream& rom, std::istream& ram);
   void set_save_callback(MemoryBankController::SaveRAMCallback save_ram);
