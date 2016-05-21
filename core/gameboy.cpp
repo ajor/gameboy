@@ -32,11 +32,11 @@ void Gameboy::step()
 
 void Gameboy::set_debug(DEBUG_MODE debug_mode, bool debug)
 {
-  if (debug_mode == DEBUG_MODE_CPU || debug_mode == DEBUG_MODE_ALL)
+  if (debug_mode == DEBUG_MODE::CPU || debug_mode == DEBUG_MODE::ALL)
   {
     cpu.debug = debug;
   }
-  if (debug_mode == DEBUG_MODE_AUDIO || debug_mode == DEBUG_MODE_ALL)
+  if (debug_mode == DEBUG_MODE::AUDIO || debug_mode == DEBUG_MODE::ALL)
   {
     audio.set_debug(debug);
   }
@@ -45,4 +45,16 @@ void Gameboy::set_debug(DEBUG_MODE debug_mode, bool debug)
 void Gameboy::set_muted(bool muted)
 {
   audio.set_muted(muted);
+}
+
+void Gameboy::set_version(GB_VERSION version)
+{
+  gb_version_set = true;
+  gb_version = version;
+  if (version == GB_VERSION::ORIGINAL)
+    display.gb_version = Display::GB_VERSION::ORIGINAL;
+  else if (version == GB_VERSION::COLOUR)
+    display.gb_version = Display::GB_VERSION::COLOUR;
+  else
+    abort();
 }

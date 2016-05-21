@@ -20,16 +20,16 @@ void Cartridge::init_cartridge(std::istream& rom_stream, std::istream& ram_strea
     if (cgb_flag & (1<<6))
     {
       // Game only works on CGB
-      gb.gb_version = Gameboy::GB_VERSION_COLOUR;
+      gb.set_version(Gameboy::GB_VERSION::COLOUR);
       printf("Running in Gameboy Colour mode\n");
     }
     else
     {
       // Game supports colour and original - choose colour here
       // if user hasn't specified a preference
-      if (gb.gb_version == Gameboy::GB_VERSION_UNDEFINED)
+      if (gb.gb_version_set == false)
       {
-        gb.gb_version = Gameboy::GB_VERSION_COLOUR;
+        gb.set_version(Gameboy::GB_VERSION::COLOUR);
         printf("Running in Gameboy Colour mode\n");
       }
     }
@@ -37,7 +37,7 @@ void Cartridge::init_cartridge(std::istream& rom_stream, std::istream& ram_strea
   else
   {
     // Game only supports original
-    gb.gb_version = Gameboy::GB_VERSION_ORIGINAL;
+    gb.set_version(Gameboy::GB_VERSION::ORIGINAL);
     printf("Running in original Gameboy mode\n");
   }
 

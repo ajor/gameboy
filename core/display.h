@@ -8,6 +8,12 @@ class Memory;
 class Display
 {
 public:
+  enum class GB_VERSION
+  {
+    ORIGINAL,
+    COLOUR,
+  } gb_version;
+
   Display() = delete;
   explicit Display(LR35902 &lr35902, Memory &mem) : cpu(lr35902), memory(mem) { }
 

@@ -62,15 +62,15 @@ int main(int argc, char *argv[])
         std::string arg = optarg;
         if (arg == "all")
         {
-          gb.set_debug(Gameboy::DEBUG_MODE_ALL, true);
+          gb.set_debug(Gameboy::DEBUG_MODE::ALL, true);
         }
         else if (arg == "cpu")
         {
-          gb.set_debug(Gameboy::DEBUG_MODE_CPU, true);
+          gb.set_debug(Gameboy::DEBUG_MODE::CPU, true);
         }
         else if (arg == "audio")
         {
-          gb.set_debug(Gameboy::DEBUG_MODE_AUDIO, true);
+          gb.set_debug(Gameboy::DEBUG_MODE::AUDIO, true);
         }
         else
         {
@@ -84,11 +84,11 @@ int main(int argc, char *argv[])
         std::string arg = optarg;
         if (arg == "original")
         {
-          gb.gb_version = Gameboy::GB_VERSION_ORIGINAL;
+          gb.set_version(Gameboy::GB_VERSION::ORIGINAL);
         }
         else if (arg == "colour")
         {
-          gb.gb_version = Gameboy::GB_VERSION_COLOUR;
+          gb.set_version(Gameboy::GB_VERSION::COLOUR);
         }
         else
         {
