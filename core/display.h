@@ -62,6 +62,7 @@ private:
 
   void draw_scanline();
   void draw_background();
+  void clear_background();
   void draw_window();
   void draw_sprites();
 

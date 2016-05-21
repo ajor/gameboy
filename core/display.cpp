@@ -41,9 +41,13 @@ void Display::draw_scanline()
 {
   u8 LCDC = memory.get8(Memory::IO::LCDC);
 
-  if (LCDC & (1<<0))
+  if (gb_version == GB_VERSION::COLOUR || LCDC & (1<<0))
   {
     draw_background();
+  }
+  else
+  {
+    clear_background();
   }
   if (LCDC & (1<<5))
   {
@@ -135,6 +139,15 @@ void Display::draw_background()
     u8 colour = (BGP >> (colour_id * 2)) & 0x3;
 
     framebuffer[LY][screenx] = display_palette[colour];
+  }
+}
+
+void Display::clear_background()
+{
+  u8 LY = memory.get8(Memory::IO::LY);
+  for (uint screenx=0; screenx<width; screenx++)
+  {
+    framebuffer[LY][screenx] = display_palette[0]; // white
   }
 }
 
@@ -262,6 +275,11 @@ void Display::draw_sprites()
     bool flip_y = (flags >> 6) & 0x1;
     bool flip_x = (flags >> 5) & 0x1;
     uint palette_num = (flags >> 4) & 0x1;
+
+    if (gb_version == GB_VERSION::COLOUR && !(LCDC & (1<<0)))
+    {
+      low_priority = false;
+    }
 
     // Sprites are either 8x8 or 8x16 pixels, with eiter 16 or 32 bytes each.
     // 8x16 sprites are restricted to only even pattern numbers, so we can
