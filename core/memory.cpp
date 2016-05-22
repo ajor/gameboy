@@ -23,8 +23,7 @@ u8 Memory::read_byte(uint address) const
   else if (address >= 0xd000 && address < 0xe000)
   {
     // Switchable Work RAM bank (1 - 7)
-    // TODO make switchable
-    return wram.at(address - 0xc000);
+    return wram.at(active_wram_bank*0x1000 + address - 0xd000);
   }
   else if (address >= 0xe000 && address < 0xfe00)
   {
@@ -124,6 +123,10 @@ void Memory::write_byte(uint address, u8 value)
     else if (address >= IO::NR10 && address <= IO::WAVE + 0xf)
     {
       audio.write_byte(address, value);
+    }
+    else if (address == IO::SVBK)
+    {
+      active_wram_bank = value & 0x7;
     }
 
     io.at(address - 0xff00) = value;

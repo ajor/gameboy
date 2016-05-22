@@ -148,9 +148,11 @@ private:
   Audio &audio;
 
   std::vector<u8> vram = std::vector<u8>(0x2000);
-  std::vector<u8> wram = std::vector<u8>(0x2000);
+  std::vector<u8> wram = std::vector<u8>(0x8000);
   std::vector<u8> hram = std::vector<u8>(0x7f);
   std::vector<u8> oam  = std::vector<u8>(0xa0);
   std::vector<u8> io   = std::vector<u8>(0x80);
   u8 interrupt_enable;
+
+  uint active_wram_bank = 1;
 };
