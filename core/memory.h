@@ -9,17 +9,6 @@ class Audio;
 
 class Memory
 {
-  Cartridge &cart;
-  Joypad &joypad;
-  Audio &audio;
-
-  std::vector<u8> vram = std::vector<u8>(0x2000);
-  std::vector<u8> wram = std::vector<u8>(0x2000);
-  std::vector<u8> hram = std::vector<u8>(0x7f);
-  std::vector<u8> oam  = std::vector<u8>(0xa0);
-  std::vector<u8> io   = std::vector<u8>(0x80);
-  u8 interrupt_enable;
-
 public:
   Memory() = delete;
   explicit Memory(Cartridge &cartridge, Joypad &j, Audio &a) : cart(cartridge),
@@ -125,6 +114,24 @@ public:
       WY   = 0xff4a,    // Window Y position
       WX   = 0xff4b,    // Window X position
 
+      // Gameboy Colour Registers
+      KEY1 = 0xff4d,    // Prepare speed switch
+      RP   = 0xff56,    // Infrared communications port
+      SVBK = 0xff70,    // WRAM bank
+
+      // DMA Transfers - Gameboy Colour only
+      HDMA1 = 0xff51,   // New DMA source, high
+      HDMA2 = 0xff52,   // New DMA source, low
+      HDMA3 = 0xff53,   // New DMA destination, high
+      HDMA4 = 0xff54,   // New DMA destination, low
+      HDMA5 = 0xff55,   // New DMA length/mode/start
+
+      // Colour Palettes - Gameboy Colour only
+      BGPI = 0xff68,    // BCPS/BGPI Background Palette Index
+      BGPD = 0xff69,    // BCPD/BGPD Background Palette Data
+      OBPI = 0xff6a,    // OCPS/OBPI Sprite Palette Index
+      OBPD = 0xff6b,    // OCPD/OBPD Sprite Palette Data
+
       // Interrupt
       IF = 0xff0f,      // Interrupt Flag
       IE = 0xffff,      // Interrupt Enable
@@ -135,4 +142,15 @@ private:
   u8 read_byte(uint address) const;
   void write_byte(uint address, u8 value);
   void dma_transfer(uint address);
+
+  Cartridge &cart;
+  Joypad &joypad;
+  Audio &audio;
+
+  std::vector<u8> vram = std::vector<u8>(0x2000);
+  std::vector<u8> wram = std::vector<u8>(0x2000);
+  std::vector<u8> hram = std::vector<u8>(0x7f);
+  std::vector<u8> oam  = std::vector<u8>(0xa0);
+  std::vector<u8> io   = std::vector<u8>(0x80);
+  u8 interrupt_enable;
 };
