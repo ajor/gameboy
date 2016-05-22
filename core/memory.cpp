@@ -13,7 +13,7 @@ u8 Memory::read_byte(uint address) const
   else if (address >= 0x8000 && address < 0xa000)
   {
     // VRAM - Video RAM
-    return vram.at(address - 0x8000);
+    return vram.at(active_vram_bank*0x2000 + address - 0x8000);
   }
   else if (address >= 0xc000 && address < 0xd000)
   {
@@ -123,6 +123,10 @@ void Memory::write_byte(uint address, u8 value)
     else if (address >= IO::NR10 && address <= IO::WAVE + 0xf)
     {
       audio.write_byte(address, value);
+    }
+    else if (address == IO::VBK)
+    {
+      active_vram_bank = value & 0x1;
     }
     else if (address == IO::SVBK)
     {

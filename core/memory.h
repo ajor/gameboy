@@ -117,6 +117,7 @@ public:
       // Gameboy Colour Registers
       KEY1 = 0xff4d,    // Prepare speed switch
       RP   = 0xff56,    // Infrared communications port
+      VBK  = 0xff4f,    // VRAM bank
       SVBK = 0xff70,    // WRAM bank
 
       // DMA Transfers - Gameboy Colour only
@@ -147,12 +148,13 @@ private:
   Joypad &joypad;
   Audio &audio;
 
-  std::vector<u8> vram = std::vector<u8>(0x2000);
+  std::vector<u8> vram = std::vector<u8>(0x4000);
   std::vector<u8> wram = std::vector<u8>(0x8000);
   std::vector<u8> hram = std::vector<u8>(0x7f);
   std::vector<u8> oam  = std::vector<u8>(0xa0);
   std::vector<u8> io   = std::vector<u8>(0x80);
   u8 interrupt_enable;
 
+  uint active_vram_bank = 0;
   uint active_wram_bank = 1;
 };
