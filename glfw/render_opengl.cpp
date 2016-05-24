@@ -59,7 +59,6 @@ GLuint link_program(GLuint frag_shader, GLuint vert_shader) {
 }
 
 const GLchar *kVertexShaderSource =
-  "#version 100\n"
   "attribute vec2 a_position;"
   "attribute vec2 a_texcoord;"
   "varying vec2 v_texcoord;"
@@ -69,8 +68,9 @@ const GLchar *kVertexShaderSource =
   "}";
 
 const GLchar *kFragmentShaderSource =
-  "#version 100\n"
+#ifdef __EMSCRIPTEN__
   "precision mediump float;"
+#endif
   "varying vec2 v_texcoord;"
   "uniform sampler2D u_texture;"
   "void main() {"

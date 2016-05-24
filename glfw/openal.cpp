@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <math.h>
-#include <AL/al.h>
-#include <AL/alc.h>
 
 AudioOut::AudioOut(Audio &audio_) : audio(audio_)
 {
