@@ -143,6 +143,7 @@ private:
   u8 read_byte(uint address) const;
   void write_byte(uint address, u8 value);
   void dma_transfer(uint address);
+  void hdma_transfer();
 
   Cartridge &cart;
   Joypad &joypad;

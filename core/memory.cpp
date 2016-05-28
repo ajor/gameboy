@@ -162,6 +162,10 @@ void Memory::write_byte(uint address, u8 value)
       cgb_sprite_palette_index = value & 0x3f;
       cgb_sprite_palette_autoinc = (value >> 7) & 0x1;
     }
+    else if (address == IO::HDMA5)
+    {
+      hdma_transfer();
+    }
 
     io.at(address - 0xff00) = value;
   }
@@ -193,5 +197,24 @@ void Memory::dma_transfer(uint address)
   for (uint i=0; i<0xa0; i++)
   {
     set8(0xfe00+i, get8(address+i));
+  }
+}
+
+void Memory::hdma_transfer()
+{
+  uint source_high = read_byte(IO::HDMA1);
+  uint source_low  = read_byte(IO::HDMA2);
+  uint dest_high   = read_byte(IO::HDMA3);
+  uint dest_low    = read_byte(IO::HDMA4);
+
+  uint source = source_high << 8 | source_low;
+  uint dest = dest_high << 8 | dest_low;
+
+  // TODO support for H-Blank DMA
+  uint HDMA5 = read_byte(IO::HDMA5);
+  uint transfer_length = HDMA5 & 0x7f;
+  for (uint i=0; i<transfer_length; i++)
+  {
+    write_byte(dest+i, read_byte(source+i));
   }
 }
