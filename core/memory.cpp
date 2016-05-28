@@ -42,12 +42,20 @@ u8 Memory::read_byte(uint address) const
   }
   else if (address >= 0xff00 && address < 0xff80)
   {
-    // Audio IO registers
+    // IO registers
     if (address >= IO::NR10 && address <= IO::WAVE + 0xf)
     {
       return audio.read_byte(address);
     }
-    // General IO registers
+    else if (address == IO::BGPD)
+    {
+      return cgb_background_palettes[cgb_background_palette_index];
+    }
+    else if (address == IO::OBPD)
+    {
+      return cgb_sprite_palettes[cgb_sprite_palette_index];
+    }
+
     return io.at(address - 0xff00);
   }
   else if (address >= 0xff80 && address < 0xffff)
@@ -131,6 +139,28 @@ void Memory::write_byte(uint address, u8 value)
     else if (address == IO::SVBK)
     {
       active_wram_bank = value & 0x7;
+    }
+    else if (address == IO::BGPD)
+    {
+      cgb_background_palettes[cgb_background_palette_index] = value;
+      if (cgb_background_palette_autoinc)
+        cgb_background_palette_index++;
+    }
+    else if (address == IO::OBPD)
+    {
+      cgb_sprite_palettes[cgb_sprite_palette_index] = value;
+      if (cgb_sprite_palette_autoinc)
+        cgb_sprite_palette_index++;
+    }
+    else if (address == IO::BGPI)
+    {
+      cgb_background_palette_index = value & 0x3f;
+      cgb_background_palette_autoinc = (value >> 7) & 0x1;
+    }
+    else if (address == IO::OBPI)
+    {
+      cgb_sprite_palette_index = value & 0x3f;
+      cgb_sprite_palette_autoinc = (value >> 7) & 0x1;
     }
 
     io.at(address - 0xff00) = value;

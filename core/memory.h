@@ -153,6 +153,10 @@ private:
   std::vector<u8> hram = std::vector<u8>(0x7f);
   std::vector<u8> oam  = std::vector<u8>(0xa0);
   std::vector<u8> io   = std::vector<u8>(0x80);
+  std::vector<u8> cgb_background_palettes = std::vector<u8>(0x40);
+  std::vector<u8> cgb_sprite_palettes = std::vector<u8>(0x40);
+  int cgb_background_palette_index, cgb_sprite_palette_index;
+  bool cgb_background_palette_autoinc, cgb_sprite_palette_autoinc;
   u8 interrupt_enable;
 
   uint active_vram_bank = 0;
