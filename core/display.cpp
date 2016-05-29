@@ -314,6 +314,13 @@ void Display::draw_sprites()
 
     for (uint sprite_x=0; sprite_x<8; sprite_x++)
     {
+      uint screenx = (x_pos-8+sprite_x)%256;
+      if (screenx >= width)
+      {
+        // Pixel is off screen
+        continue;
+      }
+
       uint bit = flip_x ? sprite_x : 7 - sprite_x;
       uint colour_id = ((sprite_byte1 >> bit) & 0x1) |
                        ((sprite_byte2 >> bit) & 0x1) << 1;
@@ -323,35 +330,56 @@ void Display::draw_sprites()
         continue;
       }
 
-      // Get the colour from the background palette register
-      // 0 = white, 3 = black
-      u8 palette;
-      if (palette_num == 0)
+      Colour colour;
+      Colour colour_0;
+      if (gb_version == GB_VERSION::ORIGINAL)
       {
-        palette = memory.get8(Memory::IO::OBP0);
+        // Get the colour from the background palette register
+        // 0 = white, 3 = black
+        u8 palette;
+        if (palette_num == 0)
+        {
+          palette = memory.get8(Memory::IO::OBP0);
+        }
+        else
+        {
+          palette = memory.get8(Memory::IO::OBP1);
+        }
+        u8 palette_colour = (palette >> (colour_id * 2)) & 0x3;
+        colour = display_palette[palette_colour];
+
+        u8 BGP = memory.get8(Memory::IO::BGP);
+        u8 palette_colour_0 = (BGP & 0x3);
+        colour_0 = display_palette[palette_colour_0];
       }
       else
       {
-        palette = memory.get8(Memory::IO::OBP1);
-      }
-      u8 colour = (palette >> (colour_id * 2)) & 0x3;
+        uint palette_num = flags & 0x7;
+        uint palette_offset = palette_num*8; // palettes are 8 bytes each
 
-      uint screenx = (x_pos-8+sprite_x)%256;
-      if (screenx >= width)
-      {
-        // Pixel is off screen
-        continue;
+        Colour cgb_display_palette[4];
+        for (uint i=0; i<4; i++)
+        {
+          u8 colour_byte1 = cgb_sprite_palettes.at(palette_offset + i*2);
+          u8 colour_byte2 = cgb_sprite_palettes.at(palette_offset + i*2 + 1);
+          u16 colour = colour_byte2 << 8 | colour_byte1;
+
+          cgb_display_palette[i] = {.r = (u8)((colour >> 0) & 0x1f),
+                                    .g = (u8)((colour >> 5) & 0x1f),
+                                    .b = (u8)((colour >>10) & 0x1f)};
+        }
+
+        colour_0 = cgb_display_palette[0];
+        colour = cgb_display_palette[colour_id];
       }
 
       // Low priority sprites are only drawn on colour 0 backgrounds
-      u8 BGP = memory.get8(Memory::IO::BGP);
-      u8 colour_0 = (BGP & 0x3);
       if (!low_priority ||
-          (framebuffer[LY][screenx].r == display_palette[colour_0].r &&
-           framebuffer[LY][screenx].b == display_palette[colour_0].b &&
-           framebuffer[LY][screenx].g == display_palette[colour_0].g))
+          (framebuffer[LY][screenx].r == colour_0.r &&
+           framebuffer[LY][screenx].b == colour_0.b &&
+           framebuffer[LY][screenx].g == colour_0.g))
       {
-        framebuffer[LY][screenx] = display_palette[colour];
+        framebuffer[LY][screenx] = colour;
       }
     }
   }
