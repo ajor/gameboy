@@ -128,8 +128,8 @@ void Display::draw_background()
     //   The 2 bits per pixel aren't adjacent, they are in the
     //   same position in each of the 2 bytes for their line.
     uint tile_byte_offset = tile_y*2;
-    u8 tile_byte1 = memory.get16(tile_data_addr + tile_byte_offset);
-    u8 tile_byte2 = memory.get16(tile_data_addr + tile_byte_offset + 1);
+    u8 tile_byte1 = memory.get8(tile_data_addr + tile_byte_offset);
+    u8 tile_byte2 = memory.get8(tile_data_addr + tile_byte_offset + 1);
 
     uint bit = 7 - tile_x;
     uint colour_id = ((tile_byte1 >> bit) & 0x1) |
@@ -228,8 +228,8 @@ void Display::draw_window()
     //   The 2 bits per pixel aren't adjacent, they are in the
     //   same position in each of the 2 bytes for their line.
     uint tile_byte_offset = tile_y*2;
-    u8 tile_byte1 = memory.get16(tile_data_addr + tile_byte_offset);
-    u8 tile_byte2 = memory.get16(tile_data_addr + tile_byte_offset + 1);
+    u8 tile_byte1 = memory.get8(tile_data_addr + tile_byte_offset);
+    u8 tile_byte2 = memory.get8(tile_data_addr + tile_byte_offset + 1);
 
     uint bit = 7 - tile_x;
     uint colour_id = ((tile_byte1 >> bit) & 0x1) |
@@ -309,8 +309,8 @@ void Display::draw_sprites()
     }
     // Get the data for this line of the sprite
     uint sprite_byte_offset = sprite_y*2;
-    u8 sprite_byte1 = memory.get16(sprite_data_addr + sprite_byte_offset, vram_bank);
-    u8 sprite_byte2 = memory.get16(sprite_data_addr + sprite_byte_offset + 1, vram_bank);
+    u8 sprite_byte1 = memory.get8(sprite_data_addr + sprite_byte_offset, vram_bank);
+    u8 sprite_byte2 = memory.get8(sprite_data_addr + sprite_byte_offset + 1, vram_bank);
 
     for (uint sprite_x=0; sprite_x<8; sprite_x++)
     {

@@ -28,6 +28,11 @@ public:
     return read_byte(address);
   }
 
+  u8 get8(uint address, uint vram_bank) const
+  {
+    return read_byte(address, vram_bank);
+  }
+
   void set16(uint address, u16 value)
   {
     u8 upper = (value & 0xff00) >> 8;
@@ -40,14 +45,6 @@ public:
   {
     u8 lower = read_byte(address);
     u8 upper = read_byte(address+1);
-    u16 value = (upper << 8) | lower;
-    return value;
-  }
-
-  u16 get16(uint address, uint vram_bank) const
-  {
-    u8 lower = read_byte(address, vram_bank);
-    u8 upper = read_byte(address+1, vram_bank);
     u16 value = (upper << 8) | lower;
     return value;
   }
