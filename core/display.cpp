@@ -110,7 +110,40 @@ void Display::draw_background()
 
     // Tile map is 32x32 tiles, with 1 byte per tile
     uint tile_map_addr = base_tile_map_addr + tile_row*32 + tile_col;
-    u8 tile_num = memory.get8(tile_map_addr);
+    u8 tile_num = memory.get8(tile_map_addr, 0);
+
+    u8 tile_attr;
+    uint vram_bank;
+    bool high_priority;
+    if (gb_version == GB_VERSION::ORIGINAL)
+    {
+      vram_bank = 0;
+      high_priority = false;
+    }
+    else
+    {
+      // Tile map attributes defines attributes for the corresponding tile number
+      tile_attr = memory.get8(tile_map_addr, 1);
+
+      vram_bank     = (tile_attr >> 3) & 0x1;
+      bool flip_x   = (tile_attr >> 5) & 0x1;
+      bool flip_y   = (tile_attr >> 6) & 0x1;
+      high_priority = (tile_attr >> 7) & 0x1;
+
+      if (!(LCDC & (1<<0))) // master priority
+      {
+        high_priority = false;
+      }
+      if (flip_y)
+      {
+        tile_y = 8 - tile_y;
+      }
+      if (flip_x)
+      {
+        tile_x = 8 - tile_x;
+      }
+    }
+
 
     // Tile data is 32x32 tiles, with 16 bytes per tile
     uint tile_data_addr;
@@ -128,19 +161,45 @@ void Display::draw_background()
     //   The 2 bits per pixel aren't adjacent, they are in the
     //   same position in each of the 2 bytes for their line.
     uint tile_byte_offset = tile_y*2;
-    u8 tile_byte1 = memory.get8(tile_data_addr + tile_byte_offset);
-    u8 tile_byte2 = memory.get8(tile_data_addr + tile_byte_offset + 1);
+    u8 tile_byte1 = memory.get8(tile_data_addr + tile_byte_offset, vram_bank);
+    u8 tile_byte2 = memory.get8(tile_data_addr + tile_byte_offset + 1, vram_bank);
 
     uint bit = 7 - tile_x;
     uint colour_id = ((tile_byte1 >> bit) & 0x1) |
                      ((tile_byte2 >> bit) & 0x1) << 1;
 
-    // Get the colour from the background palette register
-    // 0 = white, 3 = black
-    u8 BGP = memory.get8(Memory::IO::BGP);
-    u8 colour = (BGP >> (colour_id * 2)) & 0x3;
 
-    framebuffer[LY][screenx] = display_palette[colour];
+    Colour colour;
+    if (gb_version == GB_VERSION::ORIGINAL)
+    {
+      // Get the colour from the background palette register
+      // 0 = white, 3 = black
+      u8 BGP = memory.get8(Memory::IO::BGP);
+      u8 palette_colour = (BGP >> (colour_id * 2)) & 0x3;
+      colour = display_palette[palette_colour];
+    }
+    else
+    {
+      u8 palette_num   = (tile_attr >> 0) & 0x7;
+      uint palette_offset = palette_num*8; // palettes are 8 bytes each
+
+      Colour cgb_display_palette[4];
+      for (uint i=0; i<4; i++)
+      {
+        u8 colour_byte1 = cgb_background_palettes.at(palette_offset + i*2);
+        u8 colour_byte2 = cgb_background_palettes.at(palette_offset + i*2 + 1);
+        u16 c = colour_byte2 << 8 | colour_byte1;
+
+        cgb_display_palette[i] = {.r = (u8)((c >> 0) & 0x1f),
+                                  .g = (u8)((c >> 5) & 0x1f),
+                                  .b = (u8)((c >>10) & 0x1f)};
+      }
+
+      colour = cgb_display_palette[colour_id];
+    }
+
+    // TODO priority tiles
+    framebuffer[LY][screenx] = colour;
   }
 }
 
@@ -278,7 +337,7 @@ void Display::draw_sprites()
     bool flip_x = (flags >> 5) & 0x1;
     uint palette_num = (flags >> 4) & 0x1;
 
-    if (gb_version == GB_VERSION::COLOUR && !(LCDC & (1<<0)))
+    if (gb_version == GB_VERSION::COLOUR && !(LCDC & (1<<0))) // master priority
     {
       low_priority = false;
     }
@@ -354,7 +413,7 @@ void Display::draw_sprites()
       }
       else
       {
-        uint palette_num = flags & 0x7;
+        palette_num = flags & 0x7;
         uint palette_offset = palette_num*8; // palettes are 8 bytes each
 
         Colour cgb_display_palette[4];
@@ -362,11 +421,11 @@ void Display::draw_sprites()
         {
           u8 colour_byte1 = cgb_sprite_palettes.at(palette_offset + i*2);
           u8 colour_byte2 = cgb_sprite_palettes.at(palette_offset + i*2 + 1);
-          u16 colour = colour_byte2 << 8 | colour_byte1;
+          u16 c = colour_byte2 << 8 | colour_byte1;
 
-          cgb_display_palette[i] = {.r = (u8)((colour >> 0) & 0x1f),
-                                    .g = (u8)((colour >> 5) & 0x1f),
-                                    .b = (u8)((colour >>10) & 0x1f)};
+          cgb_display_palette[i] = {.r = (u8)((c >> 0) & 0x1f),
+                                    .g = (u8)((c >> 5) & 0x1f),
+                                    .b = (u8)((c >>10) & 0x1f)};
         }
 
         colour_0 = cgb_display_palette[0];
