@@ -6,14 +6,17 @@
 class Cartridge;
 class Joypad;
 class Audio;
+class Display;
 
 class Memory
 {
 public:
   Memory() = delete;
-  explicit Memory(Cartridge &cartridge, Joypad &j, Audio &a) : cart(cartridge),
-                                                               joypad(j),
-                                                               audio(a) { }
+  explicit Memory(Cartridge &cartridge, Joypad &j, Audio &a, Display &d)
+           : cart(cartridge),
+             joypad(j),
+             audio(a),
+             display(d) { }
 
   void set8(uint address, u8 value)
   {
@@ -37,6 +40,14 @@ public:
   {
     u8 lower = read_byte(address);
     u8 upper = read_byte(address+1);
+    u16 value = (upper << 8) | lower;
+    return value;
+  }
+
+  u16 get16(uint address, uint vram_bank) const
+  {
+    u8 lower = read_byte(address, vram_bank);
+    u8 upper = read_byte(address+1, vram_bank);
     u16 value = (upper << 8) | lower;
     return value;
   }
@@ -141,6 +152,7 @@ public:
 
 private:
   u8 read_byte(uint address) const;
+  u8 read_byte(uint address, uint vram_bank) const;
   void write_byte(uint address, u8 value);
   void dma_transfer(uint address);
   void hdma_transfer();
@@ -148,16 +160,13 @@ private:
   Cartridge &cart;
   Joypad &joypad;
   Audio &audio;
+  Display &display;
 
   std::vector<u8> vram = std::vector<u8>(0x4000);
   std::vector<u8> wram = std::vector<u8>(0x8000);
   std::vector<u8> hram = std::vector<u8>(0x7f);
   std::vector<u8> oam  = std::vector<u8>(0xa0);
   std::vector<u8> io   = std::vector<u8>(0x80);
-  std::vector<u8> cgb_background_palettes = std::vector<u8>(0x40);
-  std::vector<u8> cgb_sprite_palettes = std::vector<u8>(0x40);
-  int cgb_background_palette_index, cgb_sprite_palette_index;
-  bool cgb_background_palette_autoinc, cgb_sprite_palette_autoinc;
   u8 interrupt_enable;
 
   uint active_vram_bank = 0;

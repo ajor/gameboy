@@ -13,7 +13,7 @@ class Gameboy
 {
 public:
   Gameboy() : cpu(memory),
-              memory(cart, joypad, audio),
+              memory(cart, joypad, audio, display),
               cart(*this),
               display(cpu, memory),
               joypad(cpu, memory),

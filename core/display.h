@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "types.h"
 
 class LR35902;
@@ -36,6 +37,9 @@ public:
   const Colour *get_framebuffer() const { return &framebuffer[0][0]; }
   bool in_vblank() { return vblank; }
 
+  u8 read_byte(uint address) const;
+  void write_byte(uint address, u8 value);
+
 private:
   LR35902 &cpu;
   Memory &memory;
@@ -59,6 +63,12 @@ private:
       VRAM   = 3,
     };
   };
+
+  // Gameboy Colour palettes
+  std::vector<u8> cgb_background_palettes = std::vector<u8>(0x40);
+  std::vector<u8> cgb_sprite_palettes = std::vector<u8>(0x40);
+  int cgb_background_palette_index, cgb_sprite_palette_index;
+  bool cgb_background_palette_autoinc, cgb_sprite_palette_autoinc;
 
   void draw_scanline();
   void draw_background();

@@ -2,6 +2,7 @@
 #include "cartridge.h"
 #include "joypad.h"
 #include "audio.h"
+#include "display.h"
 
 u8 Memory::read_byte(uint address) const
 {
@@ -47,14 +48,6 @@ u8 Memory::read_byte(uint address) const
     {
       return audio.read_byte(address);
     }
-    else if (address == IO::BGPD)
-    {
-      return cgb_background_palettes[cgb_background_palette_index];
-    }
-    else if (address == IO::OBPD)
-    {
-      return cgb_sprite_palettes[cgb_sprite_palette_index];
-    }
 
     return io.at(address - 0xff00);
   }
@@ -70,6 +63,17 @@ u8 Memory::read_byte(uint address) const
   }
 
   // Should never get here
+  abort();
+}
+
+u8 Memory::read_byte(uint address, uint vram_bank) const
+{
+  if (address >= 0x8000 && address < 0xa000)
+  {
+    return vram.at(vram_bank*0x2000 + address - 0x8000);
+  }
+
+  // Should only call this function when trying to access VRAM
   abort();
 }
 
@@ -140,27 +144,10 @@ void Memory::write_byte(uint address, u8 value)
     {
       active_wram_bank = value & 0x7;
     }
-    else if (address == IO::BGPD)
+    else if (address == IO::BGPD || address == IO::OBPD ||
+             address == IO::BGPI || address == IO::OBPI)
     {
-      cgb_background_palettes[cgb_background_palette_index] = value;
-      if (cgb_background_palette_autoinc)
-        cgb_background_palette_index++;
-    }
-    else if (address == IO::OBPD)
-    {
-      cgb_sprite_palettes[cgb_sprite_palette_index] = value;
-      if (cgb_sprite_palette_autoinc)
-        cgb_sprite_palette_index++;
-    }
-    else if (address == IO::BGPI)
-    {
-      cgb_background_palette_index = value & 0x3f;
-      cgb_background_palette_autoinc = (value >> 7) & 0x1;
-    }
-    else if (address == IO::OBPI)
-    {
-      cgb_sprite_palette_index = value & 0x3f;
-      cgb_sprite_palette_autoinc = (value >> 7) & 0x1;
+      display.write_byte(address, value);
     }
     else if (address == IO::HDMA5)
     {
@@ -207,6 +194,7 @@ void Memory::hdma_transfer()
   uint dest_high   = read_byte(IO::HDMA3);
   uint dest_low    = read_byte(IO::HDMA4);
 
+  // TODO check address are in range
   uint source = source_high << 8 | source_low;
   uint dest = dest_high << 8 | dest_low;
 
@@ -217,4 +205,6 @@ void Memory::hdma_transfer()
   {
     write_byte(dest+i, read_byte(source+i));
   }
+
+  HDMA5 &= 0xfe; // Clear last bit to show HDMA has finished
 }

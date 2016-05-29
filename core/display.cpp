@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "display.h"
 #include "lr35902.h"
 #include "memory.h"
@@ -296,10 +298,19 @@ void Display::draw_sprites()
       sprite_y = sprite_height - sprite_y;
     }
 
+    uint vram_bank;
+    if (gb_version == GB_VERSION::ORIGINAL)
+    {
+      vram_bank = 0;
+    }
+    else
+    {
+      vram_bank = (flags >> 3) & 0x1;
+    }
     // Get the data for this line of the sprite
     uint sprite_byte_offset = sprite_y*2;
-    u8 sprite_byte1 = memory.get16(sprite_data_addr + sprite_byte_offset);
-    u8 sprite_byte2 = memory.get16(sprite_data_addr + sprite_byte_offset + 1);
+    u8 sprite_byte1 = memory.get16(sprite_data_addr + sprite_byte_offset, vram_bank);
+    u8 sprite_byte2 = memory.get16(sprite_data_addr + sprite_byte_offset + 1, vram_bank);
 
     for (uint sprite_x=0; sprite_x<8; sprite_x++)
     {
@@ -399,4 +410,48 @@ void Display::update_status()
   }
 
   memory.set8(Memory::IO::STAT, STAT);
+}
+
+u8 Display::read_byte(uint address) const
+{
+  switch (address)
+  {
+    case Memory::IO::BGPD:
+      return cgb_background_palettes[cgb_background_palette_index];
+    case Memory::IO::OBPD:
+      return cgb_sprite_palettes[cgb_sprite_palette_index];
+    case Memory::IO::BGPI:
+      return (cgb_background_palette_autoinc << 7) | cgb_background_palette_index;
+    case Memory::IO::OBPI:
+      return (cgb_sprite_palette_autoinc << 7) | cgb_sprite_palette_index;
+    default:
+      abort();
+  }
+}
+
+void Display::write_byte(uint address, u8 value)
+{
+  switch (address)
+  {
+    case Memory::IO::BGPD:
+      cgb_background_palettes[cgb_background_palette_index] = value;
+      if (cgb_background_palette_autoinc)
+        cgb_background_palette_index++;
+      break;
+    case Memory::IO::OBPD:
+      cgb_sprite_palettes[cgb_sprite_palette_index] = value;
+      if (cgb_sprite_palette_autoinc)
+        cgb_sprite_palette_index++;
+      break;
+    case Memory::IO::BGPI:
+      cgb_background_palette_index = value & 0x3f;
+      cgb_background_palette_autoinc = (value >> 7) & 0x1;
+      break;
+    case Memory::IO::OBPI:
+      cgb_sprite_palette_index = value & 0x3f;
+      cgb_sprite_palette_autoinc = (value >> 7) & 0x1;
+      break;
+    default:
+      abort();
+  }
 }
