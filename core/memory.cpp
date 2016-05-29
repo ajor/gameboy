@@ -196,7 +196,7 @@ void Memory::hdma_transfer()
 
   // TODO check address are in range
   uint source = source_high << 8 | source_low;
-  uint dest = dest_high << 8 | dest_low;
+  uint dest = 0x8000 + (dest_high << 8 | dest_low);
 
   // TODO support for H-Blank DMA
   uint HDMA5 = read_byte(IO::HDMA5);
@@ -207,4 +207,5 @@ void Memory::hdma_transfer()
   }
 
   HDMA5 &= 0xfe; // Clear last bit to show HDMA has finished
+  direct_io_write8(IO::HDMA5, HDMA5);
 }
