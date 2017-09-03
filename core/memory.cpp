@@ -4,6 +4,15 @@
 #include "audio.h"
 #include "display.h"
 
+Memory::Memory(Cartridge &cartridge, Joypad &j, Audio &a, Display &d)
+  : cart(cartridge),
+    joypad(j),
+    audio(a),
+    display(d)
+{
+  set8(IO::LCDC, 0xff); // LCD needs to be enabled at boot
+}
+
 u8 Memory::read_byte(uint address) const
 {
   if (address < 0x8000 || (address >= 0xa000 && address < 0xc000))

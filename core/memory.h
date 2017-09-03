@@ -18,11 +18,7 @@ public:
   } gb_version;
 
   Memory() = delete;
-  explicit Memory(Cartridge &cartridge, Joypad &j, Audio &a, Display &d)
-           : cart(cartridge),
-             joypad(j),
-             audio(a),
-             display(d) { }
+  explicit Memory(Cartridge &cartridge, Joypad &j, Audio &a, Display &d);
 
   void set8(uint address, u8 value)
   {
