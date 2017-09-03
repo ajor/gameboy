@@ -110,8 +110,7 @@ void Memory::write_byte(uint address, u8 value)
   else if (address >= 0xd000 && address < 0xe000)
   {
     // Switchable Work RAM bank (1 - 7)
-    // TODO make switchable
-    wram.at(address - 0xc000) = value;
+    wram.at(active_wram_bank*0x1000 + address - 0xd000) = value;
   }
   else if (address >= 0xe000 && address < 0xfe00)
   {
