@@ -426,6 +426,11 @@ void Audio::write_byte(uint address, u8 value)
         wave_data[address - Memory::IO::WAVE] = value;
         update_channel3();
       }
+      else if (address == 0xff15 || address == 0xff1f)
+      {
+        // Ignore - unused registers, likely originally intended as
+        // sweep registers for channels 2 and 4
+      }
       else
       {
         abort();
