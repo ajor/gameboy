@@ -52,9 +52,15 @@ void Gameboy::set_version(GB_VERSION version)
   gb_version_set = true;
   gb_version = version;
   if (version == GB_VERSION::ORIGINAL)
+  {
     display.gb_version = Display::GB_VERSION::ORIGINAL;
+    memory.gb_version = Memory::GB_VERSION::ORIGINAL;
+  }
   else if (version == GB_VERSION::COLOUR)
+  {
     display.gb_version = Display::GB_VERSION::COLOUR;
+    memory.gb_version = Memory::GB_VERSION::COLOUR;
+  }
   else
     abort();
 }

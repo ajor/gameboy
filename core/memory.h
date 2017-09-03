@@ -11,6 +11,12 @@ class Display;
 class Memory
 {
 public:
+  enum class GB_VERSION
+  {
+    ORIGINAL,
+    COLOUR,
+  } gb_version;
+
   Memory() = delete;
   explicit Memory(Cartridge &cartridge, Joypad &j, Audio &a, Display &d)
            : cart(cartridge),

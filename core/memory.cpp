@@ -54,6 +54,10 @@ u8 Memory::read_byte(uint address) const
   else if (address >= 0xff80 && address < 0xffff)
   {
     // HRAM - High RAM
+    if (address == 0xffe6) // Gameboy Colour flag (HCGB)
+    {
+      return (gb_version == GB_VERSION::ORIGINAL) ? 0 : 1;
+    }
     return hram.at(address - 0xff80);
   }
   else if (address == 0xffff)
